@@ -229,6 +229,7 @@ public class UIHelper {
     @SuppressLint({ "JavascriptInterface", "SetJavaScriptEnabled" })
     @JavascriptInterface
     public static AjaxContext initWebView(WebView webView, Activity activity) {
+	    webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         WebSettings settings = webView.getSettings();
         settings.setDefaultFontSize(15);
         settings.setDefaultTextEncodingName("UTF-8");
