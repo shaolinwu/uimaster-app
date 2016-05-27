@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -43,7 +42,6 @@ import org.shaolin.uimaster.app.bean.Notice;
 import org.shaolin.uimaster.app.bean.ShakeObject;
 import org.shaolin.uimaster.app.bean.SimpleBackPage;
 import org.shaolin.uimaster.app.context.AjaxContext;
-import org.shaolin.uimaster.app.fragment.BrowserFragment;
 import org.shaolin.uimaster.app.fragment.CommentFrament;
 import org.shaolin.uimaster.app.interf.ICallbackResult;
 import org.shaolin.uimaster.app.interf.OnWebViewImageListener;
@@ -55,7 +53,6 @@ import org.shaolin.uimaster.app.ui.EventLocationActivity;
 import org.shaolin.uimaster.app.ui.ImagePreviewActivity;
 import org.shaolin.uimaster.app.ui.LoginActivity;
 import org.shaolin.uimaster.app.ui.SimpleBackActivity;
-import org.shaolin.uimaster.app.ui.TweetActivity;
 import org.shaolin.uimaster.app.widget.AvatarView;
 
 /**
@@ -66,19 +63,6 @@ import org.shaolin.uimaster.app.widget.AvatarView;
  * 
  */
 public class UIHelper {
-
-    /** 全局web样式 */
-    // 链接样式文件，代码块高亮的处理
-    public final static String linkCss = "<script type=\"text/javascript\" src=\"file:///android_asset/shCore.js\"></script>"
-            + "<script type=\"text/javascript\" src=\"file:///android_asset/brush.js\"></script>"
-            + "<script type=\"text/javascript\" src=\"file:///android_asset/client.js\"></script>"
-            + "<script type=\"text/javascript\" src=\"file:///android_asset/detail_page.js\"></script>"
-            + "<script type=\"text/javascript\">SyntaxHighlighter.all();</script>"
-            + "<script type=\"text/javascript\">function showImagePreview(var url){window.location.url= url;}</script>"
-            + "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/shThemeDefault.css\">"
-            + "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/shCore.css\">"
-            + "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/css/common.css\">";
-    public final static String WEB_STYLE = linkCss;
 
     public static final String WEB_LOAD_IMAGES = "<script type=\"text/javascript\"> var allImgUrls = getAllImgSrc(document.body.innerHTML);</script>";
 
@@ -384,18 +368,7 @@ public class UIHelper {
             return;
         }
 
-        try {
-            // 启用外部浏览器
-            // Uri uri = Uri.parse(url);
-            // Intent it = new Intent(Intent.ACTION_VIEW, uri);
-            // context.startActivity(it);
-            Bundle bundle = new Bundle();
-            bundle.putString(BrowserFragment.BROWSER_KEY, url);
-            showSimpleBack(context, SimpleBackPage.BROWSER, bundle);
-        } catch (Exception e) {
-            e.printStackTrace();
-            AppContext.showToastShort("无法浏览此网页");
-        }
+        AppContext.showToastShort("无法浏览此网页");
     }
 
     /**
@@ -426,29 +399,6 @@ public class UIHelper {
         ImagePreviewActivity.showImagePrivew(context, index, imageUrls);
     }
 
-    public static void showSimpleBackForResult(Fragment fragment,
-            int requestCode, SimpleBackPage page, Bundle args) {
-        Intent intent = new Intent(fragment.getActivity(),
-                SimpleBackActivity.class);
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_PAGE, page.getValue());
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_ARGS, args);
-        fragment.startActivityForResult(intent, requestCode);
-    }
-
-    public static void showSimpleBackForResult(Activity context,
-            int requestCode, SimpleBackPage page, Bundle args) {
-        Intent intent = new Intent(context, SimpleBackActivity.class);
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_PAGE, page.getValue());
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_ARGS, args);
-        context.startActivityForResult(intent, requestCode);
-    }
-
-    public static void showSimpleBackForResult(Activity context,
-            int requestCode, SimpleBackPage page) {
-        Intent intent = new Intent(context, SimpleBackActivity.class);
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_PAGE, page.getValue());
-        context.startActivityForResult(intent, requestCode);
-    }
 
     public static void showSimpleBack(Context context, SimpleBackPage page) {
         Intent intent = new Intent(context, SimpleBackActivity.class);
@@ -459,15 +409,6 @@ public class UIHelper {
     public static void showSimpleBack(Context context, SimpleBackPage page,
             Bundle args) {
         Intent intent = new Intent(context, SimpleBackActivity.class);
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_ARGS, args);
-        intent.putExtra(SimpleBackActivity.BUNDLE_KEY_PAGE, page.getValue());
-        context.startActivity(intent);
-    }
-
-    public static void showTweetActivity(Context context, SimpleBackPage page,
-            Bundle args) {
-        Intent intent = new Intent(context, TweetActivity.class);
-        intent.putExtra(TweetActivity.FROM_KEY, 1);
         intent.putExtra(SimpleBackActivity.BUNDLE_KEY_ARGS, args);
         intent.putExtra(SimpleBackActivity.BUNDLE_KEY_PAGE, page.getValue());
         context.startActivity(intent);
@@ -487,39 +428,7 @@ public class UIHelper {
         String title = "";
         int start = 0;
         int end = 0;
-        if (objecttype == 1 && objectcatalog == 0) {
-            title = "添加了开源项目 " + objecttitle;
-        } else if (objecttype == 2 && objectcatalog == 1) {
-            title = "在讨论区提问：" + objecttitle;
-        } else if (objecttype == 2 && objectcatalog == 2) {
-            title = "发表了新话题：" + objecttitle;
-        } else if (objecttype == 3 && objectcatalog == 0) {
-            title = "发表了博客 " + objecttitle;
-        } else if (objecttype == 4 && objectcatalog == 0) {
-            title = "发表一篇新闻 " + objecttitle;
-        } else if (objecttype == 5 && objectcatalog == 0) {
-            title = "分享了一段代码 " + objecttitle;
-        } else if (objecttype == 6 && objectcatalog == 0) {
-            title = "发布了一个职位：" + objecttitle;
-        } else if (objecttype == 16 && objectcatalog == 0) {
-            title = "在新闻 " + objecttitle + " 发表评论";
-        } else if (objecttype == 17 && objectcatalog == 1) {
-            title = "回答了问题：" + objecttitle;
-        } else if (objecttype == 17 && objectcatalog == 2) {
-            title = "回复了话题：" + objecttitle;
-        } else if (objecttype == 17 && objectcatalog == 3) {
-            title = "在 " + objecttitle + " 对回帖发表评论";
-        } else if (objecttype == 18 && objectcatalog == 0) {
-            title = "在博客 " + objecttitle + " 发表评论";
-        } else if (objecttype == 19 && objectcatalog == 0) {
-            title = "在代码 " + objecttitle + " 发表评论";
-        } else if (objecttype == 20 && objectcatalog == 0) {
-            title = "在职位 " + objecttitle + " 发表评论";
-        } else if (objecttype == 101 && objectcatalog == 0) {
-            title = "回复了动态：" + objecttitle;
-        } else if (objecttype == 100) {
-            title = "更新了动态";
-        }
+
         SpannableString sp = new SpannableString(title);
         // 设置标题字体大小、高亮
         if (!StringUtils.isEmpty(objecttitle)) {
@@ -632,24 +541,6 @@ public class UIHelper {
         }
         String url = AvatarView.getLargeAvatar(avatarUrl);
         ImagePreviewActivity.showImagePrivew(context, 0, new String[]{url});
-    }
-
-    /**
-     * 显示登陆用户的个人中心页面
-     * 
-     * @param context
-     */
-    public static void showMyInformation(Context context) {
-        showSimpleBack(context, SimpleBackPage.MY_INFORMATION);
-    }
-
-    /**
-     * 显示我的所有动态
-     * 
-     * @param context
-     */
-    public static void showMyActive(Context context) {
-        showSimpleBack(context, SimpleBackPage.MY_ACTIVE);
     }
 
     /**

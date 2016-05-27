@@ -58,7 +58,6 @@ public class AboutPlatformFragment extends BaseFragment {
             onClickUpdate();
             break;
         case R.id.rl_feedback:
-            showFeedBack();
             break;
         case R.id.rl_grade:
             TDevice.openAppInMarket(getActivity());
@@ -76,7 +75,4 @@ public class AboutPlatformFragment extends BaseFragment {
         new UpdateManager(getActivity(), true).checkUpdate();
     }
 
-    private void showFeedBack() {
-        UIHelper.showSimpleBack(getActivity(), SimpleBackPage.FEED_BACK);
-    }
 }

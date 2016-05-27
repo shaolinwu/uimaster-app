@@ -7,8 +7,6 @@ import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.SimpleBackPage;
 import org.shaolin.uimaster.app.emoji.OnSendClickListener;
-import org.shaolin.uimaster.app.fragment.MessageDetailFragment;
-import org.shaolin.uimaster.app.util.UIHelper;
 
 
 import android.content.Intent;
@@ -150,10 +148,6 @@ public class SimpleBackActivity extends BaseActivity implements
 
     @Override
     public void onClickSendButton(Editable str) {
-        if (mFragment.get() instanceof MessageDetailFragment) {
-            ((OnSendClickListener) mFragment.get()).onClickSendButton(str);
-            ((MessageDetailFragment) mFragment.get()).emojiFragment.clean();
-        }
     }
 
     @Override

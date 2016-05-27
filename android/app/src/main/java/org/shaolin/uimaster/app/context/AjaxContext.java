@@ -122,7 +122,7 @@ public class AjaxContext {
                 params.put(key, data.getString(key));
             }
 
-            HttpClientService.post(HttpClientService.AJAX_SERVICE_URL, "", params, new AsyncHttpResponseHandler() {
+            HttpClientService.post(AppConfig.AJAX_SERVICE_URL, "", params, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers,
                                       byte[] responseBytes) {

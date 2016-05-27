@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UIMaster App</string>
+    <string name="app_name">抢单达人</string>
     
     <string name="main_tab_name_news">功能块</string>
     <string name="main_tab_name_tweet">动弹</string>
@@ -9,9 +9,10 @@
 	<string name="main_tab_name_main">主页</string>
 	<string name="main_tab_name_status">当前事件</string>
 	<string name="main_tab_name_shopping">购物车</string>
+	<string name="main_tab_name_product">产品</string>
 	<string name="main_tab_name_order">订单</string>
 	<string name="main_tab_name_question">问答</string>
-    <string name="main_tab_name_my">自己</string>
+    <string name="main_tab_name_my">我的</string>
     <string name="main_tab_name_explore">发现</string>
     
     <string name="app_error">应用程序错误</string>
@@ -21,7 +22,7 @@
     <!-- slide menu -->
 	<string name="menu_text">项目</string>
     <string name="menu_rss">订阅</string>
-    <string name="menu_opensoft">开源软件</string>
+    <string name="menu_opensoft">软件</string>
     <string name="menu_blog">博客区</string>
     <string name="menu_quests">技术问答</string>
     <string name="menu_setting">设置</string>
@@ -83,11 +84,11 @@
 	<string name="platform_sina">微博</string>
 	<string name="platform_weichat">微信</string>
 	<string name="platform_weichat_circle">朋友圈</string>
-	<string name="share_title">开源中国分享</string>
-	<string name="share_title_news">开源中国资讯分享</string>
-	<string name="share_title_blog">开源中国博客分享</string>
-	<string name="share_title_soft">开源中国软件分享</string>
-	<string name="share_title_post">开源中国帖子分享</string>
+	<string name="share_title">抢单达人分享</string>
+	<string name="share_title_news">抢单达人资讯分享</string>
+	<string name="share_title_blog">抢单达人博客分享</string>
+	<string name="share_title_soft">抢单达人软件分享</string>
+	<string name="share_title_post">抢单达人帖子分享</string>
 	<string name="tip_start_share">开始分享…</string>
 	<string name="tip_share_done">分享完成</string>
 	
@@ -138,7 +139,7 @@
 	<string name="tip_content_empty">内容不能为空</string>
 	<string name="tip_content_too_long">内容太长</string>
 	
-	<string name="actionbar_title_softwarelist">开源软件</string>
+	<string name="actionbar_title_softwarelist">软件</string>
 	<string name="actionbar_title_function">功能</string>
 	<string name="actionbar_title_comment">评论列表</string>
 	<string name="actionbar_title_questions">技术问答</string>
@@ -214,7 +215,7 @@
 	
 	<!-- software detail -->
 	<string name="software_author">软件作者 :</string>
-    <string name="software_license">开源协议 :</string>
+    <string name="software_license">协议 :</string>
     <string name="software_language">开发语言 :</string>
     <string name="software_os">操作系统 :</string>
     <string name="software_recordtime">收录时间 :</string>
@@ -247,7 +248,7 @@
 	
 	<string name="add_notebook">新建便签</string>
 	<string name="submit_notebook">保存便签</string>
-	
+	<string name="serverinfo_img">服务器设置</string>
 	<string name="loading_img">加载图片</string>
 	<string name="mes_notice">消息通知</string>
 	<string name="clean_cache">清理缓存</string>
@@ -290,7 +291,7 @@
 	<string name="tip_report_success">举报成功</string>
 	<string name="tip_report_faile">举报失败</string>
 	
-	<string name="tip_double_click_exit">再次点击退出开源中国</string>
+	<string name="tip_double_click_exit">再次点击退出抢单达人</string>
 	
 	
 	<string name="team_dynamic">团队动态</string>

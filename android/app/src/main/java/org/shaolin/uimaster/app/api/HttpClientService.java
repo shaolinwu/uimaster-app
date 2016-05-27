@@ -4,6 +4,7 @@ import java.util.Locale;
 
 
 import org.apache.http.client.params.ClientPNames;
+import org.shaolin.uimaster.app.context.AppConfig;
 import org.shaolin.uimaster.app.context.AppContext;
 import org.shaolin.uimaster.app.util.TLog;
 
@@ -15,15 +16,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class HttpClientService {
-
-    /**
-     * 那到底要如何才能访问到本地电脑上的Web应用呢？在Android中，将我们本地电脑的地址映射为10.0.2.2，
-     * 因此，只需要将原先的localhost或者127.0.0.1换成10.0.2.2，就可以在模拟器上访问本地计算机上的Web资源了。
-     * */
-    public final static String HOST = "10.0.2.2";
-    public final static String Origin = "http://10.0.2.2:8080";
-    public static String FUNCTION_DETAILS_URL = "http://10.0.2.2:8080/uimaster/webflow.do?_appclient=andriod";
-    public static String AJAX_SERVICE_URL = "http://10.0.2.2:8080/uimaster/ajaxservice?_appclient=andriod";
 
     public static final String DELETE = "DELETE";
     public static final String GET = "GET";
@@ -63,13 +55,13 @@ public class HttpClientService {
     }
 
     public static String getAbsoluteApiUrl(String partUrl) {
-        String url = String.format(AJAX_SERVICE_URL, partUrl);
+        String url = String.format(AppConfig.AJAX_SERVICE_URL, partUrl);
         Log.d("BASE_CLIENT", "request:" + url);
         return url;
     }
 
     public static String getAjaxServiceUrl() {
-        return AJAX_SERVICE_URL;
+        return AppConfig.AJAX_SERVICE_URL;
     }
 
     public static void getDirect(String url, AsyncHttpResponseHandler handler) {
@@ -132,14 +124,14 @@ public class HttpClientService {
     }
 
     public static void setAjaxServiceUrl(String ajaxServiceUrl) {
-        AJAX_SERVICE_URL = ajaxServiceUrl;
+        AppConfig.AJAX_SERVICE_URL = ajaxServiceUrl;
     }
 
     public static void setHttpClient(AsyncHttpClient c) {
         client = c;
         client.addHeader("Accept-Language", Locale.getDefault().toString());
-        client.addHeader("Host", HOST);
-        client.addHeader("Origin", Origin);
+        client.addHeader("Host", AppConfig.HOST);
+        client.addHeader("Origin", AppConfig.Origin);
         client.addHeader("Connection", "Keep-Alive");
         client.getHttpClient().getParams()
                 .setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);

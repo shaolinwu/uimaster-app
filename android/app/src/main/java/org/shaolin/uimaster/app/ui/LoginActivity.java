@@ -6,6 +6,7 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONObject;
 import org.kymjs.kjframe.http.HttpConfig;
 import org.shaolin.uimaster.app.bean.Result;
 import org.shaolin.uimaster.app.bean.User;
@@ -33,21 +34,21 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.PersistentCookieStore;
 
 import java.util.Map;
 import java.util.Set;
 
 /**
  * 用户登录界面
- *
- * @author  (http://www..com/)
- */
+ * */
 public class LoginActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_INIT = 0;
@@ -59,6 +60,12 @@ public class LoginActivity extends BaseActivity {
 
     @InjectView(R.id.et_password)
     EditText mEtPassword;
+
+    @InjectView(R.id.et_verifycodequestion)
+    TextView mEtVerifyQuestion;
+
+    @InjectView(R.id.et_verifycode)
+    EditText mEtVerifyCode;
 
     private final int requestCode = REQUEST_CODE_INIT;
     private String mUserName = "";
@@ -93,6 +100,9 @@ public class LoginActivity extends BaseActivity {
             case R.id.btn_login:
                 handleLogin();
                 break;
+            case R.id.et_verifycodequestion:
+                refreshVerifyCode();
+                break;
             // R.id.iv_qq_login, R.id.iv_wx_login
             /**
             case R.id.iv_qq_login:
@@ -108,7 +118,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void handleLogin() {
-
         if (prepareForLogin()) {
             return;
         }
@@ -116,40 +125,74 @@ public class LoginActivity extends BaseActivity {
         // if the data has ready
         mUserName = mEtUserName.getText().toString();
         mPassword = mEtPassword.getText().toString();
-
+        String verifyCodeAnswer = mEtVerifyCode.getText().toString();
         showWaitDialog(R.string.progress_login);
-        RService.login(mUserName, mPassword, mHandler);
+        RService.login(mUserName, mPassword, verifyCodeAnswer, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+                try {
+                    JSONObject json = new JSONObject(new String(arg2, "UTF-8"));
+                    if (json.has("verifyCode.error")) {
+                        AppContext.showToast("验证码错误");
+                        return;
+                    }
+                    LoginUserBean loginUserBean = new LoginUserBean();
+                    Result result = new Result();
+                    loginUserBean.setResult(result);
+                    if (json.has("authfail")) {
+                        result.setErrorCode(2);
+                        result.setErrorMessage("登录失败");
+                    } else {
+                        result.setErrorCode(1);
+                        User user = new User();
+                        user.setAccount(mUserName);
+                        user.setPwd(mPassword);
+                        user.setName(json.getString("orgName") + json.getString("userName"));
+                        loginUserBean.setUser(user);
+                        loginUserBean.setResult(result);
+                    }
+                    handleLoginBean(loginUserBean);
+                    AppContext.getInstance().keepUserSession();
+                    AppContext.getInstance().getNavigator().refreshModuleItems();
+                } catch (Exception e) {
+                    AppContext.showToast("登录失败");
+                }
+            }
+            @Override
+            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+                                  Throwable arg3) {
+                AppContext.showToast("网络出错! ");
+            }
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                hideWaitDialog();
+            }
+        });
     }
 
-    private final AsyncHttpResponseHandler mHandler = new AsyncHttpResponseHandler() {
-
-        @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
-            LoginUserBean loginUserBean = new LoginUserBean();
-            Result result = new Result();
-            result.setErrorCode(1);
-            User user = new User();
-            user.setAccount(mUserName);
-            user.setPwd(mPassword);
-            loginUserBean.setUser(user);
-            loginUserBean.setResult(result);
-            if (loginUserBean != null) {
-                handleLoginBean(loginUserBean);
+    private void refreshVerifyCode() {
+        RService.getVerifyCode(new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+                try {
+                    AppContext.getInstance().keepUserSession();
+                    JSONObject json = new JSONObject(new String(arg2, "UTF-8"));
+                    mEtVerifyQuestion.setText(json.getString("value"));
+                } catch (Exception e) {}
             }
-        }
-
-        @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
-                              Throwable arg3) {
-            AppContext.showToast("网络出错" + arg0);
-        }
-
-        @Override
-        public void onFinish() {
-            super.onFinish();
-            hideWaitDialog();
-        }
-    };
+            @Override
+            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+                                  Throwable arg3) {
+                AppContext.showToast("网络出错! ");
+            }
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                hideWaitDialog();
+            }
+        });
+    }
 
     private void handleLoginSuccess() {
         Intent data = new Intent();
@@ -181,55 +224,20 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
         mEtUserName.setText(AppContext.getInstance()
                 .getProperty("user.account"));
         mEtPassword.setText(CyptoUtils.decode("uimasterApp", AppContext
                 .getInstance().getProperty("user.pwd")));
+        mEtVerifyQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refreshVerifyCode();
+            }
+        });
+        refreshVerifyCode();
     }
 
     BroadcastReceiver receiver;
-
-    /***
-     *
-     * @param catalog 第三方登录的类别
-     * @param openIdInfo 第三方的信息
-     */
-    private void openIdLogin(final String catalog, final String openIdInfo) {
-        final ProgressDialog waitDialog = DialogHelp.getWaitDialog(this, "登陆中...");
-        RService.open_login(catalog, openIdInfo, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                LoginUserBean loginUserBean = XmlUtils.toBean(LoginUserBean.class, responseBody);
-                if (loginUserBean.getResult().OK()) {
-                    handleLoginBean(loginUserBean);
-                } else {
-                    // 前往绑定或者注册操作
-                    Intent intent = new Intent(LoginActivity.this, LoginBindActivityChooseActivity.class);
-                    intent.putExtra(LoginBindActivityChooseActivity.BUNDLE_KEY_CATALOG, catalog);
-                    intent.putExtra(LoginBindActivityChooseActivity.BUNDLE_KEY_OPENIDINFO, openIdInfo);
-                    startActivityForResult(intent, REQUEST_CODE_OPENID);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                AppContext.showToast("网络出错" + statusCode);
-            }
-
-            @Override
-            public void onStart() {
-                super.onStart();
-                waitDialog.show();
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                waitDialog.dismiss();
-            }
-        });
-    }
 
     public static final int REQUEST_CODE_OPENID = 1000;
     // 登陆实体类
@@ -257,24 +265,6 @@ public class LoginActivity extends BaseActivity {
     // 处理loginBean
     private void handleLoginBean(LoginUserBean loginUserBean) {
         if (loginUserBean.getResult().OK()) {
-            AsyncHttpClient client = HttpClientService.getHttpClient();
-            HttpContext httpContext = client.getHttpContext();
-            CookieStore cookies = (CookieStore) httpContext
-                    .getAttribute(ClientContext.COOKIE_STORE);
-            if (cookies != null) {
-                String tmpcookies = "";
-                for (Cookie c : cookies.getCookies()) {
-                    TLog.log(TAG,
-                            "cookie:" + c.getName() + " " + c.getValue());
-                    tmpcookies += (c.getName() + "=" + c.getValue()) + ";";
-                }
-                TLog.log(TAG, "cookies:" + tmpcookies);
-                AppContext.getInstance().setProperty(AppConfig.CONF_COOKIE,
-                        tmpcookies);
-                HttpClientService.setCookie(HttpClientService.getCookie(AppContext
-                        .getInstance()));
-                HttpConfig.sCookie = tmpcookies;
-            }
             // 保存登录信息
             loginUserBean.getUser().setName(mUserName);
             loginUserBean.getUser().setAccount(mUserName);

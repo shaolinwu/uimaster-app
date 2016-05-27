@@ -46,6 +46,10 @@ public class ServerTaskService extends IntentService {
 
     public static List<String> penddingTasks = new ArrayList<String>();
 
+	public ServerTaskService() {
+		super("vogerp");
+	}
+
     class PublicCommentResponseHandler extends AsyncResponseHandler {
 
 	public PublicCommentResponseHandler(Looper looper, Object... args) {
@@ -142,16 +146,16 @@ public class ServerTaskService extends IntentService {
     }
 
     private void publicComment(final PublicCommentTask task) {
-	int id = task.getId() * task.getUid();
-	addPenddingTask(KEY_COMMENT + id);
-
-	notifySimpleNotifycation(id, getString(R.string.comment_publishing),
-		getString(R.string.comment_blog),
-		getString(R.string.comment_publishing), true, false);
-
-	RService.publicComment(task.getCatalog(), task.getId(),
-			task.getUid(), task.getContent(), task.getIsPostToMyZone(),
-			new PublicCommentResponseHandler(getMainLooper(), task, false));
+//	int id = task.getId() * task.getUid();
+//	addPenddingTask(KEY_COMMENT + id);
+//
+//	notifySimpleNotifycation(id, getString(R.string.comment_publishing),
+//		getString(R.string.comment_blog),
+//		getString(R.string.comment_publishing), true, false);
+//
+//	RService.publicComment(task.getCatalog(), task.getId(),
+//			task.getUid(), task.getContent(), task.getIsPostToMyZone(),
+//			new PublicCommentResponseHandler(getMainLooper(), task, false));
     }
 
 

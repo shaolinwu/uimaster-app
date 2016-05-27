@@ -16,11 +16,8 @@ import java.util.Properties;
 public class AppConfig {
 
     private final static String APP_CONFIG = "config";
-
     public final static String CONF_COOKIE = "cookie";
-
     public final static String CONF_APP_UNIQUEID = "APP_UNIQUEID";
-
     public static final String KEY_LOAD_IMAGE = "KEY_LOAD_IMAGE";
     public static final String KEY_NOTIFICATION_ACCEPT = "KEY_NOTIFICATION_ACCEPT";
     public static final String KEY_NOTIFICATION_SOUND = "KEY_NOTIFICATION_SOUND";
@@ -28,16 +25,17 @@ public class AppConfig {
     public static final String KEY_NOTIFICATION_DISABLE_WHEN_EXIT = "KEY_NOTIFICATION_DISABLE_WHEN_EXIT";
     public static final String KEY_CHECK_UPDATE = "KEY_CHECK_UPDATE";
     public static final String KEY_DOUBLE_CLICK_EXIT = "KEY_DOUBLE_CLICK_EXIT";
-
-    public static final String KEY_TWEET_DRAFT = "KEY_TWEET_DRAFT";
-    public static final String KEY_NOTE_DRAFT = "KEY_NOTE_DRAFT";
-
     public static final String KEY_FRITST_START = "KEY_FRIST_START";
-
     public static final String KEY_NIGHT_MODE_SWITCH="night_mode_switch";
 
-    public static final String APP_QQ_KEY = "100942993";
-
+    /**
+     * 那到底要如何才能访问到本地电脑上的Web应用呢？在Android中，将我们本地电脑的地址映射为10.0.2.2，
+     * 因此，只需要将原先的localhost或者127.0.0.1换成10.0.2.2，就可以在模拟器上访问本地计算机上的Web资源了。
+     * */
+    public static String HOST = "10.0.2.2";//www.vogerp.com
+    public static String Origin = "http://10.0.2.2:8080";//10.0.2.2:8080
+    public static String FUNCTION_DETAILS_URL = Origin + "/uimaster/webflow.do?_appclient=andriod";
+    public static String AJAX_SERVICE_URL = Origin + "/uimaster/ajaxservice?_appclient=andriod";
     // 默认存放图片的路径
     public final static String DEFAULT_SAVE_IMAGE_PATH = Environment
             .getExternalStorageDirectory()
@@ -61,6 +59,13 @@ public class AppConfig {
             appConfig.mContext = context;
         }
         return appConfig;
+    }
+
+    public static void updateServerURL(String serverURL) {
+        AppConfig.Origin = serverURL;
+        AppConfig.HOST = serverURL;
+        AppConfig.FUNCTION_DETAILS_URL = AppConfig.Origin + "/uimaster/webflow.do?_appclient=andriod";
+        AppConfig.AJAX_SERVICE_URL = AppConfig.Origin + "/uimaster/ajaxservice?_appclient=andriod";
     }
 
     /**

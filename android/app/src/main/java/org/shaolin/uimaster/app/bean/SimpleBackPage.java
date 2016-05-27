@@ -3,10 +3,7 @@ package org.shaolin.uimaster.app.bean;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.fragment.AboutPlatformFragment;
-import org.shaolin.uimaster.app.fragment.ActiveFragment;
-import org.shaolin.uimaster.app.fragment.BrowserFragment;
 import org.shaolin.uimaster.app.fragment.CommentFrament;
-import org.shaolin.uimaster.app.fragment.FeedBackFragment;
 import org.shaolin.uimaster.app.fragment.FunctionFragment;
 import org.shaolin.uimaster.app.fragment.MyInformationFragment;
 import org.shaolin.uimaster.app.fragment.MyInformationFragmentDetail;
@@ -29,8 +26,6 @@ public enum SimpleBackPage {
     MY_INFORMATION(7, R.string.actionbar_title_my_information,
             MyInformationFragment.class),
 
-    MY_ACTIVE(8, R.string.actionbar_title_active, ActiveFragment.class),
-
     MY_MES(9, R.string.actionbar_title_mes, NoticeViewPagerFragment.class),
 
     USER_FAVORITE(10, R.string.actionbar_title_user_favorite,
@@ -45,12 +40,8 @@ public enum SimpleBackPage {
 
     SEARCH(14, R.string.actionbar_title_search, SearchViewPageFragment.class),
 
-    BROWSER(15, R.string.app_name, BrowserFragment.class),
-
     MY_INFORMATION_DETAIL(17, R.string.actionbar_title_my_information,
-            MyInformationFragmentDetail.class),
-
-    FEED_BACK(18, R.string.str_feedback_title, FeedBackFragment.class);
+            MyInformationFragmentDetail.class);
 
     private int title;
     private Class<?> clz;

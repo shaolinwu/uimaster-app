@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal" >
-
+<!--
             <LinearLayout
                 android:id="@+id/ly_score"
                 style="@style/uset_information_ll" >
@@ -96,7 +96,7 @@
                     style="@style/user_formation_info"
                     android:text="@string/favorite" />
             </LinearLayout>
-
+-->
         </LinearLayout>
     </LinearLayout>
 

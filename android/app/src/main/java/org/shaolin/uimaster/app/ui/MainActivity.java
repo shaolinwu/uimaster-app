@@ -117,7 +117,7 @@ public class
     private CharSequence mTitle;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (AppContext.getNightModeSwitch()) {
             setTheme(R.style.AppBaseTheme_Night);
@@ -130,7 +130,7 @@ public class
         AppManager.getAppManager().addActivity(this);
 
         handleIntent(getIntent());
-        // 注册听云的检测分析
+        // we must注册听云的检测分析
         NBSAppAgent.setLicenseKey("0ed0cc66c5cb45c0a91c6fa932ca99ac")
                 .withCrashReportEnabled(true).withLocationServiceEnabled(true)
                 .start(this);
@@ -228,7 +228,7 @@ public class
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         NoticeUtils.unbindFromService(this);
         unregisterReceiver(mReceiver);
@@ -268,21 +268,17 @@ public class
             bundle.putInt("id", i);
             bundle.putString("_chunkname", "org.shaolin.vogerp.commonmodel.diagram.ModularityModel");
             if (mainTab == MainTab.MAIN) {
+                bundle.putString("_nodename", "OnlineOrderList");
+                bundle.putString("_page", "org.shaolin.vogerp.ecommercial.page.OnlineOrderList");
+                bundle.putString("_framename", "onlineOrderList");
+            } else if (mainTab == MainTab.ORDER) {
+                bundle.putString("_nodename", "OrderManagement");
+                bundle.putString("_page", "org.shaolin.vogerp.ecommercial.page.OrderManagement");
+                bundle.putString("_framename", "goldenOrderManager");
+            } else if (mainTab == MainTab.PRODUCT) {
                 bundle.putString("_nodename", "ProductManagement");
                 bundle.putString("_page", "org.shaolin.vogerp.productmodel.page.ProductManagement");
                 bundle.putString("_framename", "productManager");
-            } else if (mainTab == MainTab.SHOPPING_CART) {
-                bundle.putString("_nodename", "MyShoppingCart");
-                bundle.putString("_page", "org.shaolin.vogerp.productmodel.page.MyShoppingCart");
-                bundle.putString("_framename", "productManager");
-            } else if (mainTab == MainTab.ORDER) {
-                bundle.putString("_nodename", "MyOrder");
-                bundle.putString("_page", "org.shaolin.vogerp.productmodel.page.MyOrder");
-                bundle.putString("_framename", "productManager");
-            } else if (mainTab == MainTab.ME) {
-
-            } else {
-
             }
             mTabHost.addTab(tab, mainTab.getClz(), bundle);
 
@@ -347,10 +343,12 @@ public class
         }
         if (tabId.equals(getString(MainTab.MAIN.getResName()))) {
 
-        } else if (tabId.equals(getString(MainTab.SHOPPING_CART.getResName()))) {
-
-        } else if (tabId.equals(getString(MainTab.ORDER.getResName()))) {
-
+        } else if (tabId.equals(getString(MainTab.ORDER.getResName()))
+                || tabId.equals(getString(MainTab.PRODUCT.getResName()))) {
+            if (!AppContext.getInstance().isLogin()) {
+                UIHelper.showLoginActivity(this);
+                return;
+            }
         } else if (tabId.equals(getString(MainTab.ME.getResName()))) {
             mBvNotice.setText("");
             mBvNotice.hide();

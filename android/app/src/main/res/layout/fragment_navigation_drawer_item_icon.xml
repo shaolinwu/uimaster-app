@@ -2,4 +2,6 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MenuItemImageViewStyle"
     android:background="@drawable/drawer_menu_icon_quest_nor"
-    android:contentDescription="@null" />
+    android:contentDescription="@null"
+    android:layout_width="30dp"
+    android:layout_height="30dp" />

@@ -169,7 +169,7 @@ public class CommentFrament extends BaseListFragment<Comment> implements
 
     @Override
     protected void sendRequestData() {
-        RService.getCommentList(mId, mCatalog, mCurrentPage, mHandler);
+        //RService.getCommentList(mId, mCatalog, mCurrentPage, mHandler);
     }
 
     @Override
@@ -188,10 +188,6 @@ public class CommentFrament extends BaseListFragment<Comment> implements
             UIHelper.showLoginActivity(getActivity());
             return;
         }
-        AppContext.showToastShort(R.string.deleting);
-        RService.deleteComment(mId, mCatalog, comment.getId(),
-                comment.getAuthorId(),
-                new DeleteAsyncResponseHandler(comment));
     }
 
     class DeleteAsyncResponseHandler extends AsyncResponseHandler {
@@ -272,19 +268,11 @@ public class CommentFrament extends BaseListFragment<Comment> implements
     }
 
     private void sendReply(String text) {
-        showWaitDialog(R.string.progress_submit);
-        RService.publicComment(mCatalog, mId, AppContext.getInstance()
-                .getLoginUid(), text, 1, mCommentHandler);
+
     }
 
     private void handleReplyComment(Comment comment, String text) {
-        showWaitDialog(R.string.progress_submit);
-        if (!AppContext.getInstance().isLogin()) {
-            UIHelper.showLoginActivity(getActivity());
-            return;
-        }
-        RService.replyComment(mId, mCatalog, comment.getId(), comment.getAuthorId(),
-                AppContext.getInstance().getLoginUid(), text, mCommentHandler);
+
     }
 
     @Override

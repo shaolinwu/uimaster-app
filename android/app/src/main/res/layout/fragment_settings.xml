@@ -17,7 +17,30 @@
         <View
             style="@style/h_line"
             android:layout_marginTop="20dip"/>
+        <RelativeLayout
+            android:id="@+id/rl_serverinfo_img"
+            style="@style/option_item_rl" >
 
+            <TextView
+                style="@style/option_item_text_parent"
+                android:text="@string/serverinfo_img"
+                android:textColor="?attr/textColor"
+                android:textSize="@dimen/text_size_16"
+                android:id="@+id/textView" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/serverinfoEditText"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/textView"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            style="@style/h_line" />
         <RelativeLayout
             android:id="@+id/rl_loading_img"
             style="@style/option_item_rl" >

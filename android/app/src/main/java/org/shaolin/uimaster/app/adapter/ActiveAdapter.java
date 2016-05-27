@@ -38,8 +38,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class ActiveAdapter extends ListBaseAdapter {
-    private final static String AT_HOST_PRE = "http://my.oschina.net";
-    private final static String MAIN_HOST = "http://www.oschina.net";
 
     public ActiveAdapter() {}
 
@@ -181,11 +179,6 @@ public class ActiveAdapter extends ListBaseAdapter {
     }
 
     private String modifyPath(String message) {
-        message = message.replaceAll("(<a[^>]+href=\")/([\\S]+)\"", "$1"
-                + AT_HOST_PRE + "/$2\"");
-        message = message.replaceAll(
-                "(<a[^>]+href=\")http://m.oschina.net([\\S]+)\"", "$1"
-                        + MAIN_HOST + "$2\"");
         return message;
     }
 

@@ -3,9 +3,12 @@ package org.shaolin.uimaster.app.fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -35,6 +38,8 @@ import butterknife.InjectView;
  */
 public class SettingsFragment extends BaseFragment {
 
+    @InjectView(R.id.serverinfoEditText)
+    EditText mTvServerInfo;
     @InjectView(R.id.tb_loading_img)
     ToggleButton mTbLoadImg;
     @InjectView(R.id.tv_cache_size)
@@ -57,6 +62,20 @@ public class SettingsFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
+        mTvServerInfo.setText(AppConfig.Origin);
+        mTvServerInfo.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence var1, int var2, int var3, int var4) {
+            }
+
+            public void onTextChanged(CharSequence var1, int var2, int var3, int var4) {
+            }
+
+            public void afterTextChanged(Editable var1) {
+                if (var1 != null && var1.length() > 0) {
+                    AppConfig.updateServerURL(var1.toString());
+                }
+            }
+        });
         mTbLoadImg.setOnToggleChanged(new OnToggleChanged() {
             @Override
             public void onToggle(boolean on) {

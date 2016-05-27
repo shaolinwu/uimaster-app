@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 
 
 import org.apache.http.Header;
+import org.json.JSONObject;
 import org.shaolin.uimaster.app.context.AppContext;
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.api.remote.RService;
@@ -59,14 +60,14 @@ public class MyInformationFragment extends BaseFragment {
 
     @InjectView(R.id.iv_avatar)
     AvatarView mIvAvatar;
-    @InjectView(R.id.iv_gender)
-    ImageView mIvGender;
+//    @InjectView(R.id.iv_gender)
+//    ImageView mIvGender;
     @InjectView(R.id.tv_name)
     TextView mTvName;
-    @InjectView(R.id.tv_score)
-    TextView mTvScore;
-    @InjectView(R.id.tv_favorite)
-    TextView mTvFavorite;
+//    @InjectView(R.id.tv_score)
+//    TextView mTvScore;
+   // @InjectView(R.id.tv_favorite)
+   // TextView mTvFavorite;
     @InjectView(R.id.tv_mes)
     View mMesView;
     @InjectView(R.id.error_layout)
@@ -110,9 +111,10 @@ public class MyInformationFragment extends BaseFragment {
         @Override
         public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
             try {
-                mInfo = XmlUtils.toBean(MyInformation.class,
-                        new ByteArrayInputStream(arg2)).getUser();
+                String response = new String(arg2, "UTF-8");
+                JSONObject json = new JSONObject(response);
                 if (mInfo != null) {
+                    mInfo = new User();
                     fillUI();
                     AppContext.getInstance().updateUserInfo(mInfo);
                     new SaveCacheTask(getActivity(), mInfo, getCacheKey())
@@ -215,7 +217,7 @@ public class MyInformationFragment extends BaseFragment {
                 }
             }
         });
-        view.findViewById(R.id.ly_favorite).setOnClickListener(this);
+        //view.findViewById(R.id.ly_favorite).setOnClickListener(this);
         view.findViewById(R.id.rl_message).setOnClickListener(this);
         view.findViewById(R.id.rl_team).setOnClickListener(this);
         /**
@@ -255,11 +257,10 @@ public class MyInformationFragment extends BaseFragment {
             return;
         mIvAvatar.setAvatarUrl(mInfo.getPortrait());
         mTvName.setText(mInfo.getName());
-        mIvGender
-                .setImageResource(StringUtils.toInt(mInfo.getGender()) != 2 ? R.drawable.userinfo_icon_male
-                        : R.drawable.userinfo_icon_female);
-        mTvScore.setText(String.valueOf(mInfo.getScore()));
-        mTvFavorite.setText(String.valueOf(mInfo.getFavoritecount()));
+//        mIvGender.setImageResource(StringUtils.toInt(mInfo.getGender()) != 2 ? R.drawable.userinfo_icon_male
+//                        : R.drawable.userinfo_icon_female);
+        //mTvScore.setText(String.valueOf(mInfo.getScore()));
+        //mTvFavorite.setText(String.valueOf(mInfo.getFavoritecount()));
     }
 
     private void requestData(boolean refresh) {
@@ -292,7 +293,7 @@ public class MyInformationFragment extends BaseFragment {
 
     private void sendRequestData() {
         int uid = AppContext.getInstance().getLoginUid();
-        RService.getMyInformation(uid, mHandler);
+        //RService.getMyInformation(uid, mHandler);
     }
 
     private String getCacheKey() {
@@ -364,10 +365,10 @@ public class MyInformationFragment extends BaseFragment {
         case R.id.iv_qr_code:
             showMyQrCode();
             break;
-        case R.id.ly_favorite:
-            UIHelper.showUserFavorite(getActivity(), AppContext.getInstance()
-                    .getLoginUid());
-            break;
+//        case R.id.ly_favorite:
+//            UIHelper.showUserFavorite(getActivity(), AppContext.getInstance()
+//                    .getLoginUid());
+//            break;
         case R.id.rl_message:
             UIHelper.showMyMes(getActivity());
             setNoticeReaded();

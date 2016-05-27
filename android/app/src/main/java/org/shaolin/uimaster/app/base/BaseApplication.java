@@ -45,6 +45,8 @@ public class BaseApplication extends Application {
         super.onCreate();
         _context = getApplicationContext();
         _resource = _context.getResources();
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        crashHandler.init(getApplicationContext());
     }
 
     public static synchronized BaseApplication context() {

@@ -144,8 +144,7 @@ public class MessageFragment extends BaseListFragment<Messages> implements
 
     @Override
     protected void sendRequestData() {
-        RService.getMessageList(AppContext.getInstance().getLoginUid(),
-                mCurrentPage, mHandler);
+
     }
 
     @Override
@@ -191,17 +190,6 @@ public class MessageFragment extends BaseListFragment<Messages> implements
 
     private void handleDeleteMessage(final Messages message) {
 
-        DialogHelp.getConfirmDialog(getActivity(), getString(R.string.confirm_delete_message,
-                message.getFriendName()), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                showWaitDialog(R.string.progress_submit);
-
-                RService.deleteMessage(AppContext.getInstance()
-                                .getLoginUid(), message.getFriendId(),
-                        new DeleteMessageAsyncHandler(message));
-            }
-        }).show();
     }
 
     class DeleteMessageAsyncHandler extends AsyncResponseHandler {

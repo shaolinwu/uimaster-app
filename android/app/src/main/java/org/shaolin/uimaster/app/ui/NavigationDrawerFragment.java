@@ -178,8 +178,10 @@ public class NavigationDrawerFragment extends BaseFragment implements
         getActivity().recreate();
     }
 
+    private View view;
     @Override
     public void initView(final View view) {
+        this.view = view;
         TextView night = (TextView) view.findViewById(R.id.tv_night);
         if (AppContext.getNightModeSwitch()) {
             night.setText("日间");
@@ -190,27 +192,16 @@ public class NavigationDrawerFragment extends BaseFragment implements
         mMenu_item_setting.setOnClickListener(this);
         mMenu_item_theme.setOnClickListener(this);
 
-
-        /**
-         * <LinearLayout
-         android:id="@+id/menu_item_quests"
-         style="@style/MenuItemLayoutStyle" >
-
-         <ImageView
-         style="@style/MenuItemImageViewStyle"
-         android:background="@drawable/drawer_menu_icon_quest_nor"
-         android:contentDescription="@null" />
-
-         <TextView
-         style="@style/MenuItemTextViewStyle"
-         android:gravity="center"
-         android:text="@string/menu_quests" />
-         </LinearLayout>
-
-         <View
-         style="@style/h_line" />
-         */
+        AppContext.getInstance().setNavtigation(this);
         showWaitDialog(R.string.loading);
+        refreshModuleItems();
+    }
+
+    @Override
+    public void initData() {
+    }
+
+    public void refreshModuleItems() {
         final NavigationDrawerFragment othis = this;
         final FragmentActivity activity = this.getActivity();
         RService.getFunctionList(new AsyncHttpResponseHandler() {
@@ -218,16 +209,18 @@ public class NavigationDrawerFragment extends BaseFragment implements
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBytes) {
                 try {
+                    functionMap.clear();
                     String jsonStr = new String(responseBytes);
                     //System.out.println("jsonStr: " + jsonStr);
                     JSONArray array = new JSONArray(jsonStr);
                     LinearLayout root = (LinearLayout) view.findViewById(R.id.layout_root);
+                    root.removeAllViews();
 
                     int length = array.length();
                     for (int i = 0; i < length; i++) {
                         JSONObject item = array.getJSONObject(i);
                         int groupId = i;
-                        int itemId = Integer.parseInt(item.getString("id"));
+                        //int itemId = Integer.parseInt(item.getString("id"));
 
                         LinearLayout.LayoutParams LP_FW = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -236,7 +229,7 @@ public class NavigationDrawerFragment extends BaseFragment implements
                         //ContextThemeWrapper theme = new ContextThemeWrapper(activity, R.style.MenuItemLayoutStyle);
                         LinearLayout layout = (LinearLayout)activity.getLayoutInflater().inflate(
                                 R.layout.fragment_navigation_drawer_item, null);
-                        layout.setId(item.getInt("id"));
+                        layout.setId(i);
                         layout.setOnClickListener(othis);
                         root.addView(layout, LP_FW);
 
@@ -257,7 +250,8 @@ public class NavigationDrawerFragment extends BaseFragment implements
                             int clength = children.length();
                             for (int j = 0; j < clength; j++) {
                                 JSONObject citem = children.getJSONObject(j);
-                                functionMap.put(citem.getInt("id"), citem.getJSONObject("a_attr").getString("href"));
+                                int id = (int)(Math.random()*10000);
+                                functionMap.put(id , citem.getJSONObject("a_attr").getString("href"));
 
                                 LinearLayout.LayoutParams LP_FW1 = new LinearLayout.LayoutParams(
                                         LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -265,7 +259,7 @@ public class NavigationDrawerFragment extends BaseFragment implements
                                 //activity.obtainStyledAttributes(R.style.MenuItemLayoutStyle);
                                 LinearLayout sublayout = (LinearLayout)activity.getLayoutInflater().inflate(
                                         R.layout.fragment_navigation_drawer_item, null);
-                                sublayout.setId(citem.getInt("id"));
+                                sublayout.setId(id);
                                 sublayout.setOnClickListener(othis);
                                 root.addView(sublayout, LP_FW1);
 
@@ -284,12 +278,11 @@ public class NavigationDrawerFragment extends BaseFragment implements
                                 root.addView(line);
                             }
                         } else {
-                            functionMap.put(item.getInt("id"), item.getJSONObject("a_attr").getString("href"));
+                            functionMap.put(groupId, item.getJSONObject("a_attr").getString("href"));
 
                             View line = new View(new ContextThemeWrapper(activity, R.style.h_line));
                             root.addView(line);
                         }
-
                     }
                 } catch (Exception e) {
                     Log.w("", e.getMessage(), e);
@@ -304,10 +297,6 @@ public class NavigationDrawerFragment extends BaseFragment implements
                 showWaitDialog("Failed to load data: " + arg3.getMessage());
             }
         });
-    }
-
-    @Override
-    public void initData() {
     }
 
     private Bundle getBundle(int newType) {

@@ -10,8 +10,13 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.PersistentCookieStore;
 
 
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.protocol.HttpContext;
 import org.kymjs.kjframe.KJBitmap;
 import org.kymjs.kjframe.bitmap.BitmapConfig;
+import org.kymjs.kjframe.http.HttpConfig;
 import org.kymjs.kjframe.utils.KJLoger;
 import org.shaolin.uimaster.app.BuildConfig;
 import org.shaolin.uimaster.app.api.HttpClientService;
@@ -19,19 +24,22 @@ import org.shaolin.uimaster.app.base.BaseApplication;
 import org.shaolin.uimaster.app.bean.Constants;
 import org.shaolin.uimaster.app.bean.User;
 import org.shaolin.uimaster.app.cache.DataCleanManager;
+import org.shaolin.uimaster.app.ui.MainActivity;
+import org.shaolin.uimaster.app.ui.NavigationDrawerFragment;
 import org.shaolin.uimaster.app.util.CyptoUtils;
 import org.shaolin.uimaster.app.util.MethodsCompat;
 import org.shaolin.uimaster.app.util.StringUtils;
 import org.shaolin.uimaster.app.util.TLog;
 import org.shaolin.uimaster.app.util.UIHelper;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 import static org.shaolin.uimaster.app.context.AppConfig.KEY_FRITST_START;
 import static org.shaolin.uimaster.app.context.AppConfig.KEY_LOAD_IMAGE;
 import static org.shaolin.uimaster.app.context.AppConfig.KEY_NIGHT_MODE_SWITCH;
-import static org.shaolin.uimaster.app.context.AppConfig.KEY_TWEET_DRAFT;
 
 /**
  *
@@ -65,8 +73,10 @@ public class AppContext extends BaseApplication {
     private void init() {
         // 初始化网络请求
         AsyncHttpClient client = new AsyncHttpClient();
+        //client.setThreadPool(ExecutorService);
+        client.setEnableRedirects(true);
         PersistentCookieStore myCookieStore = new PersistentCookieStore(this);
-        client.setCookieStore(myCookieStore);
+        client.setCookieStore(myCookieStore);//keep session.
         HttpClientService.setHttpClient(client);
         HttpClientService.setCookie(HttpClientService.getCookie(this));
 
@@ -193,12 +203,12 @@ public class AppContext extends BaseApplication {
             {
                 setProperty("user.name", user.getName());
                 setProperty("user.face", user.getPortrait());// 用户头像-文件名
-                setProperty("user.followers",
-                        String.valueOf(user.getFollowers()));
-                setProperty("user.fans", String.valueOf(user.getFans()));
-                setProperty("user.score", String.valueOf(user.getScore()));
-                setProperty("user.favoritecount",
-                        String.valueOf(user.getFavoritecount()));
+                //setProperty("user.followers",
+                  //      String.valueOf(user.getFollowers()));
+                //setProperty("user.fans", String.valueOf(user.getFans()));
+                //setProperty("user.score", String.valueOf(user.getScore()));
+                //setProperty("user.favoritecount",
+                 //       String.valueOf(user.getFavoritecount()));
                 setProperty("user.gender", String.valueOf(user.getGender()));
             }
         });
@@ -259,6 +269,45 @@ public class AppContext extends BaseApplication {
         sendBroadcast(intent);
     }
 
+    public void keepUserSession() {
+        AsyncHttpClient client = HttpClientService.getHttpClient();
+        HttpContext httpContext = client.getHttpContext();
+        PersistentCookieStore myCookieStore = new PersistentCookieStore(this);
+        HttpClientService.getHttpClient().setCookieStore(myCookieStore);
+        CookieStore cookies = (CookieStore) httpContext .getAttribute(ClientContext.COOKIE_STORE);
+        if (cookies != null) {
+            int i = 0;
+            int duplicatedSid = -1;
+            int duplicatedSidCount = 0;
+            String jsessionId = "";
+            String tmpcookies = "";
+            List<Cookie> cookies1 = cookies.getCookies();
+            for (Cookie c : cookies1) {
+                TLog.log(AppContext.class.getName(),
+                        "cookie:" + c.getName() + " " + c.getValue());
+                //TODO: the issue of session is unable to be kept!!!
+//                if ("JSESSIONID".equals(c.getName())) {
+//                    if (duplicatedSidCount == 0) {
+//                        duplicatedSid = i;//find the first.
+//                    }
+//                    duplicatedSidCount++;
+//                    jsessionId = c.getName() + "=" + c.getValue();//get the last one;
+//                } else {
+                    tmpcookies += (c.getName() + "=" + c.getValue()) + ";";
+//                }
+//                i++;
+            }
+//            if (duplicatedSidCount > 1) {
+//                cookies.getCookies().remove(duplicatedSid);
+//            }
+//            tmpcookies = jsessionId + ";" + tmpcookies;
+            TLog.log(AppContext.class.getName(), "cookies:" + tmpcookies);
+            AppContext.getInstance().setProperty(AppConfig.CONF_COOKIE, tmpcookies);
+            HttpClientService.setCookie(HttpClientService.getCookie(this));
+            HttpConfig.sCookie = tmpcookies;
+        }
+    }
+
     /**
      * 清除保存的缓存
      */
@@ -303,24 +352,6 @@ public class AppContext extends BaseApplication {
         return currentVersion >= VersionCode;
     }
 
-    public static String getTweetDraft() {
-        return getPreferences().getString(
-                KEY_TWEET_DRAFT + getInstance().getLoginUid(), "");
-    }
-
-    public static void setTweetDraft(String draft) {
-        set(KEY_TWEET_DRAFT + getInstance().getLoginUid(), draft);
-    }
-
-    public static String getNoteDraft() {
-        return getPreferences().getString(
-                AppConfig.KEY_NOTE_DRAFT + getInstance().getLoginUid(), "");
-    }
-
-    public static void setNoteDraft(String draft) {
-        set(AppConfig.KEY_NOTE_DRAFT + getInstance().getLoginUid(), draft);
-    }
-
     public static boolean isFristStart() {
         return getPreferences().getBoolean(KEY_FRITST_START, true);
     }
@@ -337,5 +368,14 @@ public class AppContext extends BaseApplication {
     // 设置夜间模式
     public static void setNightModeSwitch(boolean on) {
         set(KEY_NIGHT_MODE_SWITCH, on);
+    }
+
+    private NavigationDrawerFragment navigator;
+    public void setNavtigation(NavigationDrawerFragment n) {
+        navigator = n;
+    }
+
+    public NavigationDrawerFragment getNavigator() {
+        return navigator;
     }
 }

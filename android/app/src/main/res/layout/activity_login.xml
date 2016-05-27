@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center_vertical"
-            android:hint="邮箱/用户名" />
+            android:hint="手机号/用户名" />
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_password"
@@ -27,6 +27,34 @@
             android:hint="密码"
             android:inputType="textPassword" />
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="验证码问题: "
+                android:id="@+id/et_verifycodequestionlabel" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="a"
+                android:id="@+id/et_verifycodequestion" />
+
+        </LinearLayout>
+
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/et_verifycode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:hint="验证码"
+            android:inputType="text" />
         <Button
             android:id="@+id/btn_login"
             style="@style/button_common_blue"
