@@ -55,10 +55,11 @@ public class FunctionFragment extends WebViewlFragment<String> {
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-dataTable.css\" type=\"text/css\">\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-jstree.css\" type=\"text/css\">\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-ui.css\" type=\"text/css\">\n");
-            sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-mob.css\" type=\"text/css\">\n");
+            sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-mobile.css\" type=\"text/css\">\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/iumaster-mob.css\" type=\"text/css\">\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-ui.js\"></script>\n");
+            sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-mobile.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-dataTable.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-jstree.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/uimaster.js\"></script>\n");
@@ -84,6 +85,8 @@ public class FunctionFragment extends WebViewlFragment<String> {
             sb.append("var RESOURCE_CONTEXTPATH=\"file:///android_asset/uimaster\";\n");
             sb.append("var FRAMEWRAP=\"/uimaster\";\n");
             sb.append("var IS_SERVLETMODE=true;\n");
+            sb.append("var IS_MOBILEVIEW=true;\n");
+            sb.append("var MOBILE_APP_TYEP=\"andriod\";\n");
             sb.append("var AJAX_SERVICE_URL=\"\";\n");
             sb.append("getElementList();\n");
             sb.append(argus.get("js"));
