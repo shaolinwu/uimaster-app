@@ -55,13 +55,14 @@ public class FunctionFragment extends WebViewlFragment<String> {
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-dataTable.css\" type=\"text/css\">\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-jstree.css\" type=\"text/css\">\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-ui.css\" type=\"text/css\">\n");
+            sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/jquery-mob.css\" type=\"text/css\">\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/css/iumaster-mob.css\" type=\"text/css\">\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-ui.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-dataTable.js\"></script>\n");
             sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/jquery-jstree.js\"></script>\n");
-            sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/uimaster-mob.js\"></script>\n");
-            sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/uimaster-widget-mob.js\"></script>\n");
+            sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/uimaster.js\"></script>\n");
+            sb.append("<script type=\"text/javascript\" src=\"file:///android_asset/uimaster/js/uimaster-widget.js\"></script>\n");
             sb.append("</head>\n");
             sb.append("<body>\n");
             sb.append("<form action=\"#\" method=\"post\" name=\"everything\" onsubmit=\"return false;\" _framePrefix=\"\">\n");

@@ -272,8 +272,6 @@ public class AppContext extends BaseApplication {
     public void keepUserSession() {
         AsyncHttpClient client = HttpClientService.getHttpClient();
         HttpContext httpContext = client.getHttpContext();
-        PersistentCookieStore myCookieStore = new PersistentCookieStore(this);
-        HttpClientService.getHttpClient().setCookieStore(myCookieStore);
         CookieStore cookies = (CookieStore) httpContext .getAttribute(ClientContext.COOKIE_STORE);
         if (cookies != null) {
             int i = 0;
@@ -303,7 +301,7 @@ public class AppContext extends BaseApplication {
 //            tmpcookies = jsessionId + ";" + tmpcookies;
             TLog.log(AppContext.class.getName(), "cookies:" + tmpcookies);
             AppContext.getInstance().setProperty(AppConfig.CONF_COOKIE, tmpcookies);
-            HttpClientService.setCookie(HttpClientService.getCookie(this));
+            HttpClientService.setCookie(tmpcookies);
             HttpConfig.sCookie = tmpcookies;
         }
     }

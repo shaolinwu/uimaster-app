@@ -82,6 +82,7 @@ public class HttpClientService {
 
     public static void post(String partUrl, RequestParams params,
             AsyncHttpResponseHandler handler) {
+
         client.post(getAbsoluteApiUrl(partUrl), params, handler);
         log(new StringBuilder("POST ").append(partUrl).append("&")
                 .append(params).toString());
@@ -141,6 +142,12 @@ public class HttpClientService {
 
     public static void setUserAgent(String userAgent) {
         client.setUserAgent(userAgent);
+    }
+
+    public static void syncCookie() {
+        if (AppContext.getInstance().getProperty(AppConfig.CONF_COOKIE) != null) {
+            setCookie(AppContext.getInstance().getProperty(AppConfig.CONF_COOKIE));
+        }
     }
 
     public static void setCookie(String cookie) {

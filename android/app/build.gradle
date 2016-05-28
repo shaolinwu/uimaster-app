@@ -10,7 +10,7 @@ android {
         release {
             keyAlias 'demo.keystore'
             keyPassword 'demokey'
-            storeFile file('C:/Users/wushaol/demo.keystore')
+            storeFile file('C:\\uimaster\\uimaster-app\\android\\demo.keystore')
             storePassword 'demokey'
         }
     }
