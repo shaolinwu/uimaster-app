@@ -32,8 +32,8 @@ public class AppConfig {
      * 那到底要如何才能访问到本地电脑上的Web应用呢？在Android中，将我们本地电脑的地址映射为10.0.2.2，
      * 因此，只需要将原先的localhost或者127.0.0.1换成10.0.2.2，就可以在模拟器上访问本地计算机上的Web资源了。
      * */
-    public static String HOST = "10.0.2.2";//www.vogerp.com
-    public static String Origin = "http://10.0.2.2:8080";//10.0.2.2:8080
+    public static String HOST = "120.25.146.49";//10.0.2.2
+    public static String Origin = "www.vogerp.com";//10.0.2.2:8080
     public static String FUNCTION_DETAILS_URL = Origin + "/uimaster/webflow.do?_appclient=andriod";
     public static String AJAX_SERVICE_URL = Origin + "/uimaster/ajaxservice?_appclient=andriod";
     // 默认存放图片的路径

@@ -148,6 +148,7 @@ public class AjaxContext {
                                 arguments.putString("js", item.getString("js"));
                                 arguments.putString("data", item.getString("data"));
                                 arguments.putString("uiid", item.getString("uiid"));
+                                arguments.putString("_framePrefix", item.getString("frameInfo"));
                                 JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
                                 arguments.putString("title", dialogInfo.getString("title"));
                                 arguments.putString("icon", dialogInfo.getString("icon"));
@@ -179,6 +180,11 @@ public class AjaxContext {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @JavascriptInterface
+    public void close(){
+        ((Activity)myWebView.getContext()).finish();
     }
 
     @JavascriptInterface
