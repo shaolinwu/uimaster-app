@@ -11,6 +11,7 @@ android {
             keyAlias 'demo.keystore'
             keyPassword 'demokey'
             storeFile file('C:\\uimaster\\uimaster-app\\android\\demo.keystore')
+            //storeFile file('/Users/sql/java-workspace/uimaster-app/android/demo.keystore')
             storePassword 'demokey'
         }
     }
@@ -50,6 +51,20 @@ dependencies {
     compile 'com.joanzapata.android:android-iconify:1.0.9'
     //provided 'org.shaolin.bmdp:uipage:1.0.0-SNAPSHOT'
 }
+
+task('cleanResource',type: Delete){
+    delete('src/main/assets/uimaster')
+}
+
+task('copyResource', type: Copy,dependsOn: cleanResource) {
+    from '../../../uimaster/modules/uipage/src/other/web'
+    into('src/main/assets/uimaster')
+    include('js/**/*.*')
+    include('css/**/*.*')
+    include('baserule/**/*.*')
+}
+
+preBuild.dependsOn copyResource
 
 // 配置签名文件以及相关的账号信息
 File propFile = new File('sign.properties')
