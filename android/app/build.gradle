@@ -57,11 +57,12 @@ task('cleanResource',type: Delete){
 }
 
 task('copyResource', type: Copy,dependsOn: cleanResource) {
-    from '../../../uimaster/modules/uipage/src/other/web'
+    from 'C:\\uimaster\\deploy\\apache-tomcat-8.0.9\\webapps\\uimaster'
     into('src/main/assets/uimaster')
     include('js/**/*.*')
     include('css/**/*.*')
     include('baserule/**/*.*')
+    include('images/**/*.*')
 }
 
 preBuild.dependsOn copyResource

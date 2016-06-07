@@ -21,6 +21,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -220,12 +222,34 @@ public class UIHelper {
         settings.setJavaScriptEnabled(true);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
+        settings.setUseWideViewPort(true);//关键点
+        settings.setLoadWithOverviewMode(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        settings.setAllowFileAccess(true);
         int sysVersion = Build.VERSION.SDK_INT;
         if (sysVersion >= 11) {
             settings.setDisplayZoomControls(false);
         } else {
             ZoomButtonsController zbc = new ZoomButtonsController(webView);
             zbc.getZoomControls().setVisibility(View.GONE);
+        }
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int mDensity = metrics.densityDpi;
+        Log.d("maomao", "densityDpi = " + mDensity);
+        if (mDensity == 240) {
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        } else if (mDensity == 160) {
+            settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
+        } else if(mDensity == 120) {
+            settings.setDefaultZoom(WebSettings.ZoomDensity.CLOSE);
+        }else if(mDensity == DisplayMetrics.DENSITY_XHIGH){
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        }else if (mDensity == DisplayMetrics.DENSITY_TV){
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        }else{
+            settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
         }
 
         AjaxContext ajaxContext = new AjaxContext(webView, activity);
