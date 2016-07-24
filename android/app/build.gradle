@@ -49,6 +49,7 @@ dependencies {
     compile 'com.networkbench.newlens.agent.android:nbs.newlens.agent:2.2.5'
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.joanzapata.android:android-iconify:1.0.9'
+    compile "org.java-websocket:Java-WebSocket:1.3.0"
     //provided 'org.shaolin.bmdp:uipage:1.0.0-SNAPSHOT'
 }
 

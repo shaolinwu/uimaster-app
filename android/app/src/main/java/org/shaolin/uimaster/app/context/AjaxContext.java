@@ -1,10 +1,16 @@
 package org.shaolin.uimaster.app.context;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -13,14 +19,23 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.api.HttpClientService;
 import org.shaolin.uimaster.app.base.BaseActivity;
+import org.shaolin.uimaster.app.base.BaseFragment;
+import org.shaolin.uimaster.app.base.WebViewlFragment;
 import org.shaolin.uimaster.app.bean.SimpleBackPage;
 import org.shaolin.uimaster.app.util.UIHelper;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 
 /**
@@ -32,11 +47,19 @@ public class AjaxContext {
 
     private final Activity activity;
 
+    private final BaseFragment fragment;
+
+    /** File upload callback for platform versions prior to Android 5.0 */
+    protected ValueCallback<Uri> mFileUploadCallbackFirst;
+    /** File upload callback for Android 5.0+ */
+    protected ValueCallback<Uri[]> mFileUploadCallbackSecond;
+
     private Runnable pageLoaded;
 
     private Runnable pageClosed;
 
-    public AjaxContext(WebView myWebView, Activity activity) {
+    public AjaxContext(BaseFragment f, WebView myWebView, Activity activity) {
+        this.fragment = f;
         this.myWebView = myWebView;
         this.activity = activity;
 
@@ -69,16 +92,108 @@ public class AjaxContext {
 
     class WebChromeClientA extends WebChromeClient {
 
+        @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
             Log.d("[" + consoleMessage.messageLevel() + "]", consoleMessage.message()
                     + " -- From line " + consoleMessage.lineNumber()
                     + " of " + consoleMessage.sourceId());
             return true;
         }
+
+        @Override
         public void onCloseWindow(WebView window) {
             Log.d("WebView closed", window.getOriginalUrl());
             if (pageClosed != null) {
                 pageClosed.run();
+            }
+        }
+
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
+        }
+
+        // file upload callback (Android 2.2 (API level 8) -- Android 2.3 (API level 10)) (hidden method)
+        @SuppressWarnings("unused")
+        public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+            openFileChooser(uploadMsg, null);
+        }
+
+        // file upload callback (Android 3.0 (API level 11) -- Android 4.0 (API level 15)) (hidden method)
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+            openFileChooser(uploadMsg, acceptType, null);
+        }
+
+        // file upload callback (Android 4.1 (API level 16) -- Android 4.3 (API level 18)) (hidden method)
+        @SuppressWarnings("unused")
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+            openFileInput(uploadMsg, null);
+        }
+
+        // file upload callback (Android 5.0 (API level 21) -- current) (public method)
+        @SuppressWarnings("all")
+        public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
+            openFileInput(null, filePathCallback);
+            return true;
+        }
+
+        @SuppressLint("NewApi")
+        protected void openFileInput(final ValueCallback<Uri> fileUploadCallbackFirst, final ValueCallback<Uri[]> fileUploadCallbackSecond) {
+            if (mFileUploadCallbackFirst != null) {
+                mFileUploadCallbackFirst.onReceiveValue(null);
+            }
+            mFileUploadCallbackFirst = fileUploadCallbackFirst;
+
+            if (mFileUploadCallbackSecond != null) {
+                mFileUploadCallbackSecond.onReceiveValue(null);
+            }
+            mFileUploadCallbackSecond = fileUploadCallbackSecond;
+
+            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("*/*");
+
+            fragment.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+        }
+
+        protected String getFileUploadPromptLabel() {
+            return "选择一个文件";
+        }
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == 30) {
+            //file chooser.
+            if (resultCode == Activity.RESULT_OK) {
+                if (intent != null) {
+                    if (mFileUploadCallbackFirst != null) {
+                        mFileUploadCallbackFirst.onReceiveValue(intent.getData());
+                        mFileUploadCallbackFirst = null;
+                    }
+                    else if (mFileUploadCallbackSecond != null) {
+                        Uri[] dataUris;
+                        try {
+                            dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
+                        }
+                        catch (Exception e) {
+                            dataUris = null;
+                        }
+
+                        mFileUploadCallbackSecond.onReceiveValue(dataUris);
+                        mFileUploadCallbackSecond = null;
+                    }
+                }
+            }
+            else {
+                if (mFileUploadCallbackFirst != null) {
+                    mFileUploadCallbackFirst.onReceiveValue(null);
+                    mFileUploadCallbackFirst = null;
+                }
+                else if (mFileUploadCallbackSecond != null) {
+                    mFileUploadCallbackSecond.onReceiveValue(null);
+                    mFileUploadCallbackSecond = null;
+                }
             }
         }
     }
@@ -198,4 +313,63 @@ public class AjaxContext {
         });
     }
 
+    @JavascriptInterface
+    public int getScreenHeight() {
+        return AppConfig.screenHeight;
+    }
+
+    @JavascriptInterface
+    public String getServerHost() {
+        return AppConfig.HOST;
+    }
+
+    private WebSocketClient wsclient;
+
+    @JavascriptInterface
+    public Object getWebSocket() {
+        if (wsclient == null) {
+            wsclient = connectWebSocket();
+        }
+        return wsclient;
+    }
+
+    public void closeWebSocket() {
+        if (wsclient != null) {
+            wsclient.close();
+        }
+    }
+
+    private WebSocketClient connectWebSocket() {
+        URI uri;
+        try {
+            uri = new URI("ws://"+AppConfig.HOST+"/uimaster/wschart");
+        } catch (URISyntaxException e) {
+            Log.w(e.getMessage(), e);
+            return null;
+        }
+
+        final WebSocketClient mWebSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake serverHandshake) {
+                Log.i("Websocket", "Opened");
+            }
+
+            @Override
+            public void onMessage(String s) {
+                Log.i("Websocket.onMessage", s);
+            }
+
+            @Override
+            public void onClose(int i, String s, boolean b) {
+                Log.i("Websocket", "Closed " + s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.i("Websocket", "Error " + e.getMessage());
+            }
+        };
+        mWebSocketClient.connect();
+        return mWebSocketClient;
+    }
 }

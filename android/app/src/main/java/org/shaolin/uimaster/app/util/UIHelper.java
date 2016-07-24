@@ -2,6 +2,7 @@ package org.shaolin.uimaster.app.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,7 +24,9 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -34,6 +37,8 @@ import com.dtr.zxing.activity.CaptureActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.shaolin.uimaster.app.base.BaseFragment;
+import org.shaolin.uimaster.app.base.WebViewlFragment;
 import org.shaolin.uimaster.app.context.AppConfig;
 import org.shaolin.uimaster.app.context.AppContext;
 import org.shaolin.uimaster.app.base.BaseListFragment;
@@ -212,14 +217,41 @@ public class UIHelper {
         }
     }
 
+    public static int[] getScreenResolution(Context context)
+    {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        int mDensity = metrics.densityDpi;
+        if (mDensity == 240) {
+
+        } else if (mDensity == 160) {
+
+        } else if(mDensity == 120) {
+
+        }else if(mDensity == DisplayMetrics.DENSITY_XHIGH){
+
+        }else if (mDensity == DisplayMetrics.DENSITY_TV){
+
+        }else{
+
+        }
+        return new int[]{(int)(width/metrics.density), (int)(height/metrics.density)};
+    }
+
     @SuppressLint({ "JavascriptInterface", "SetJavaScriptEnabled" })
     @JavascriptInterface
-    public static AjaxContext initWebView(WebView webView, Activity activity) {
+    public static AjaxContext initWebView(BaseFragment f, WebView webView, Activity activity) {
 	    webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         WebSettings settings = webView.getSettings();
         settings.setDefaultFontSize(15);
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         settings.setUseWideViewPort(true);//关键点
@@ -234,26 +266,14 @@ public class UIHelper {
             zbc.getZoomControls().setVisibility(View.GONE);
         }
 
+        /**
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int mDensity = metrics.densityDpi;
-        Log.d("maomao", "densityDpi = " + mDensity);
-        if (mDensity == 240) {
-            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        } else if (mDensity == 160) {
-            settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
-        } else if(mDensity == 120) {
-            settings.setDefaultZoom(WebSettings.ZoomDensity.CLOSE);
-        }else if(mDensity == DisplayMetrics.DENSITY_XHIGH){
-            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        }else if (mDensity == DisplayMetrics.DENSITY_TV){
-            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        }else{
-            settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
-        }
+        */
 
-        AjaxContext ajaxContext = new AjaxContext(webView, activity);
+        AjaxContext ajaxContext = new AjaxContext(f, webView, activity);
         webView.addJavascriptInterface(ajaxContext, "_mobContext");
+
         return ajaxContext;
     }
 
@@ -512,13 +532,13 @@ public class UIHelper {
      * @param context
      * @param notice
      */
-    public static void sendBroadCast(Context context, Notice notice) {
+    public static void sendBroadCast(Context context, JSONObject notice) {
         if (!((AppContext) context.getApplicationContext()).isLogin()
                 || notice == null)
             return;
         Intent intent = new Intent(Constants.INTENT_ACTION_NOTICE);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("notice_bean", notice);
+        bundle.putString("notice_bean", notice.toString());
         intent.putExtras(bundle);
         context.sendBroadcast(intent);
     }

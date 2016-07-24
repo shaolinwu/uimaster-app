@@ -1,7 +1,9 @@
 package org.shaolin.uimaster.app.base;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -68,6 +70,8 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
 
     private AsyncTask<String, Void, T> mCacheTask;
 
+    private AjaxContext ajaxContext;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +103,7 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
         mEmptyLayout = (EmptyLayout) view.findViewById(R.id.error_layout);
         setCommentCount(mCommentCount);
         mWebView = (WebView) view.findViewById(R.id.webview);
-        AjaxContext ajaxContext = UIHelper.initWebView(mWebView, this.getActivity());
+        ajaxContext = UIHelper.initWebView(this, mWebView, this.getActivity());
         ajaxContext.addPageLoadedListener(new Runnable() {
             @Override
             public void run() {
@@ -124,6 +128,11 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
     private void requestData(boolean refresh) {
         String key = getCacheKey();
         sendRequestDataForNet();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ajaxContext.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -164,6 +164,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         printWriter.close();
         String result = writer.toString();
         sb.append(result);
+        Log.e(TAG, sb.toString());
         try {
             long timestamp = System.currentTimeMillis();
             String time = formatter.format(new Date());

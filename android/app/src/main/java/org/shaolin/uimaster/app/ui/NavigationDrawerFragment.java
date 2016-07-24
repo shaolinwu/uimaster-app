@@ -233,11 +233,11 @@ public class NavigationDrawerFragment extends BaseFragment implements
                         layout.setOnClickListener(othis);
                         root.addView(layout, LP_FW);
 
-                        ImageView imageView = (ImageView)activity.getLayoutInflater().inflate(
-                                R.layout.fragment_navigation_drawer_item_icon, null);
-                        //imageView.setBackgroundResource(R.drawable.drawer_menu_icon_opensoft_nor);
-
-                        layout.addView(imageView);
+//                        ImageView imageView = (ImageView)activity.getLayoutInflater().inflate(
+//                                R.layout.fragment_navigation_drawer_item_icon, null);
+//                        //imageView.setBackgroundResource(R.drawable.drawer_menu_icon_opensoft_nor);
+//
+//                        layout.addView(imageView);
                         // 接下来向layout中添加TextView
                         TextView textView = (TextView)activity.getLayoutInflater().inflate(
                                 R.layout.fragment_navigation_drawer_item_text, null);
@@ -263,10 +263,10 @@ public class NavigationDrawerFragment extends BaseFragment implements
                                 sublayout.setOnClickListener(othis);
                                 root.addView(sublayout, LP_FW1);
 
-                                ImageView imageView1 = (ImageView)activity.getLayoutInflater().inflate(
-                                        R.layout.fragment_navigation_drawer_item_icon, null);
-                                //imageView1.setBackgroundResource(R.drawable.drawer_menu_icon_blog_nor);
-                                sublayout.addView(imageView1);
+//                                ImageView imageView1 = (ImageView)activity.getLayoutInflater().inflate(
+//                                        R.layout.fragment_navigation_drawer_item_icon, null);
+//                                //imageView1.setBackgroundResource(R.drawable.drawer_menu_icon_blog_nor);
+//                                sublayout.addView(imageView1);
                                 // 接下来向layout中添加TextView
                                 TextView textView1 = (TextView)activity.getLayoutInflater().inflate(
                                         R.layout.fragment_navigation_drawer_item_text, null);

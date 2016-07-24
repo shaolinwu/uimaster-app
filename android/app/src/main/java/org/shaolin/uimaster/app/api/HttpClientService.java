@@ -158,6 +158,7 @@ public class HttpClientService {
 
     public static void cleanCookie() {
         appCookie = "";
+        client.addHeader("Cookie", "");
     }
 
     public static String getCookie(AppContext appContext) {

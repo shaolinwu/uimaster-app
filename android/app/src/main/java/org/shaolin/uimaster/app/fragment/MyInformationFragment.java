@@ -260,7 +260,6 @@ public class MyInformationFragment extends BaseFragment {
 //        mIvGender.setImageResource(StringUtils.toInt(mInfo.getGender()) != 2 ? R.drawable.userinfo_icon_male
 //                        : R.drawable.userinfo_icon_female);
         //mTvScore.setText(String.valueOf(mInfo.getScore()));
-        //mTvFavorite.setText(String.valueOf(mInfo.getFavoritecount()));
     }
 
     private void requestData(boolean refresh) {
@@ -293,7 +292,7 @@ public class MyInformationFragment extends BaseFragment {
 
     private void sendRequestData() {
         int uid = AppContext.getInstance().getLoginUid();
-        //RService.getMyInformation(uid, mHandler);
+        //TODO: RService.getMyInformation(uid, mHandler);
     }
 
     private String getCacheKey() {

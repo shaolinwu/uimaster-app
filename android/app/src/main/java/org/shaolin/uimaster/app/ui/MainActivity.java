@@ -210,6 +210,8 @@ public class
             AppContext.setFristStart(false);
         }
 
+        AppConfig.screenHeight = UIHelper.getScreenResolution(this)[1] - 80;
+        //AppContext.showToast("screenHeight : " + AppConfig.screenHeight);
         checkUpdate();
     }
 

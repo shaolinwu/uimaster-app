@@ -7,11 +7,13 @@ import android.os.Build;
 import android.webkit.WebView;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.MySSLSocketFactory;
 import com.loopj.android.http.PersistentCookieStore;
 
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.protocol.HttpContext;
 import org.kymjs.kjframe.KJBitmap;
@@ -19,6 +21,7 @@ import org.kymjs.kjframe.bitmap.BitmapConfig;
 import org.kymjs.kjframe.http.HttpConfig;
 import org.kymjs.kjframe.utils.KJLoger;
 import org.shaolin.uimaster.app.BuildConfig;
+import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.api.HttpClientService;
 import org.shaolin.uimaster.app.base.BaseApplication;
 import org.shaolin.uimaster.app.bean.Constants;
@@ -32,6 +35,10 @@ import org.shaolin.uimaster.app.util.StringUtils;
 import org.shaolin.uimaster.app.util.TLog;
 import org.shaolin.uimaster.app.util.UIHelper;
 
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -58,23 +65,24 @@ public class AppContext extends BaseApplication {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        init();
-        initLogin();
-
         Thread.setDefaultUncaughtExceptionHandler(AppException
                 .getAppExceptionHandler(this));
-        UIHelper.sendBroadcastForNotice(this);
-
+        try {
+            init();
+            initLogin();
+            UIHelper.sendBroadcastForNotice(this);
+        } catch (Exception e) {}
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
     }
 
-    private void init() {
+    private void init() throws Exception {
         // 初始化网络请求
         AsyncHttpClient client = new AsyncHttpClient();
         //client.setThreadPool(ExecutorService);
         client.setEnableRedirects(true);
+        client.setSSLSocketFactory(getSocketFactory());
         PersistentCookieStore myCookieStore = new PersistentCookieStore(this);
         client.setCookieStore(myCookieStore);//keep session.
         HttpClientService.setHttpClient(client);
@@ -86,6 +94,18 @@ public class AppContext extends BaseApplication {
 
         // Bitmap缓存地址
         BitmapConfig.CACHEPATH = "uimaster/imagecache";
+    }
+
+    private SSLSocketFactory getSocketFactory() throws Exception {
+        // We initialize a default Keystore
+        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        // We load the KeyStore
+        keyStore.load(null, null);
+        // We initialize a new SSLSocketFacrory
+        MySSLSocketFactory socketFactory = new MySSLSocketFactory(keyStore);
+        // We set that all host names are allowed in the socket factory
+        socketFactory.setHostnameVerifier(MySSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        return socketFactory;
     }
 
     private void initLogin() {

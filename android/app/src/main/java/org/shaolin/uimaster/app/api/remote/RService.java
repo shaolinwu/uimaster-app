@@ -70,6 +70,7 @@ public class RService {
         params.put("_framename", framename);
         params.put("_framePrefix", "");
         params.put("_r", (int)(Math.random()*10000));
+        params.put("app_height", AppConfig.screenHeight);
 //        params.put("_chunkname", "org.shaolin.vogerp.commonmodel.diagram.ModularityModel");
 //        params.put("_nodename", "ProductManagement");
 //        params.put("_page", "org.shaolin.vogerp.productmodel.page.ProductManagement");
@@ -135,10 +136,12 @@ public class RService {
         HttpClientService.post("action/api/portrait_update", params, handler);
     }
 
-    public static void getNotices(AsyncHttpResponseHandler handler) {
+    public static void getNotifications(AsyncHttpResponseHandler handler) {
         RequestParams params = new RequestParams();
-        params.put("uid", AppContext.getInstance().getLoginUid());
-        HttpClientService.get("action/api/user_notice", params, handler);
+        params.put("_ajaxUserEvent", org.shaolin.uimaster.page.AjaxProcessor.EVENT_WEBSERVICE);
+        params.put("_serviceName", "org.shaolin.bmdp.workflow.page.AjaxService.getUserNotifications");
+        params.put("_r", (int)(Math.random()*10000));
+        HttpClientService.post("", params, handler);
     }
 
     /**
@@ -146,16 +149,16 @@ public class RService {
      * 
      * @param uid
      * @param type
-     *            1:@我的信息 2:未读消息 3:评论个数 4:新粉丝个数
      * @return
      * @throws AppException
      */
     public static void clearNotice(int uid, int type,
             AsyncHttpResponseHandler handler) {
         RequestParams params = new RequestParams();
-        params.put("uid", uid);
-        params.put("type", type);
-        HttpClientService.post("action/api/notice_clear", params, handler);
+        params.put("_ajaxUserEvent", org.shaolin.uimaster.page.AjaxProcessor.EVENT_WEBSERVICE);
+        params.put("_serviceName", "org.shaolin.vogerp.commonmodel.page.AjaxService.functionList");
+        params.put("_r", (int)(Math.random()*10000));
+        HttpClientService.post("", params, handler);
     }
 
     public static void checkUpdate(AsyncHttpResponseHandler handler) {

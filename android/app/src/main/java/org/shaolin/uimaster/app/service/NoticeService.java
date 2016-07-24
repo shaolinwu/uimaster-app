@@ -5,6 +5,8 @@ import java.lang.ref.WeakReference;
 
 
 import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.shaolin.uimaster.app.context.AppConfig;
 import org.shaolin.uimaster.app.context.AppContext;
 import org.shaolin.uimaster.app.R;
@@ -68,7 +70,7 @@ public class NoticeService extends Service {
                 }
             } else if (INTENT_ACTION_BROADCAST.equals(action)) {
                 if (mNotice != null) {
-                    UIHelper.sendBroadCast(NoticeService.this, mNotice);
+                   // UIHelper.sendBroadCast(NoticeService.this, mNotice);
                 }
             } else if (INTENT_ACTION_SHUTDOWN.equals(action)) {
                 stopSelf();
@@ -131,7 +133,7 @@ public class NoticeService extends Service {
 
     /**
      * OSC采用轮询方式实现消息推送<br>
-     * 每次被调用都去执行一次{@link #AlarmReceiver}onReceive()方法
+     * 每次被调用都去执行一次{@link #ALARM_SERVICE}onReceive()方法
      * 
      * @return
      */
@@ -148,15 +150,7 @@ public class NoticeService extends Service {
 
     private int lastNotifiyCount;
 
-    private void notification(Notice notice) {
-        int atmeCount = notice.getAtmeCount();
-        int msgCount = notice.getMsgCount();
-        int reviewCount = notice.getReviewCount();
-        int newFansCount = notice.getNewFansCount();
-        int newLikeCount = notice.getNewLikeCount();
-
-        int count = atmeCount + msgCount + reviewCount + newFansCount + newLikeCount;
-
+    private void notification(int count, JSONObject notice) {
         if (count == 0) {
             lastNotifiyCount = 0;
             NotificationManagerCompat.from(this).cancel(
@@ -173,22 +167,7 @@ public class NoticeService extends Service {
                 count);
         String contentText;
         StringBuffer sb = new StringBuffer();
-        if (atmeCount > 0) {
-            sb.append(getString(R.string.atme_count, atmeCount)).append(" ");
-        }
-        if (msgCount > 0) {
-            sb.append(getString(R.string.msg_count, msgCount)).append(" ");
-        }
-        if (reviewCount > 0) {
-            sb.append(getString(R.string.review_count, reviewCount))
-                    .append(" ");
-        }
-        if (newFansCount > 0) {
-            sb.append(getString(R.string.fans_count, newFansCount));
-        }
-        if (newLikeCount > 0) {
-            sb.append(getString(R.string.like_count, newLikeCount));
-        }
+        sb.append(getString(R.string.msg_count, count)).append(" ");
         contentText = sb.toString();
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -223,22 +202,15 @@ public class NoticeService extends Service {
         @Override
         public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
             try {
-                Notice notice = XmlUtils.toBean(NoticeDetail.class,
-                	arg2).getNotice();
-                if (notice != null) {
-                    UIHelper.sendBroadCast(NoticeService.this, notice);
+                String jsonStr = new String(arg2);
+                JSONArray array = new JSONArray(jsonStr);
+                int length = array.length();
+                for (int i = 0; i < length; i++) {
+                    JSONObject item = array.getJSONObject(i);
+                    UIHelper.sendBroadCast(NoticeService.this, item);
                     if (AppContext.get(AppConfig.KEY_NOTIFICATION_ACCEPT, true)) {
-                        notification(notice);
+                        notification(length, item);
                     }
-                    mNotice = notice;
-                } else {
-//                    ResultBean resultBean = XmlUtils.toBean(ResultBean.class, arg2);
-//                    if (resultBean != null && resultBean.getResult() != null) {
-//                	AppContext appContext = AppContext.getInstance();
-//                	if (appContext != null) {
-//                	    appContext.Logout();
-//                	}
-//                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -258,13 +230,7 @@ public class NoticeService extends Service {
         @Override
         public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
             try {
-                ResultBean rsb = XmlUtils.toBean(ResultBean.class,
-                        new ByteArrayInputStream(arg2));
-                Result res = rsb.getResult();
-                if (res.OK() && rsb.getNotice() != null) {
-                    mNotice = rsb.getNotice();
-                    UIHelper.sendBroadCast(NoticeService.this, rsb.getNotice());
-                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -279,7 +245,7 @@ public class NoticeService extends Service {
      * 请求是否有新通知
      */
     private void requestNotice() {
-        RService.getNotices(mGetNoticeHandler);
+        RService.getNotifications(mGetNoticeHandler);
     }
 
     private static class ServiceStub extends INoticeService.Stub {
