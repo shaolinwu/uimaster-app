@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -79,6 +81,8 @@ public class AjaxContext {
             //UIHelper.showUrlRedirect(view.getContext(), url);
             return true;
         }
+
+        @Override
         public void onPageFinished(WebView view, String url) {
             Activity activity = (Activity) view.getContext();
             if (activity instanceof BaseActivity) {
@@ -87,6 +91,11 @@ public class AjaxContext {
             if (pageLoaded != null) {
                 pageLoaded.run();
             }
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.proceed(); // Ignore SSL certificate errors.
         }
     }
 
