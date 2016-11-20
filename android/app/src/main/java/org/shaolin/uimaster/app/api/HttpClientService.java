@@ -99,7 +99,7 @@ public class HttpClientService {
     public static void post(String servletRoot, String partUrl, RequestParams params,
                             AsyncHttpResponseHandler handler) {
         String url = String.format(servletRoot, partUrl);
-        Log.d("BASE_CLIENT", "request:" + url);
+        Log.d("BASE_CLIENT", "request:" + url + params.toString());
         client.post(url, params, handler);
         log(new StringBuilder("POST ").append(partUrl).append("&")
                 .append(params).toString());

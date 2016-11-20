@@ -9,6 +9,7 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 import org.kymjs.kjframe.http.HttpConfig;
 import org.shaolin.uimaster.app.bean.Result;
+import org.shaolin.uimaster.app.bean.SimpleBackPage;
 import org.shaolin.uimaster.app.bean.User;
 import org.shaolin.uimaster.app.context.AppConfig;
 import org.shaolin.uimaster.app.context.AppContext;
@@ -23,6 +24,7 @@ import org.shaolin.uimaster.app.util.CyptoUtils;
 import org.shaolin.uimaster.app.util.DialogHelp;
 import org.shaolin.uimaster.app.util.TDevice;
 import org.shaolin.uimaster.app.util.TLog;
+import org.shaolin.uimaster.app.util.UIHelper;
 import org.shaolin.uimaster.app.util.XmlUtils;
 
 import android.app.ProgressDialog;
@@ -92,13 +94,16 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Override
-    @OnClick({R.id.btn_login})
+    @OnClick({R.id.btn_login, R.id.btn_register})
     public void onClick(View v) {
 
         int id = v.getId();
         switch (id) {
             case R.id.btn_login:
                 handleLogin();
+                break;
+            case R.id.btn_register:
+                handleRegister();
                 break;
             case R.id.et_verifycodequestion:
                 refreshVerifyCode();
@@ -179,13 +184,16 @@ public class LoginActivity extends BaseActivity {
                     AppContext.getInstance().keepUserSession();
                     JSONObject json = new JSONObject(new String(arg2, "UTF-8"));
                     mEtVerifyQuestion.setText(json.getString("value"));
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
+
             @Override
             public void onFailure(int arg0, Header[] arg1, byte[] arg2,
                                   Throwable arg3) {
                 AppContext.showToast("网络出错! ");
             }
+
             @Override
             public void onFinish() {
                 super.onFinish();
@@ -220,6 +228,15 @@ public class LoginActivity extends BaseActivity {
         }
 
         return false;
+    }
+
+    private void handleRegister() {
+        Bundle bundle = new Bundle();
+        bundle.putInt("FunctionId", -1);
+        bundle.putInt("id", -1);
+        bundle.putString("_chunkname", "org.shaolin.bmdp.adminconsole.diagram.LoginAuthentication");
+        bundle.putString("_nodename", "Registration");
+        UIHelper.showSimpleBack(this, SimpleBackPage.FUNCTION, bundle);
     }
 
     @Override

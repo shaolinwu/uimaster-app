@@ -42,6 +42,7 @@ public class FunctionFragment extends WebViewlFragment<String> {
     public void initData() {
         Bundle argus = this.getArguments();
         if (argus != null && argus.get("dialog") != null) {
+            frameId = (String)argus.get("uiid");
             //showing ajax dialog
             StringBuffer sb = new StringBuffer();
             sb.append("<!DOCTYPE html><html><head><title>");
@@ -69,6 +70,7 @@ public class FunctionFragment extends WebViewlFragment<String> {
             sb.append("var IS_SERVLETMODE=true;\n");
             sb.append("var IS_MOBILEVIEW=true;\n");
             sb.append("var MOBILE_APP_TYPE=\"andriod\";\n");
+            sb.append("var UPLOAD_CONTEXTPATH=\"").append(AppConfig.UPLOAD_URL).append("\";\n");
             sb.append("var AJAX_SERVICE_URL=\"").append(AppConfig.AJAX_SERVICE_URL).append("\";\n");
             sb.append("</script>\n");
             sb.append("<link rel=\"stylesheet\" href=\"file:///android_asset/uimaster/js/controls/swiper/swiper.css\" type=\"text/css\">\n");

@@ -60,6 +60,11 @@
             style="@style/button_common_blue"
             android:layout_marginTop="20dp"
             android:text="@string/login" />
+        <Button
+            android:id="@+id/btn_register"
+            style="@style/button_common_blue1"
+            android:layout_marginTop="20dp"
+            android:text="@string/register" />
         <!--
                 <TextView
                     android:layout_width="wrap_content"

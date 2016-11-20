@@ -244,34 +244,46 @@ public class UIHelper {
 
     @SuppressLint({ "JavascriptInterface", "SetJavaScriptEnabled" })
     @JavascriptInterface
-    public static AjaxContext initWebView(BaseFragment f, WebView webView, Activity activity) {
+    public static AjaxContext initWebView(BaseFragment f, WebView parent, WebView webView, Activity activity) {
 	    webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         WebSettings settings = webView.getSettings();
+        if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         settings.setDefaultFontSize(15);
         settings.setDefaultTextEncodingName("UTF-8");
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setUseWideViewPort(true);//关键点
-        settings.setLoadWithOverviewMode(true);
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        settings.setSupportZoom(false);
+        settings.setBuiltInZoomControls(false);
+        settings.setDisplayZoomControls(false);
         settings.setAllowFileAccess(true);
         int sysVersion = Build.VERSION.SDK_INT;
-        if (sysVersion >= 11) {
-            settings.setDisplayZoomControls(false);
-        } else {
-            ZoomButtonsController zbc = new ZoomButtonsController(webView);
-            zbc.getZoomControls().setVisibility(View.GONE);
-        }
 
-        /**
+        // 高度自适应。
+        settings.setLoadWithOverviewMode(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        settings.setUseWideViewPort(true);//关键点
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        */
+        int mDensity = metrics.densityDpi;
+        Log.d("maomao", "densityDpi = " + mDensity);
+        if (mDensity == 240) {
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        } else if (mDensity == 160) {
+            settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
+        } else if(mDensity == 120) {
+            settings.setDefaultZoom(WebSettings.ZoomDensity.CLOSE);
+        }else if(mDensity == DisplayMetrics.DENSITY_XHIGH){
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        }else if (mDensity == DisplayMetrics.DENSITY_TV){
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        }else{
+            settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
+        }
 
-        AjaxContext ajaxContext = new AjaxContext(f, webView, activity);
+        AjaxContext ajaxContext = new AjaxContext(f, parent, webView, activity);
         webView.addJavascriptInterface(ajaxContext, "_mobContext");
 
         return ajaxContext;

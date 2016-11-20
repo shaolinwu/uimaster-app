@@ -20,7 +20,7 @@ public class RService {
     public static void getBottomFunctionList(AsyncHttpResponseHandler handler) {
         RequestParams params = new RequestParams();
         params.put("_ajaxUserEvent", org.shaolin.uimaster.page.AjaxProcessor.EVENT_WEBSERVICE);
-        params.put("_serviceName", "org.shaolin.bmdp.adminconsole.page.AjaxService.mobileBottomFunctionList");
+        params.put("_serviceName", "org.shaolin.vogerp.commonmodel.page.AjaxService.mobileBottomFunctionList");
         params.put("_r", (int)(Math.random()*10000));
         HttpClientService.post("", params, handler);
     }
@@ -78,6 +78,23 @@ public class RService {
 //        params.put("_framePrefix", "");
 
         HttpClientService.post(AppConfig.FUNCTION_DETAILS_URL, "", params, handler);
+    }
+
+    public static void getUserPageItems(AsyncHttpResponseHandler handler) {
+        RequestParams params = new RequestParams();
+        params.put("_ajaxUserEvent", org.shaolin.uimaster.page.AjaxProcessor.EVENT_WEBSERVICE);
+        params.put("_serviceName", "org.shaolin.vogerp.commonmodel.page.AjaxService.userPageItems");
+        params.put("_r", (int)(Math.random()*10000));
+        HttpClientService.post("", params, handler);
+    }
+
+    public static void getOnlineSearch(AsyncHttpResponseHandler handler, String word) {
+        RequestParams params = new RequestParams();
+        params.put("_ajaxUserEvent", org.shaolin.uimaster.page.AjaxProcessor.EVENT_WEBSERVICE);
+        params.put("_serviceName", "org.shaolin.vogerp.commonmodel.page.AjaxService.onlineSearch");
+        params.put("word", word);
+        params.put("_r", (int)(Math.random()*10000));
+        HttpClientService.post("", params, handler);
     }
 
     public static void getActiveList(int uid, int catalog, int page,

@@ -36,6 +36,9 @@ public class AppConfig {
     public static String Origin = "https://www.vogerp.com";//10.0.2.2:8080
     public static String FUNCTION_DETAILS_URL = Origin + "/uimaster/webflow.do?_appclient=andriod";
     public static String AJAX_SERVICE_URL = Origin + "/uimaster/ajaxservice?_appclient=andriod";
+    public static String RESOURCE_URL = Origin + "/uimaster";
+    public static String UPLOAD_URL = Origin + "/uimaster/uploadFile";
+
     public static int screenHeight = 300;
     // 默认存放图片的路径
     public final static String DEFAULT_SAVE_IMAGE_PATH = Environment

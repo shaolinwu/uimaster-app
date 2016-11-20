@@ -45,6 +45,8 @@ import java.util.Iterator;
  */
 public class AjaxContext {
 
+    private final WebView parentWebView;
+
     private final WebView myWebView;
 
     private final Activity activity;
@@ -60,8 +62,9 @@ public class AjaxContext {
 
     private Runnable pageClosed;
 
-    public AjaxContext(BaseFragment f, WebView myWebView, Activity activity) {
+    public AjaxContext(BaseFragment f, WebView parentWebView, WebView myWebView, Activity activity) {
         this.fragment = f;
+        this.parentWebView = myWebView;
         this.myWebView = myWebView;
         this.activity = activity;
 
@@ -263,9 +266,6 @@ public class AjaxContext {
                             } else if ("nopermission".equals(jsHandler)) {
                                 UIHelper.showNoPermission(activity);
                                 break;
-                            } else if ("error".equals(jsHandler)) {
-                                //TODO: UIHelper.show
-                                break;
                             } else if ("openwindow".equals(jsHandler)) {
                                 Bundle arguments = new Bundle();
                                 arguments.putString("dialog", "yes");
@@ -281,6 +281,9 @@ public class AjaxContext {
                                 ((Activity)myWebView.getContext()).finish();
                                 break;
                             } else {
+                                // find out the parent webview if neccesary.
+                                // parentWebView.;
+                                String uiid = item.getString("uiid");
                                 final String itemJson = item.toString();
                                 myWebView.post(new Runnable() {
                                     @Override
@@ -351,7 +354,7 @@ public class AjaxContext {
     private WebSocketClient connectWebSocket() {
         URI uri;
         try {
-            uri = new URI("ws://"+AppConfig.HOST+"/uimaster/wschart");
+            uri = new URI("wss://"+AppConfig.HOST+"/uimaster/wschart");
         } catch (URISyntaxException e) {
             Log.w(e.getMessage(), e);
             return null;

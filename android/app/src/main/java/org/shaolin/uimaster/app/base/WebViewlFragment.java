@@ -60,6 +60,8 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
 
     protected int mId;
 
+    protected String frameId;
+
     protected EmptyLayout mEmptyLayout;
 
     protected int mCommentCount = 0;
@@ -103,7 +105,8 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
         mEmptyLayout = (EmptyLayout) view.findViewById(R.id.error_layout);
         setCommentCount(mCommentCount);
         mWebView = (WebView) view.findViewById(R.id.webview);
-        ajaxContext = UIHelper.initWebView(this, mWebView, this.getActivity());
+        WebView parentWebView = (WebView)((ViewGroup)view.getParent()).findViewById(R.id.webview);
+        ajaxContext = UIHelper.initWebView(this, parentWebView, mWebView, this.getActivity());
         ajaxContext.addPageLoadedListener(new Runnable() {
             @Override
             public void run() {
