@@ -134,7 +134,7 @@ public class LoginActivity extends BaseActivity {
         showWaitDialog(R.string.progress_login);
         RService.login(mUserName, mPassword, verifyCodeAnswer, new AsyncHttpResponseHandler() {
             @Override
-            public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+            public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
                 try {
                     JSONObject json = new JSONObject(new String(arg2, "UTF-8"));
                     if (json.has("verifyCode.error")) {
@@ -164,7 +164,7 @@ public class LoginActivity extends BaseActivity {
                 }
             }
             @Override
-            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+            public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                                   Throwable arg3) {
                 AppContext.showToast("网络出错! ");
             }
@@ -179,7 +179,7 @@ public class LoginActivity extends BaseActivity {
     private void refreshVerifyCode() {
         RService.getVerifyCode(new AsyncHttpResponseHandler() {
             @Override
-            public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+            public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
                 try {
                     AppContext.getInstance().keepUserSession();
                     JSONObject json = new JSONObject(new String(arg2, "UTF-8"));
@@ -189,7 +189,7 @@ public class LoginActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+            public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                                   Throwable arg3) {
                 AppContext.showToast("网络出错! ");
             }

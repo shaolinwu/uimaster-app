@@ -13,9 +13,9 @@ import com.loopj.android.http.PersistentCookieStore;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.params.HttpProtocolParams;
+import cz.msebera.android.httpclient.protocol.HttpContext;
 import org.kymjs.kjframe.KJBitmap;
 import org.kymjs.kjframe.bitmap.BitmapConfig;
 import org.kymjs.kjframe.http.HttpConfig;
@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+
+import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
 
 import static org.shaolin.uimaster.app.context.AppConfig.KEY_FRITST_START;
 import static org.shaolin.uimaster.app.context.AppConfig.KEY_LOAD_IMAGE;

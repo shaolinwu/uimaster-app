@@ -109,7 +109,7 @@ public class ShakeActivity extends BaseActivity implements SensorEventListener {
             public void onAnimationEnd(Animation animation) {
                 RService.shake(new AsyncHttpResponseHandler() {
                     @Override
-                    public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+                    public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
                         isRequest = false;
                         final ShakeObject obj = XmlUtils.toBean(
                                 ShakeObject.class, new ByteArrayInputStream(
@@ -146,7 +146,7 @@ public class ShakeActivity extends BaseActivity implements SensorEventListener {
                     }
 
                     @Override
-                    public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+                    public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                                           Throwable arg3) {
                         isRequest = false;
                         jokeToast();

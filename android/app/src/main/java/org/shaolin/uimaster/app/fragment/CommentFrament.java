@@ -59,7 +59,7 @@ public class CommentFrament extends BaseListFragment<Comment> implements
     private final AsyncHttpResponseHandler mCommentHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
                 ResultBean rsb = XmlUtils.toBean(ResultBean.class,
                         new ByteArrayInputStream(arg2));
@@ -86,7 +86,7 @@ public class CommentFrament extends BaseListFragment<Comment> implements
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {
             hideWaitDialog();
             AppContext.showToastShort(R.string.comment_publish_faile);

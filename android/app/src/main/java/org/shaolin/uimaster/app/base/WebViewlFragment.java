@@ -167,7 +167,7 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
 
     protected AsyncHttpResponseHandler mDetailHeandler = new AsyncHttpResponseHandler() {
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
                 T detail = parseData(new ByteArrayInputStream(arg2));
                 if (detail != null) {
@@ -189,7 +189,7 @@ public abstract class WebViewlFragment<T extends Serializable> extends BaseFragm
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                               Throwable arg3) {
             readCacheData(getCacheKey());
         }

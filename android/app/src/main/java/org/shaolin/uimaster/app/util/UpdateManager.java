@@ -36,7 +36,7 @@ public class UpdateManager {
     private AsyncHttpResponseHandler mCheckUpdateHandle = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                               Throwable arg3) {
             hideCheckDialog();
             if (isShow) {
@@ -45,7 +45,7 @@ public class UpdateManager {
         }
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             hideCheckDialog();
             mUpdate = XmlUtils.toBean(Update.class,
                     new ByteArrayInputStream(arg2));

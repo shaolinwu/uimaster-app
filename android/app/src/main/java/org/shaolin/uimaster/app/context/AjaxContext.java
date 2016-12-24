@@ -251,7 +251,7 @@ public class AjaxContext {
 
             HttpClientService.post(AppConfig.AJAX_SERVICE_URL, "", params, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers,
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers,
                                       byte[] responseBytes) {
                     String jsonStr = new String(responseBytes);
                     try {
@@ -299,7 +299,7 @@ public class AjaxContext {
                 }
 
                 @Override
-                public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+                public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                                       Throwable arg3) {
                     Log.w("Failed to load data: ", arg3);
                 }

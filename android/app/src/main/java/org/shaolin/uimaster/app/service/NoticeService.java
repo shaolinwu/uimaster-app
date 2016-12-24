@@ -200,7 +200,7 @@ public class NoticeService extends Service {
     private final AsyncHttpResponseHandler mGetNoticeHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
                 String jsonStr = new String(arg2);
                 JSONArray array = new JSONArray(jsonStr);
@@ -219,7 +219,7 @@ public class NoticeService extends Service {
         };
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {
             arg3.printStackTrace();
         }
@@ -228,7 +228,7 @@ public class NoticeService extends Service {
     private final AsyncHttpResponseHandler mClearNoticeHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
 
             } catch (Exception e) {
@@ -237,7 +237,7 @@ public class NoticeService extends Service {
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {}
     };
 

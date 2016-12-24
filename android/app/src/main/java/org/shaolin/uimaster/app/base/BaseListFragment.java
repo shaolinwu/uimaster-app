@@ -343,7 +343,7 @@ public abstract class BaseListFragment<T extends Entity> extends BaseFragment
     protected AsyncHttpResponseHandler mHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int statusCode, Header[] headers,
+        public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers,
                 byte[] responseBytes) {
             if (mCurrentPage == 0 && needAutoRefresh()) {
                 AppContext.putToLastRefreshTime(getCacheKey(),
@@ -358,7 +358,7 @@ public abstract class BaseListFragment<T extends Entity> extends BaseFragment
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {
             if (isAdded()) {
                 readCacheData(getCacheKey());
@@ -499,23 +499,6 @@ public abstract class BaseListFragment<T extends Entity> extends BaseFragment
 
         @Override
         protected String doInBackground(Void... params) {
-            try {
-                ListEntity<T> data = parseList(new ByteArrayInputStream(
-                        reponseData));
-                new SaveCacheTask(getActivity(), data, getCacheKey()).execute();
-                list = data.getList();
-                if (list == null) {
-                    ResultBean resultBean = XmlUtils.toBean(ResultBean.class,
-                            reponseData);
-                    if (resultBean != null) {
-                        mResult = resultBean.getResult();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                parserError = true;
-            }
             return null;
         }
 

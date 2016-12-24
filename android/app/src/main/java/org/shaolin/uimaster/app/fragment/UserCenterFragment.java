@@ -75,7 +75,7 @@ public class UserCenterFragment extends BaseFragment implements
     private final AsyncHttpResponseHandler mActiveHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
                 UserInformation information = XmlUtils.toBean(
                         UserInformation.class, new ByteArrayInputStream(arg2));
@@ -104,7 +104,7 @@ public class UserCenterFragment extends BaseFragment implements
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {
             mEmptyView.setErrorType(EmptyLayout.NETWORK_ERROR);
         }

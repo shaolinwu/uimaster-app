@@ -109,7 +109,7 @@ public class MyInformationFragment extends BaseFragment {
 
     private final AsyncHttpResponseHandler mHandler = new AsyncHttpResponseHandler() {
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
                 String response = new String(arg2, "UTF-8");
                 JSONObject json = new JSONObject(response);
@@ -129,7 +129,7 @@ public class MyInformationFragment extends BaseFragment {
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {}
     };
 

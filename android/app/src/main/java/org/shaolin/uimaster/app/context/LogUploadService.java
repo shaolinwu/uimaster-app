@@ -36,13 +36,13 @@ public class LogUploadService extends Service {
         if (!StringUtils.isEmpty(data)) {
             RService.uploadLog(data, new AsyncHttpResponseHandler() {
                 @Override
-                public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+                public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
                     log.delete();
                     LogUploadService.this.stopSelf();
                 }
 
                 @Override
-                public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+                public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                                       Throwable arg3) {
                     LogUploadService.this.stopSelf();
                 }

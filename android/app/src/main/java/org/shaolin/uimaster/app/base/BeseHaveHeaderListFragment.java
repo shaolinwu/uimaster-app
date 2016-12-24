@@ -38,7 +38,7 @@ public abstract class BeseHaveHeaderListFragment<T1 extends Entity, T2 extends S
     protected final AsyncHttpResponseHandler mDetailHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             try {
                 if (arg2 != null) {
                     T2 detail = getDetailBean(new ByteArrayInputStream(arg2));
@@ -60,7 +60,7 @@ public abstract class BeseHaveHeaderListFragment<T1 extends Entity, T2 extends S
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                 Throwable arg3) {
             readDetailCacheData(getDetailCacheKey());
         }

@@ -19,6 +19,8 @@ import android.app.Activity;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import cz.msebera.android.httpclient.HttpEntity;
+
 /**
  * 一个文件云同步解决方案（便签同步）
  * 
@@ -54,19 +56,14 @@ public class SynchronizeController {
 
     /**
      * GPRS环境下：使用二重循环遍历差异文件并更新云端文件达到同步
-     * 
-     * @param localDatas
-     *            本地数据
-     * @param cloudDatas
-     *            云端数据
+     *
      */
     private void doSynchronizeWithGPRS() {}
 
     /**
      * WIFI环境下：客户端直接提交全部文件，交由服务器做同步判断<br>
      * 由于量可能会比较大，采用json传输，而不是from
-     * 
-     * @author  (https://github.com/)
+     *
      */
     private void doSynchronizeWithWIFI(final SynchronizeListener cb) {
         long currentTime = System.currentTimeMillis();
@@ -120,18 +117,18 @@ public class SynchronizeController {
                     aty,
                     HttpClientService
                             .getAbsoluteApiUrl("action/api/team_stickynote_batch_update"),
-                    new StringEntity(jsonData.toString(), HTTP.UTF_8),
+                    (HttpEntity) new StringEntity(jsonData.toString(), HTTP.UTF_8),
                     "application/json; charset=UTF-8",
                     new AsyncHttpResponseHandler() {
                         @Override
-                        public void onSuccess(int arg0, Header[] arg1,
+                        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1,
                                 byte[] arg2) {
                             KJLoger.debug("获取便签:" + new String(arg2));
                             cb.onSuccess(arg2);
                         }
 
                         @Override
-                        public void onFailure(int arg0, Header[] arg1,
+                        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1,
                                 byte[] arg2, Throwable arg3) {
                             cb.onFailure();
                         }

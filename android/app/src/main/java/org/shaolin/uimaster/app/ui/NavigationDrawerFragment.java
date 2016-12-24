@@ -206,7 +206,7 @@ public class NavigationDrawerFragment extends BaseFragment implements
         final FragmentActivity activity = this.getActivity();
         RService.getFunctionList(new AsyncHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers,
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers,
                                   byte[] responseBytes) {
                 try {
                     functionMap.clear();
@@ -292,7 +292,7 @@ public class NavigationDrawerFragment extends BaseFragment implements
             }
 
             @Override
-            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+            public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                                   Throwable arg3) {
                 showWaitDialog("Failed to load data: " + arg3.getMessage());
             }

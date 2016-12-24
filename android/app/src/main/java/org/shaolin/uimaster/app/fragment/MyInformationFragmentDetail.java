@@ -94,7 +94,7 @@ public class MyInformationFragmentDetail extends BaseFragment {
     private final AsyncHttpResponseHandler mHandler = new AsyncHttpResponseHandler() {
 
         @Override
-        public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+        public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2) {
             mErrorLayout.setErrorType(EmptyLayout.HIDE_LAYOUT);
             MyInformation  user = XmlUtils.toBean(MyInformation.class,
                     new ByteArrayInputStream(arg2));
@@ -107,7 +107,7 @@ public class MyInformationFragmentDetail extends BaseFragment {
         }
 
         @Override
-        public void onFailure(int arg0, Header[] arg1, byte[] arg2,
+        public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
                               Throwable arg3) {
             mErrorLayout.setErrorType(EmptyLayout.NETWORK_ERROR);
         }
@@ -234,7 +234,7 @@ public class MyInformationFragmentDetail extends BaseFragment {
                         new AsyncHttpResponseHandler() {
 
                             @Override
-                            public void onSuccess(int arg0, Header[] arg1,
+                            public void onSuccess(int arg0, cz.msebera.android.httpclient.Header[] arg1,
                                                   byte[] arg2) {
                                 Result res = XmlUtils.toBean(ResultBean.class,
                                         new ByteArrayInputStream(arg2))
@@ -250,7 +250,7 @@ public class MyInformationFragmentDetail extends BaseFragment {
                             }
 
                             @Override
-                            public void onFailure(int arg0, Header[] arg1,
+                            public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1,
                                                   byte[] arg2, Throwable arg3) {
                                 AppContext.showToast("更换头像失败");
                             }

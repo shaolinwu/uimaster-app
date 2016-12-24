@@ -136,7 +136,8 @@ public class HttpClientService {
         client.addHeader("Connection", "Keep-Alive");
         client.getHttpClient().getParams()
                 .setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
-
+        client.setMaxRetriesAndTimeout(3, 30000);
+        client.setUserAgent("android-async-http-1.4.9");
         setUserAgent(LocalServiceHelper.getUserAgent(AppContext.getInstance()));
     }
 
