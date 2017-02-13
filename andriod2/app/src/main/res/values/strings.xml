@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">WebViewApp</string>
+    <string name="drawer_open">侧滑开启</string>
+    <string name="drawer_close">侧滑关闭</string>
+    <string name="tab_mine">我的</string>
+    <string name="unLogin">未登录</string>
+    <string name="my_message">消息</string>
+    <string name="my_team">团队</string>
+    <string name="mine">我的</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+    <string name="please_edit_name">请输入用户名/手机</string>
+    <string name="please_edit_password">请输入密码</string>
+    <string name="please_edit_verificationcode">请输入验证码</string>
+    <string name="login_error">登录失败</string>
+</resources>
