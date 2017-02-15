@@ -4,7 +4,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
     defaultConfig {
-        applicationId "com.felink.webviewapp"
+        applicationId "org.shaolin.uimaster.app"
         minSdkVersion 15
         targetSdkVersion 15
         versionCode 1
