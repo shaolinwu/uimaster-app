@@ -21,7 +21,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import org.shaolin.uimaster.app.R;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -29,6 +28,7 @@ import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.adpter.MenuAdapter;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
@@ -66,6 +66,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private long mExitTime;
     private Socket mSocket;
     private String userId;
+    private boolean isLogin = false;
 
     {
         try {
@@ -188,6 +189,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         tabs.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+
                 switch (checkedId) {
                     case R.id.main_tab:
                         setToolBarTitle(titleMap.get(R.id.main_tab));
@@ -208,9 +210,12 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
                     default:
                         break;
                 }
+                if (checkedId != R.id.mine_tab && !isLogin){
+                    tabs.check(R.id.mine_tab);
+                }
             }
         });
-        tabs.check(R.id.main_tab);
+        tabs.check(R.id.mine_tab);
     }
 
     /**
@@ -245,6 +250,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     @Subscribe(threadMode = ThreadMode.BackgroundThread)
     public void getMenuItems(LoginBean loginBean) {
+        isLogin = true;
         userId = loginBean.userId;
         MenuItemPresenterImpl presenter = new MenuItemPresenterImpl(this);
 
