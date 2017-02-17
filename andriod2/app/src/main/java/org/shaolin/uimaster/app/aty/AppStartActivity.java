@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 
 import org.shaolin.uimaster.app.R;
+import org.shaolin.uimaster.app.service.SyncServerResources;
 
 /**
  * Launch the app
@@ -17,7 +18,7 @@ import org.shaolin.uimaster.app.R;
  * @created 2014年12月22日 上午11:51:56
  * 
  */
-public class AppStartActivity extends Activity {
+public class AppStartActivity extends Activity implements AnimationListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,18 +36,21 @@ public class AppStartActivity extends Activity {
         AlphaAnimation aa = new AlphaAnimation(0.5f, 1.0f);
         aa.setDuration(800);
         view.startAnimation(aa);
-        aa.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationEnd(Animation arg0) {
-                redirectTo();
-            }
+        aa.setAnimationListener(this);
+    }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
+    @Override
+    public void onAnimationEnd(Animation arg0) {
+        redirectTo();
+    }
 
-            @Override
-            public void onAnimationStart(Animation animation) {}
-        });
+    @Override
+    public void onAnimationRepeat(Animation animation) {}
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+        Intent uploadLog = new Intent(this, SyncServerResources.class);
+        startService(uploadLog);
     }
 
     @Override
@@ -55,8 +59,6 @@ public class AppStartActivity extends Activity {
     }
 
     private void redirectTo() {
-//        Intent uploadLog = new Intent(this, LogUploadService.class);
-//        startService(uploadLog);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

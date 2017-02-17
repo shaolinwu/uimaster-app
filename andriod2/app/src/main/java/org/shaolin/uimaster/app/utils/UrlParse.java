@@ -1,7 +1,16 @@
 package org.shaolin.uimaster.app.utils;
 
+import android.os.Environment;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.zhy.http.okhttp.OkHttpUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -10,6 +19,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Callback;
 
 /**
  * Created Administrator
@@ -253,5 +267,52 @@ public class UrlParse {
             url = url.replace(cn, URLEncoder.encode(cn));
         }
         return url;
+    }
+
+    public static void download(final String url, final File dest) {
+        OkHttpUtils.get().url(url).build().getCall().enqueue(new Callback() {
+
+            @SuppressWarnings("resource")
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                InputStream is = null;
+                byte[] buf = new byte[2048];
+                int len = 0;
+                FileOutputStream fos = null;
+                String SDPath = FileUtil.getSDRoot();
+                try {
+                    is = response.body().byteStream();
+                    long total = response.body().contentLength();
+                    fos = new FileOutputStream(dest);
+                    long sum = 0;
+                    while ((len = is.read(buf)) != -1) {
+                        fos.write(buf, 0, len);
+                        sum += len;
+                        int progress = (int) (sum * 1.0f / total * 100);
+                        Log.d("h_bl", "progress=" + progress);
+                    }
+                    fos.flush();
+                    Log.d("h_bl", "文件下载成功: " + dest.getAbsolutePath());
+                } catch (Exception e) {
+                    Log.d("h_bl", "文件下载失败: " + url);
+                } finally {
+                    try {
+                        if (is != null)
+                            is.close();
+                    } catch (IOException e) {
+                    }
+                    try {
+                        if (fos != null)
+                            fos.close();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException arg1) {
+                Log.d("h_bl", "onFailure");
+            }
+        });
     }
 }

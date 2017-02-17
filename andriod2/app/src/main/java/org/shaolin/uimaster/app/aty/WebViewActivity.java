@@ -11,6 +11,8 @@ import android.webkit.WebViewClient;
 import org.shaolin.uimaster.app.R;
 
 import org.shaolin.uimaster.app.base.BaseActivity;
+import org.shaolin.uimaster.app.fragment.AjaxContext;
+import org.shaolin.uimaster.app.fragment.WebFragment;
 
 import butterknife.BindView;
 
@@ -22,12 +24,25 @@ public class WebViewActivity extends BaseActivity {
 
     @BindView(R.id.webview)
     WebView webview;
+    AjaxContext ajaxContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
         loadWebView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_webview;
+    }
+
+    private void initView() {
+        webview = (WebView)findViewById(R.id.webview);
+
+        WebView parentWebView = webview;
+        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
     }
 
     private void loadWebView() {
@@ -39,24 +54,6 @@ public class WebViewActivity extends BaseActivity {
         if (!TextUtils.isEmpty(title)){
             setToolBarTitle(title);
         }
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_webview;
-    }
-
-    private void initView() {
-        webview = (WebView)findViewById(R.id.webview);
-        WebSettings wSet = webview.getSettings();
-        wSet.setJavaScriptEnabled(true);
-        webview.setWebViewClient(new WebViewClient() {
-            public boolean shouldOverrideUrlLoading(WebView view, String url)
-            { //  重写此方法表明点击网页里面的链接还是在当前的webview里跳转，不跳到浏览器那边
-                view.loadUrl(url);
-                return true;
-            }
-        });
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
