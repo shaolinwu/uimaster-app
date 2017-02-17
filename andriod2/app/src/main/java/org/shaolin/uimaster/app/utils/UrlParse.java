@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.Callback;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.Callback;
+import okhttp3.ResponseBody;
 
 /**
  * Created Administrator
@@ -270,19 +271,23 @@ public class UrlParse {
     }
 
     public static void download(final String url, final File dest) {
-        OkHttpUtils.get().url(url).build().getCall().enqueue(new Callback() {
-
+        OkHttpUtils.get().url(url).build().execute(new Callback<ResponseBody>() {
+            public ResponseBody parseNetworkResponse(Response response) throws Exception {
+                return response.body();
+            }
+            public void onError(Call call, Exception e) {
+                Log.w("SyncResourcesFailed", e);
+            }
             @SuppressWarnings("resource")
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(ResponseBody body) {
                 InputStream is = null;
                 byte[] buf = new byte[2048];
                 int len = 0;
                 FileOutputStream fos = null;
                 String SDPath = FileUtil.getSDRoot();
                 try {
-                    is = response.body().byteStream();
-                    long total = response.body().contentLength();
+                    is = body.byteStream();
+                    long total = body.contentLength();
                     fos = new FileOutputStream(dest);
                     long sum = 0;
                     while ((len = is.read(buf)) != -1) {
@@ -294,7 +299,7 @@ public class UrlParse {
                     fos.flush();
                     Log.d("h_bl", "文件下载成功: " + dest.getAbsolutePath());
                 } catch (Exception e) {
-                    Log.d("h_bl", "文件下载失败: " + url);
+                    Log.d("h_bl", "文件下载失败: " + url, e);
                 } finally {
                     try {
                         if (is != null)
@@ -307,11 +312,6 @@ public class UrlParse {
                     } catch (IOException e) {
                     }
                 }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException arg1) {
-                Log.d("h_bl", "onFailure");
             }
         });
     }

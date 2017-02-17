@@ -44,39 +44,48 @@ public class SyncServerResources extends Service{
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
         if (FileUtil.checkSaveLocationExists()) {
-            try {
-                OkHttpUtils.get()
-                        .url(UrlData.GET_RESOURCES_README)
-                        .build()
-                        .execute(new Callback<String>() {
-                            @Override
-                            public String parseNetworkResponse(Response response) throws Exception {
-                                return response.body().string();
-                            }
-
-                            @Override
-                            public void onError(Call call, Exception e) {
-                                Log.w("SyncResourcesFailed", e);
-                            }
-
-                            @Override
-                            public void onResponse(String response) {
-                                //download server js, css & image resources.
-                                Type type = new TypeToken<ArrayList<JsonObject>>(){}.getType();
-                                ArrayList<JsonObject> jsonObjects = new Gson().fromJson(response, type);
-                                for (JsonObject jsonObject : jsonObjects) {
-                                    UrlParse.download(UrlData.GET_DOWNLOAD_RESOURCES + jsonObject.get("resource").getAsString(),
-                                            new File(FileUtil.getSDRoot() + "/uimaster", jsonObject.get("resourceType").getAsString()));
-                                }
-                            }
-                        });
-            } catch (Throwable e) {
-                Log.w("SyncResourcesFailed", e);
-            }
-            SyncServerResources.this.stopSelf();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    syncData();
+                    SyncServerResources.this.stopSelf();
+                }
+            }).start();
         }
         //接受传递过来的intent的数据等
         return START_STICKY;
+    }
+
+    private void syncData() {
+        try {
+            OkHttpUtils.get()
+                    .url(UrlData.GET_RESOURCES_README)
+                    .build()
+                    .execute(new Callback<String>() {
+                        @Override
+                        public String parseNetworkResponse(Response response) throws Exception {
+                            return response.body().string().trim();
+                        }
+                        @Override
+                        public void onError(Call call, Exception e) {
+                            Log.w("SyncResourcesFailed", e);
+                        }
+                        @Override
+                        public void onResponse(String response) {
+                            Type type = new TypeToken<ArrayList<JsonObject>>(){}.getType();
+                            final ArrayList<JsonObject> jsonObjects = new ArrayList<JsonObject>();
+                            jsonObjects.addAll((ArrayList<JsonObject>)new Gson().fromJson(response, type));
+                            //download server js, css & image resources.
+                            for (JsonObject jsonObject : jsonObjects) {
+                                UrlParse.download(UrlData.GET_DOWNLOAD_RESOURCES + jsonObject.get("resource").getAsString(),
+                                                new File(FileUtil.getSDRoot() + "/uimaster", jsonObject.get("resourceType").getAsString()));
+
+                            }
+                        }
+                    });
+        } catch (Throwable e) {
+            Log.w("SyncResourcesFailed", e);
+        }
     }
 
     @Override
