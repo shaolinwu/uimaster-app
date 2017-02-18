@@ -1,5 +1,10 @@
 package org.shaolin.uimaster.app.utils;
 
+import android.content.Context;
+import android.os.Environment;
+import android.os.StatFs;
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,11 +14,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import android.content.Context;
-import android.os.Environment;
-import android.os.StatFs;
-import android.util.Log;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * 文件操作工具包
@@ -625,5 +627,36 @@ public class FileUtil {
 		}
 		savedir = null;
 		return savePath;
+	}
+
+	public static void UnZipFolder(String zipFileString, String outPathString) throws Exception {
+		ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFileString));
+		ZipEntry zipEntry;
+		String szName = "";
+		while ((zipEntry = inZip.getNextEntry()) != null) {
+			szName = zipEntry.getName();
+			if (zipEntry.isDirectory()) {
+				// get the folder name of the widget
+				szName = szName.substring(0, szName.length() - 1);
+				File folder = new File(outPathString + File.separator + szName);
+				folder.mkdirs();
+			} else {
+
+				File file = new File(outPathString + File.separator + szName);
+				file.createNewFile();
+				// get the output stream of the file
+				FileOutputStream out = new FileOutputStream(file);
+				int len;
+				byte[] buffer = new byte[1024];
+				// read (len) bytes into buffer
+				while ((len = inZip.read(buffer)) != -1) {
+					// write (len) byte from buffer at the position 0
+					out.write(buffer, 0, len);
+					out.flush();
+				}
+				out.close();
+			}
+		}
+		inZip.close();
 	}
 }

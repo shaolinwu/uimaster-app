@@ -38,6 +38,7 @@ import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
 import org.shaolin.uimaster.app.utils.UrlParse;
+import org.shaolin.uimaster.app.viewmodule.impl.ReadMePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MainModulePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MenuItemPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
@@ -51,6 +52,8 @@ import java.util.Map;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 import de.greenrobot.event.ThreadMode;
+
+import static org.shaolin.uimaster.app.data.UrlData.GET_RESOURCES_README;
 
 public class MainActivity extends BaseActivity implements IMainModuleView,IMenuView {
 
@@ -67,6 +70,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private Socket mSocket;
     private String userId;
     private boolean isLogin = false;
+    private MainModulePresenterImpl presenter;
+    private ReadMePresenterImpl downFilePresenter;
 
     {
         try {
@@ -79,9 +84,22 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        MainModulePresenterImpl presenter = new MainModulePresenterImpl(this, UrlData.GET_TAB_URL);
+        createModulePresenter();
+        registerEvent();
+        downServerFiles();
+    }
+
+    //从服务下载文件
+    private void downServerFiles() {
+        downFilePresenter = new ReadMePresenterImpl(GET_RESOURCES_README,this);
+    }
+
+    private void registerEvent() {
         EventBus.getDefault().register(this);
-        MenuItemPresenterImpl presenter1 = new MenuItemPresenterImpl(this);
+    }
+
+    private void createModulePresenter() {
+        MainModulePresenterImpl presenter = new MainModulePresenterImpl(this, UrlData.GET_TAB_URL);
     }
 
     @Override
@@ -342,4 +360,14 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null){
+            presenter.onDestroy();
+        }
+        if (downFilePresenter != null){
+            downFilePresenter.onDestroy();
+        }
+    }
 }

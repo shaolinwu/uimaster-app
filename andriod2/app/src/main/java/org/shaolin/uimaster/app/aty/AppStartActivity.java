@@ -9,7 +9,6 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 
 import org.shaolin.uimaster.app.R;
-import org.shaolin.uimaster.app.service.SyncServerResources;
 
 /**
  * Launch the app
@@ -49,8 +48,7 @@ public class AppStartActivity extends Activity implements AnimationListener {
 
     @Override
     public void onAnimationStart(Animation animation) {
-        Intent uploadLog = new Intent(this, SyncServerResources.class);
-        startService(uploadLog);
+
     }
 
     @Override

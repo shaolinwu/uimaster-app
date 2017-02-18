@@ -11,12 +11,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-//        try {
-//            OkHttpUtils
-//                    .getInstance()
-//                    .setCertificates(getAssets().open("vogerp.cer"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
     }
 }
