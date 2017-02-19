@@ -14,9 +14,12 @@ import android.widget.Toast;
 import org.shaolin.uimaster.app.R;
 
 import org.shaolin.uimaster.app.base.BaseActivity;
+import org.shaolin.uimaster.app.bean.CookiesBean;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.VerificationCodeBean;
+import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.LoginPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.VerificationCodePresenterImpl;
@@ -121,6 +124,10 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
             Toast.makeText(this,R.string.login_error,Toast.LENGTH_SHORT).show();
         }else {
             EventBus.getDefault().post(loginBean);
+            CookiesBean cookiesBean = new CookiesBean();
+            cookiesBean.cookies = loginBean.cookies;
+            PreferencesUtils.putString(this, ConfigData.USER_COOKIES,loginBean.cookies);
+            EventBus.getDefault().post(cookiesBean);
             finish();
         }
     }

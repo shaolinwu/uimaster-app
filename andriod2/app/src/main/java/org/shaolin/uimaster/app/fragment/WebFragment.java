@@ -3,17 +3,24 @@ package org.shaolin.uimaster.app.fragment;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import org.shaolin.uimaster.app.R;
-
 import org.shaolin.uimaster.app.base.BaseFragment;
+import org.shaolin.uimaster.app.bean.CookiesBean;
+import org.shaolin.uimaster.app.data.ConfigData;
+import org.shaolin.uimaster.app.utils.PreferencesUtils;
+
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
+import de.greenrobot.event.ThreadMode;
 
 /**
  * Created Administrator
@@ -23,13 +30,12 @@ import org.shaolin.uimaster.app.base.BaseFragment;
 
 public class WebFragment extends BaseFragment {
 
-    private String url;
-    private WebView mWebView;
+
     private AjaxContext ajaxContext;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EventBus.getDefault().register(this);
         mView = View.inflate(mContext, R.layout.web_fragment_layout, null);
         initData();
         initView();
@@ -41,9 +47,14 @@ public class WebFragment extends BaseFragment {
 
     private void initView() {
         mWebView = (WebView) mView.findViewById(R.id.webview);
-        mWebView.loadUrl(url);
         WebView parentWebView = mWebView;
         ajaxContext = WebFragment.initWebView(this, parentWebView, mWebView, this.getActivity());
+        String cookies = PreferencesUtils.getString(getContext(), ConfigData.USER_COOKIES,"");
+        if (!TextUtils.isEmpty(cookies)){
+            setWebViewCookies(cookies);
+        }
+        mWebView.loadUrl(url);
+
     }
 
     public static AjaxContext initWebView(BaseFragment f, WebView parent, WebView webView, Activity activity) {
@@ -61,8 +72,6 @@ public class WebFragment extends BaseFragment {
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setAllowFileAccess(true);
-        int sysVersion = Build.VERSION.SDK_INT;
-
         // 高度自适应。
         settings.setLoadWithOverviewMode(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
@@ -111,10 +120,9 @@ public class WebFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-
-        mContext = null;
         super.onDestroy();
-
+        mContext = null;
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -122,5 +130,23 @@ public class WebFragment extends BaseFragment {
         super.onDestroyView();
 
     }
+
+    @Subscribe(threadMode = ThreadMode.MainThread)
+    public void refreshWebView(CookiesBean bean) {
+        setWebViewCookies(bean.cookies);
+        mWebView.loadUrl(url);
+    }
+
+    public void setWebViewCookies(String cookies){
+        CookieSyncManager.createInstance(mContext);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.removeSessionCookie();//移除
+        cookieManager.setCookie(url, cookies);//cookies是在HttpClient中获得的cookie
+        CookieSyncManager.getInstance().sync();
+    }
+
+
+
 
 }

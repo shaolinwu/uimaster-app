@@ -14,6 +14,7 @@ public class LoginBean {
     public String locale;
     public String userName;
     public String userIcon;
+    public String cookies;
     @SerializedName("verifyCode.error")
     public String error;
 }

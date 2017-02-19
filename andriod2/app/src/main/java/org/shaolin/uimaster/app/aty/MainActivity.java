@@ -34,9 +34,11 @@ import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
+import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
+import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.ReadMePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MainModulePresenterImpl;
@@ -99,7 +101,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     }
 
     private void createModulePresenter() {
-        MainModulePresenterImpl presenter = new MainModulePresenterImpl(this, UrlData.GET_TAB_URL);
+        presenter = new MainModulePresenterImpl(this, UrlData.GET_TAB_URL);
     }
 
     @Override
@@ -369,5 +371,6 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         if (downFilePresenter != null){
             downFilePresenter.onDestroy();
         }
+        PreferencesUtils.removeConfig(this, ConfigData.USER_COOKIES);
     }
 }

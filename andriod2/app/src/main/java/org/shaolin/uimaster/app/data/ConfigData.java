@@ -8,4 +8,5 @@ package org.shaolin.uimaster.app.data;
 
 public class ConfigData {
     public static String FILE_VERSION = "file_version";
+    public static String USER_COOKIES = "user_cookies";
 }

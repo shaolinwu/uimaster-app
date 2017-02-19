@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import java.lang.reflect.Field;
 
@@ -19,13 +21,13 @@ import java.lang.reflect.Field;
  */
 public  class BaseFragment extends Fragment implements View.OnClickListener{
 
-    private String TAG = "Fragment Lifecycle";
-
     /**
      * Fragment的View，子类必须在OnCreate方法中完成对mView的赋值
      */
     protected View mView;
     protected Context mContext;
+    protected String url;
+    protected WebView mWebView;
 
     @Override
     public void onAttach(Activity activity) {
@@ -36,6 +38,7 @@ public  class BaseFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -88,6 +91,7 @@ public  class BaseFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onDestroy() {
+        Log.e("linbin","33333");
         super.onDestroy();
         if (mView instanceof ViewGroup) {
             ((ViewGroup) mView).removeAllViewsInLayout();
@@ -97,6 +101,7 @@ public  class BaseFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onDetach() {
+        Log.e("linbin","2222");
         super.onDetach();
 
         try {
@@ -124,4 +129,6 @@ public  class BaseFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
 
     }
+
+
 }
