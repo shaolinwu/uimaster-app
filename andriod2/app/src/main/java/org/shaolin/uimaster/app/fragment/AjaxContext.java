@@ -67,7 +67,7 @@ public class AjaxContext {
     class WebViewClientA extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.d("MyLog", "url: " + url);
+            Log.d("UIMaster", "url: " + url);
             //  重写此方法表明点击网页里面的链接还是在当前的webview里跳转，不跳到浏览器那边
             view.loadUrl(url);
             return true;
@@ -100,7 +100,7 @@ public class AjaxContext {
 
         @Override
         public void onCloseWindow(WebView window) {
-            Log.d("WebView closed", window.getOriginalUrl());
+            Log.d("UIMaster", "WebView closed" + window.getOriginalUrl());
             if (pageClosed != null) {
                 pageClosed.run();
             }
@@ -302,7 +302,7 @@ public class AjaxContext {
 
     @JavascriptInterface
     public void addResource(final String url) {
-        Log.d("dynamic loading URL: ", url);
+        Log.d("UIMaster", "dynamic loading URL: " + url);
         this.myWebView.post(new Runnable() {
             @Override
             public void run() {

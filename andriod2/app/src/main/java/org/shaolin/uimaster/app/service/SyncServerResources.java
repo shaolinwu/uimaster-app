@@ -12,7 +12,6 @@ import com.google.gson.reflect.TypeToken;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.Callback;
 
-import org.shaolin.uimaster.app.base.AppConfig;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.UrlParse;

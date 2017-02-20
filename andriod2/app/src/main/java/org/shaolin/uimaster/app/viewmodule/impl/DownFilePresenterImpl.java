@@ -1,12 +1,15 @@
 package org.shaolin.uimaster.app.viewmodule.impl;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 
-import org.shaolin.uimaster.app.data.FileData;
+import org.shaolin.uimaster.app.data.ConfigData;
+import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.utils.FileUtil;
+import org.shaolin.uimaster.app.utils.PreferencesUtils;
 
 import java.io.File;
 
@@ -19,23 +22,21 @@ import okhttp3.Call;
  */
 
 public class DownFilePresenterImpl {
-
-    public DownFilePresenterImpl(String url,String fileName) {
-
+    public DownFilePresenterImpl(final Context mContext, String url,String fileName) {
         OkHttpUtils
                 .get()
                 .url(url)
                 .build()
-                .execute(new FileCallBack(FileData.APP_ROOT_FILE, fileName)
+                .execute(new FileCallBack(UrlData.APP_ROOT_FILE, fileName)
                 {
                     @Override
                     public void inProgress(float progress, long total) {
-                        Log.e("linbin","progress =" + progress + "===" + "total =" + total);
+                        Log.d("UIMaster","progress =" + progress + "===" + "total =" + total);
                     }
 
                     @Override
                     public void inProgress(float progress){
-                        Log.e("linbin","progress =" + progress);
+                        Log.d("UIMaster","progress =" + progress);
                     }
 
                     @Override
@@ -45,7 +46,7 @@ public class DownFilePresenterImpl {
 
                     @Override
                     public void onResponse(File file){
-                       Runnable runnable = new ZipRunnable(file.getAbsolutePath(),FileData.APP_ROOT_FILE);
+                       Runnable runnable = new ZipRunnable(mContext, file.getAbsolutePath(), UrlData.APP_ROOT_FILE);
                         new Thread(runnable).start();
                     }
                 });
@@ -53,10 +54,12 @@ public class DownFilePresenterImpl {
 
 
     public static class ZipRunnable implements Runnable {
+        private Context mContext;
         private String zipFileString;
         private String outPathString;
 
-        public ZipRunnable(String zipFileString, String outPathString){
+        public ZipRunnable(Context mContext, String zipFileString, String outPathString){
+            this.mContext = mContext;
             this.zipFileString = zipFileString;
             this.outPathString = outPathString;
         }
@@ -64,12 +67,13 @@ public class DownFilePresenterImpl {
         @Override
         public void run() {
             try {
-                FileUtil.UnZipFolder(zipFileString,outPathString);
+                FileUtil.UnZipFolder(zipFileString, outPathString);
                 File file = new File(zipFileString);
                 if (file.exists()){
                     file.delete();
                 }
             } catch (Exception e) {
+                PreferencesUtils.putString(mContext, ConfigData.FILE_VERSION,"0");
                 e.printStackTrace();
             }
         }

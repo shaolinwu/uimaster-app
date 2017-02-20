@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     //从服务下载文件
     private void downServerFiles() {
-        downFilePresenter = new ReadMePresenterImpl(GET_RESOURCES_README,this);
+        downFilePresenter = new ReadMePresenterImpl(getResources().getAssets(), GET_RESOURCES_README,this);
     }
 
     private void registerEvent() {

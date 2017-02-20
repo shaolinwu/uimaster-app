@@ -369,13 +369,13 @@ public class FileUtil {
 		if (sDCardStatus.equals(Environment.MEDIA_MOUNTED)) {
 			status = true;
 		} else
-			status = false;
-		return status;
-	}
-	
+	status = false;
+	return status;
+}
+
 	/**
 	 * 检查是否安装外置的SD卡
-	 * 
+	 *
 	 * @return
 	 */
 	public static boolean checkExternalSDExists() {
@@ -595,7 +595,7 @@ public class FileUtil {
 		if (path.exists()) {
 			return PathStatus.EXITS;
 		}
-		if (path.mkdir()) {
+		if (path.mkdirs()) {
 			return PathStatus.SUCCESS;
 		} else {
 			return PathStatus.ERROR;

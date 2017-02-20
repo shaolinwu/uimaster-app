@@ -12,6 +12,8 @@ import org.shaolin.uimaster.app.R;
 
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.fragment.AjaxContext;
+import org.shaolin.uimaster.app.fragment.WebFragment;
 
 import butterknife.BindView;
 
@@ -24,6 +26,7 @@ public class RegisterActivity extends BaseActivity {
     Toolbar toolbar;
     @BindView(R.id.webview)
     WebView webview;
+    AjaxContext ajaxContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,14 +37,8 @@ public class RegisterActivity extends BaseActivity {
 
     private void initView() {
         webview.loadUrl(UrlData.REGISTER_URL);
-        WebSettings wSet = webview.getSettings();
-        wSet.setJavaScriptEnabled(true);
-        webview.setWebViewClient(new WebViewClient() {
-            public boolean shouldOverrideUrlLoading(WebView view, String url) { //  重写此方法表明点击网页里面的链接还是在当前的webview里跳转，不跳到浏览器那边
-                view.loadUrl(url);
-                return true;
-            }
-        });
+        WebView parentWebView = webview;
+        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
     }
 
     @Override
