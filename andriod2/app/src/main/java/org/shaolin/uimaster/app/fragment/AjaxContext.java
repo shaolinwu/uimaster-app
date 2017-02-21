@@ -57,6 +57,7 @@ public class AjaxContext {
 
         myWebView.setWebViewClient(new WebViewClientA());
         myWebView.setWebChromeClient(new WebChromeClientA());
+        //myWebView.loadDataWithBaseURL("file:///", data, "text/html", "UTF-8",null);
     }
 
     /**

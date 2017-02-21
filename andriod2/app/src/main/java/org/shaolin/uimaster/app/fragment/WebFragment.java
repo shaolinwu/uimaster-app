@@ -17,6 +17,8 @@ import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.CookiesBean;
 import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
+import org.shaolin.uimaster.app.viewmodule.impl.HTMLPresenterImpl;
+import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
@@ -28,7 +30,7 @@ import de.greenrobot.event.ThreadMode;
  * deprecated:
  */
 
-public class WebFragment extends BaseFragment {
+public class WebFragment extends BaseFragment implements IHTMLWebView {
 
 
     private AjaxContext ajaxContext;
@@ -53,8 +55,12 @@ public class WebFragment extends BaseFragment {
         if (!TextUtils.isEmpty(cookies)){
             setWebViewCookies(cookies);
         }
-        mWebView.loadUrl(url);
+        HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
+    }
 
+    public void received(String html) {
+        //mWebView.loadUrl(url); please DON'T use this one.
+        mWebView.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
     }
 
     public static AjaxContext initWebView(BaseFragment f, WebView parent, WebView webView, Activity activity) {
@@ -72,6 +78,7 @@ public class WebFragment extends BaseFragment {
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
         // 高度自适应。
         settings.setLoadWithOverviewMode(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
@@ -147,6 +154,18 @@ public class WebFragment extends BaseFragment {
     }
 
 
+    @Override
+    public void toast(String msg) {
 
+    }
 
+    @Override
+    public void showProgress() {
+
+    }
+
+    @Override
+    public void hideProgress() {
+
+    }
 }

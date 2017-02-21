@@ -686,7 +686,7 @@ public class FileUtil {
 			}
 			is.close();
 			fos.close();
-			Log.e("linbin","file.getAbsolutePath() =" + file.getAbsolutePath());
+			Log.e("UIMaster","file.getAbsolutePath() =" + file.getAbsolutePath());
 		}
 	}
 

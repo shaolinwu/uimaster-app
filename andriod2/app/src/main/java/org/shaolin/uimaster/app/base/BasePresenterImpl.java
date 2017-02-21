@@ -46,7 +46,7 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
 
     @Override
     public void onError(Call call, Exception e) {
-        Log.e("linbin","Exception ="+ e.toString());
+        Log.e("UIMaster","Exception ="+ e.toString());
     }
 
     @Override

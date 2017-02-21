@@ -66,16 +66,16 @@ public class DownFilePresenterImpl {
         }
 
         @Override
-        public void run() {
-            try {
-                FileUtil.UnZipFolder(zipFileString, outPathString);
-                File file = new File(zipFileString);
-                if (file.exists()){
-                    file.delete();
-                }
+                public void run() {
+                    try {
+                        FileUtil.unZip(mContext, "uimaster.zip", Environment.getExternalStorageDirectory().getAbsolutePath(),false);
 
-                FileUtil.unZip(mContext, "uimaster.zip", Environment.getExternalStorageDirectory().getAbsolutePath(),false);
-            } catch (Exception e) {
+                        FileUtil.UnZipFolder(zipFileString, outPathString);
+                        File file = new File(zipFileString);
+                        if (file.exists()){
+                            file.delete();
+                        }
+                    } catch (Exception e) {
                 PreferencesUtils.putString(mContext, ConfigData.FILE_VERSION,"0");
                 e.printStackTrace();
             }
