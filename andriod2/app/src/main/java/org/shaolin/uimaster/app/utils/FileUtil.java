@@ -1,6 +1,7 @@
 package org.shaolin.uimaster.app.utils;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
@@ -11,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -658,5 +660,104 @@ public class FileUtil {
 			}
 		}
 		inZip.close();
+	}
+
+	public static  void copyAssetFileToSD(AssetManager asset, String path) throws IOException {
+		String str[] = asset.list(path);
+		if (str.length > 0) {//如果是目录
+			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), path);
+			file.mkdirs();
+			for (String string : str) {
+				path = path + "/" + string;
+				copyAssetFileToSD(asset, path);
+				path = path.substring(0, path.lastIndexOf('/'));
+			}
+		} else {//如果是文件
+			InputStream is = asset.open(path);
+			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), path);
+			FileOutputStream fos = new FileOutputStream(file);
+			byte[] buffer = new byte[1024];
+			while (true) {
+				int len = is.read(buffer);
+				if (len == -1) {
+					break;
+				}
+				fos.write(buffer, 0, len);
+			}
+			is.close();
+			fos.close();
+			Log.e("linbin","file.getAbsolutePath() =" + file.getAbsolutePath());
+		}
+	}
+
+	public static  void copyAssetFileToSD(Context context,String srcFileName, String strOutFileName) throws IOException{
+		InputStream myInput;
+		OutputStream myOutput = new FileOutputStream(strOutFileName);
+		myInput = context.getAssets().open(srcFileName);
+		byte[] buffer = new byte[1024];
+		int length = myInput.read(buffer);
+		while(length > 0)
+		{
+			myOutput.write(buffer, 0, length);
+			length = myInput.read(buffer);
+		}
+
+		myOutput.flush();
+		myInput.close();
+		myOutput.close();
+	}
+
+	/**
+	 * 解压assets的zip压缩文件到指定目录
+	 * @param context上下文对象
+	 * @param assetName压缩文件名
+	 * @param outputDirectory输出目录
+	 * @param isReWrite是否覆盖
+	 * @throws IOException
+	 */
+	public static void unZip(Context context, String assetName,
+							 String outputDirectory,boolean isReWrite) throws IOException {
+		//创建解压目标目录
+		File file = new File(outputDirectory);
+		//如果目标目录不存在，则创建
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		//打开压缩文件
+		InputStream inputStream = context.getAssets().open(assetName);
+		ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+		//读取一个进入点
+		ZipEntry zipEntry = zipInputStream.getNextEntry();
+		//使用1Mbuffer
+		byte[] buffer = new byte[1024 * 1024];
+		//解压时字节计数
+		int count = 0;
+		//如果进入点为空说明已经遍历完所有压缩包中文件和目录
+		while (zipEntry != null) {
+			//如果是一个目录
+			if (zipEntry.isDirectory()) {
+				file = new File(outputDirectory + File.separator + zipEntry.getName());
+				//文件需要覆盖或者是文件不存在
+				if (isReWrite || !file.exists()) {
+					file.mkdir();
+				}
+			} else {
+				//如果是文件
+				file = new File(outputDirectory + File.separator
+						+ zipEntry.getName());
+				//文件需要覆盖或者文件不存在，则解压文件
+				if (isReWrite || !file.exists()) {
+					file.createNewFile();
+					FileOutputStream fileOutputStream = new FileOutputStream(file);
+					while ((count = zipInputStream.read(buffer)) > 0) {
+						fileOutputStream.write(buffer, 0, count);
+					}
+					fileOutputStream.close();
+				}
+			}
+			//定位到下一个文件入口
+			zipEntry = zipInputStream.getNextEntry();
+		}
+		zipInputStream.close();
 	}
 }

@@ -1,7 +1,5 @@
 package org.shaolin.uimaster.app.data;
 
-import android.os.Environment;
-
 /**
  * Created Administrator
  * on 2017/1/11
@@ -19,8 +17,6 @@ public final class UrlData {
     public static final String FUNCTION_DETAILS_URL = Origin + "/uimaster/webflow.do?_appclient=andriod";
     public static final String AJAX_SERVICE_URL = Origin + "/uimaster/ajaxservice?_appclient=andriod";
     public static final String UPLOAD_URL = Origin + "/uimaster/uploadFile";
-
-    public static String APP_ROOT_FILE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/uimaster";
 
     //获取服务器资源文件
     public static final String GET_DOWNLOAD_RESOURCES = RESOURCE_URL + "download/";

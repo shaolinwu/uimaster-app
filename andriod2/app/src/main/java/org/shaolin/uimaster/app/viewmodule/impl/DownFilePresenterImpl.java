@@ -1,13 +1,14 @@
 package org.shaolin.uimaster.app.viewmodule.impl;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 
 import org.shaolin.uimaster.app.data.ConfigData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 
@@ -27,7 +28,7 @@ public class DownFilePresenterImpl {
                 .get()
                 .url(url)
                 .build()
-                .execute(new FileCallBack(UrlData.APP_ROOT_FILE, fileName)
+                .execute(new FileCallBack(FileData.APP_ROOT_FILE, fileName)
                 {
                     @Override
                     public void inProgress(float progress, long total) {
@@ -46,7 +47,7 @@ public class DownFilePresenterImpl {
 
                     @Override
                     public void onResponse(File file){
-                       Runnable runnable = new ZipRunnable(mContext, file.getAbsolutePath(), UrlData.APP_ROOT_FILE);
+                       Runnable runnable = new ZipRunnable(mContext, file.getAbsolutePath(), FileData.APP_ROOT_FILE);
                         new Thread(runnable).start();
                     }
                 });
@@ -72,10 +73,13 @@ public class DownFilePresenterImpl {
                 if (file.exists()){
                     file.delete();
                 }
+
+                FileUtil.unZip(mContext, "uimaster.zip", Environment.getExternalStorageDirectory().getAbsolutePath(),false);
             } catch (Exception e) {
                 PreferencesUtils.putString(mContext, ConfigData.FILE_VERSION,"0");
                 e.printStackTrace();
             }
         }
     }
+
 }
