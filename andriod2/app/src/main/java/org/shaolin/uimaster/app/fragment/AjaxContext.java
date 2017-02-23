@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
@@ -16,21 +17,34 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
+
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.builder.PostFormBuilder;
+import com.zhy.http.okhttp.callback.Callback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.shaolin.uimaster.app.aty.LoginActivity;
+import org.shaolin.uimaster.app.aty.WebViewActivity;
+import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
+import org.shaolin.uimaster.app.base.BasePresenterImpl;
+import org.shaolin.uimaster.app.data.UrlData;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 
+import okhttp3.Call;
+import okhttp3.Response;
+
 /**
  * Created by wushaol on 10/22/2015.
  */
-public class AjaxContext {
+public class AjaxContext extends Callback<String> {
 
     private final WebView parentWebView;
 
@@ -58,6 +72,67 @@ public class AjaxContext {
         myWebView.setWebViewClient(new WebViewClientA());
         myWebView.setWebChromeClient(new WebChromeClientA());
         //myWebView.loadDataWithBaseURL("file:///", data, "text/html", "UTF-8",null);
+    }
+
+    @Override
+    public String parseNetworkResponse(Response response) throws Exception {
+        String content = response.body().string();
+        return content;
+    }
+
+    @Override
+    public void onError(Call call, Exception e) {
+        Log.e("UIMaster", "Ajax call exception : " + e);
+    }
+
+    @Override
+    public void onResponse(final String response) {
+        try {
+            JSONArray array = new JSONArray(response);
+            int length = array.length();
+            for (int i = 0; i < length; i++) {
+                JSONObject item = array.getJSONObject(i);
+                String jsHandler = item.getString("jsHandler");
+                if ("sessiontimeout".equals(jsHandler)) {
+                    Intent intent = new Intent(activity, LoginActivity.class);
+                    activity.startActivity(intent);
+                    break;
+                } else if ("nopermission".equals(jsHandler)) {
+                    Toast.makeText(activity, "对不起！您没有访问权限！", Toast.LENGTH_SHORT).show();
+                    break;
+                } else if ("openwindow".equals(jsHandler)) {
+                    Bundle arguments = new Bundle();
+                    arguments.putString("dialog", "yes");
+                    arguments.putString("js", item.getString("js"));
+                    arguments.putString("data", item.getString("data"));
+                    arguments.putString("uiid", item.getString("uiid"));
+                    arguments.putString("_framePrefix", item.getString("frameInfo"));
+                    JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
+                    arguments.putString("title", dialogInfo.getString("title"));
+                    arguments.putString("icon", dialogInfo.getString("icon"));
+
+                    Intent intent = new Intent(activity, WebViewDialogActivity.class);
+                    intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+                    activity.startActivity(intent);
+                } else if ("closewindow".equals(jsHandler)) {
+                    ((Activity)myWebView.getContext()).finish();
+                    break;
+                } else {
+                    // find out the parent webview if neccesary.
+                    // parentWebView.;
+                    String uiid = item.getString("uiid");
+                    final String itemJson = item.toString();
+                    myWebView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            myWebView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+                        }
+                    });
+                }
+            }
+        } catch (Exception e){
+            Log.w("Failed to load data: ", e);
+        }
     }
 
     /**
@@ -224,76 +299,22 @@ public class AjaxContext {
      */
     @JavascriptInterface
     public void ajax(String jsonStr) {
-//        try {
-//            Log.d("JS Invocation", jsonStr);
-//            JSONObject json = new JSONObject(jsonStr);
-//            JSONObject data = json.getJSONObject("data");
+        try {
+            Log.d("UIMaster", "ajax invocation " + jsonStr);
+            JSONObject json = new JSONObject(jsonStr);
+            JSONObject data = json.getJSONObject("data");
 
-//            RequestParams params = new RequestParams();
-//            Iterator<String> i = (Iterator<String>) data.keys();
-//            while(i.hasNext()) {
-//                String key = i.next();
-//                params.put(key, data.getString(key));
-//            }
-//
-//            HttpClientService.post(AppConfig.AJAX_SERVICE_URL, "", params, new AsyncHttpResponseHandler() {
-//                @Override
-//                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers,
-//                                      byte[] responseBytes) {
-//                    String jsonStr = new String(responseBytes);
-//                    try {
-//                        JSONArray array = new JSONArray(jsonStr);
-//                        int length = array.length();
-//                        for (int i = 0; i < length; i++) {
-//                            JSONObject item = array.getJSONObject(i);
-//                            String jsHandler = item.getString("jsHandler");
-//                            if ("sessiontimeout".equals(jsHandler)) {
-//                                UIHelper.showLoginActivity(activity);
-//                                break;
-//                            } else if ("nopermission".equals(jsHandler)) {
-//                                UIHelper.showNoPermission(activity);
-//                                break;
-//                            } else if ("openwindow".equals(jsHandler)) {
-//                                Bundle arguments = new Bundle();
-//                                arguments.putString("dialog", "yes");
-//                                arguments.putString("js", item.getString("js"));
-//                                arguments.putString("data", item.getString("data"));
-//                                arguments.putString("uiid", item.getString("uiid"));
-//                                arguments.putString("_framePrefix", item.getString("frameInfo"));
-//                                JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
-//                                arguments.putString("title", dialogInfo.getString("title"));
-//                                arguments.putString("icon", dialogInfo.getString("icon"));
-//                                UIHelper.showSimpleBack(activity, SimpleBackPage.FUNCTION, arguments);
-//                            } else if ("closewindow".equals(jsHandler)) {
-//                                ((Activity)myWebView.getContext()).finish();
-//                                break;
-//                            } else {
-//                                // find out the parent webview if neccesary.
-//                                // parentWebView.;
-//                                String uiid = item.getString("uiid");
-//                                final String itemJson = item.toString();
-//                                myWebView.post(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        myWebView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
-//                                    }
-//                                });
-//                            }
-//                        }
-//                    } catch (Exception e){
-//                        Log.w("Failed to load data: ", e);
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(int arg0, cz.msebera.android.httpclient.Header[] arg1, byte[] arg2,
-//                                      Throwable arg3) {
-//                    Log.w("Failed to load data: ", arg3);
-//                }
-//            });
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+            PostFormBuilder form = OkHttpUtils.post().url(UrlData.AJAX_SERVICE_URL);
+            Iterator<String> i = (Iterator<String>) data.keys();
+            while(i.hasNext()) {
+                String key = i.next();
+                form.addParams(key, data.getString(key));
+            }
+            form.addParams("_appstore", Environment.getExternalStorageDirectory().getAbsolutePath());
+            form.build().execute(this);
+        } catch (JSONException e) {
+            Log.w("UIMaster", "ajax invocation error: " + jsonStr);
+        }
     }
 
     @JavascriptInterface

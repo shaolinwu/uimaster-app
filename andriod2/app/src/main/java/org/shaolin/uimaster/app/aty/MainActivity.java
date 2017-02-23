@@ -281,8 +281,6 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     }
 
-
-
     private Emitter.Listener connect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {

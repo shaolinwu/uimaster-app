@@ -9,6 +9,8 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.DownFileBean;
 import org.shaolin.uimaster.app.data.ConfigData;
+import org.shaolin.uimaster.app.data.FileData;
+import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 
@@ -43,15 +45,15 @@ public class ReadMePresenterImpl extends BasePresenterImpl<IMainModuleView> {
         if (downFileBeans != null && downFileBeans.size() != 0){
             DownFileBean downFileBean = downFileBeans.get(0);
             if (downFileBean != null && !TextUtils.isEmpty(downFileBean.version)){
-
-                String localFileVersion = PreferencesUtils.getString(mContext, ConfigData.FILE_VERSION,"");
-                if (!localFileVersion.equals(downFileBean.version)){
-                    PreferencesUtils.putString(mContext,ConfigData.FILE_VERSION,downFileBean.version);
+                String localFileVersion = PreferencesUtils.getString(mContext, ConfigData.FILE_VERSION, "");
+                if (!localFileVersion.equals(downFileBean.version)
+                        || !FileUtil.checkFilePathExists(FileData.APP_ROOT_FILE + "/uimaster.js")){
+                    PreferencesUtils.putString(mContext, ConfigData.FILE_VERSION, downFileBean.version);
 
                     //下载服务端资源文件
                     StringBuffer url = new StringBuffer(GET_DOWNLOAD_RESOURCES);
                     url.append(downFileBean.resource);
-                    DownFilePresenterImpl downFilePresenter = new DownFilePresenterImpl(mContext, url.toString(),downFileBean.resource);
+                    DownFilePresenterImpl downFilePresenter = new DownFilePresenterImpl(mContext, url.toString(), downFileBean.resource);
                 }
             }
         }

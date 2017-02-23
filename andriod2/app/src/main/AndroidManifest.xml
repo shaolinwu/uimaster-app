@@ -41,6 +41,7 @@
         <activity android:name="org.shaolin.uimaster.app.aty.LoginActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.RegisterActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewActivity" android:screenOrientation="portrait"/>
+        <activity android:name="org.shaolin.uimaster.app.aty.WebViewDialogActivity" android:screenOrientation="portrait"/>
 
         <service android:name=".service.SyncServerResources" />
     </application>
