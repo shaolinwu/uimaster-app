@@ -142,21 +142,22 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
                 Bundle bundle = new Bundle();
                 String url = generateWebUrl(bean);
                 bundle.putString("url",url);
+                bundle.putString("title",bean.name);
 
                 RadioButton radioButton = new RadioButton(this);
                 radioButton.setButtonDrawable(android.R.color.transparent);
                 if (bean.name.contains("主页")) {
                     fragmentMap.put(R.id.main_tab, WebFragment.newWebFragment(bundle));
-                    titleMap.put(R.id.main_tab,bean._nodename);
+                    titleMap.put(R.id.main_tab, bean.name);
                     radioButton.setId(R.id.main_tab);
                     radioButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tab_icon_main), null, null);
                 } else if (bean.name.contains("订单")) {
                     fragmentMap.put(R.id.product_tab, WebFragment.newWebFragment(bundle));
-                    titleMap.put(R.id.product_tab,bean._nodename);
+                    titleMap.put(R.id.product_tab, bean.name);
                     radioButton.setId(R.id.product_tab);
                     radioButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tab_icon_order), null, null);
                 } else if (bean.name.contains("产品")) {
-                    titleMap.put(R.id.order_tab,bean._nodename);
+                    titleMap.put(R.id.order_tab, bean.name);
                     fragmentMap.put(R.id.order_tab, WebFragment.newWebFragment(bundle));
                     radioButton.setId(R.id.order_tab);
                     radioButton.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tab_icon_func), null, null);

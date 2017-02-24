@@ -79,7 +79,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append(";\nvar TZOFFSET=");
         sb.append(String.valueOf(Calendar.getInstance().getTimeZone().getOffset(System.currentTimeMillis())));
         sb.append(";\nvar WEB_CONTEXTPATH=\"/uimaster\";\n");
-        sb.append("var RESOURCE_CONTEXTPATH=\"file:///android_asset/uimaster\";\n");
+        sb.append("var RESOURCE_CONTEXTPATH=\"https://www.vogerp-res.com:8082/uimaster\";\n");
         sb.append("var FRAMEWRAP=\"/uimaster\";\n");
         sb.append("var IS_SERVLETMODE=true;\n");
         sb.append("var IS_MOBILEVIEW=true;\n");
@@ -102,6 +102,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-jstree.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster-widget.js\"></script>\n");
+        sb.append(argus.get("loadjs"));
         sb.append("</head>\n");
         sb.append("<body>\n");
         sb.append("<form action=\"#\" method=\"post\" name=\"everything\"");

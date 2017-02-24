@@ -90,6 +90,7 @@ public class AjaxContext extends Callback<String> {
         try {
             JSONArray array = new JSONArray(response);
             int length = array.length();
+            JSONObject loadJsItem = null;
             for (int i = 0; i < length; i++) {
                 JSONObject item = array.getJSONObject(i);
                 String jsHandler = item.getString("jsHandler");
@@ -100,6 +101,20 @@ public class AjaxContext extends Callback<String> {
                 } else if ("nopermission".equals(jsHandler)) {
                     Toast.makeText(activity, "对不起！您没有访问权限！", Toast.LENGTH_SHORT).show();
                     break;
+                } else if ("load_js".equals(jsHandler)) {
+                    JSONObject item1 = array.getJSONObject(i+1);
+                    if ("openwindow".equals(item1.getString("jsHandler"))) {
+                        loadJsItem = item;//prepare for openwindow.
+                    } else {
+                        String uiid = item.getString("uiid");
+                        final String itemJson = item.toString();
+                        myWebView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                myWebView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+                            }
+                        });
+                    }
                 } else if ("openwindow".equals(jsHandler)) {
                     Bundle arguments = new Bundle();
                     arguments.putString("dialog", "yes");
@@ -110,6 +125,9 @@ public class AjaxContext extends Callback<String> {
                     JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
                     arguments.putString("title", dialogInfo.getString("title"));
                     arguments.putString("icon", dialogInfo.getString("icon"));
+                    if (loadJsItem != null) {
+                        arguments.putString("loadjs", loadJsItem.getString("data"));
+                    }
 
                     Intent intent = new Intent(activity, WebViewDialogActivity.class);
                     intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
