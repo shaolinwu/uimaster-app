@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -333,6 +334,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
                 Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
                 StringBuilder sb = new StringBuilder(UrlData.BASE_URL);
                 sb.append(items.get(position).a_attr.href);
+                sb.append("&_appclient=andriod");
                 intent.putExtra("url",sb.toString());
                 intent.putExtra("title",items.get(position).text);
                 startActivity(intent);

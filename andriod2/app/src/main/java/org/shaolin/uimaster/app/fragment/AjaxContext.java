@@ -33,6 +33,7 @@ import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.utils.FileUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -346,7 +347,13 @@ public class AjaxContext extends Callback<String> {
         this.myWebView.post(new Runnable() {
             @Override
             public void run() {
-                myWebView.loadUrl(url);
+                if (url.endsWith(".js")) {
+                    myWebView.loadData(FileUtil.read(myWebView.getContext(), url), "text/javascript", "UTF-8");
+                } else if (url.endsWith(".css")) {
+                    myWebView.loadData(FileUtil.read(myWebView.getContext(), url), "text/css", "UTF-8");
+                } else {
+                    //unsupported!
+                }
             }
         });
     }
