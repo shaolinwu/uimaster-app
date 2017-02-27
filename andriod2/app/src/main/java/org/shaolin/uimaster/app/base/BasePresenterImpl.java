@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import okhttp3.Call;
+import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -66,4 +67,23 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
         }
         return arrayList;
     }
+
+    @Override
+    public void onBefore(Request request) {
+        super.onBefore(request);
+        if (mViewRef.get() != null){
+            mViewRef.get().showProgress();
+        }
+
+    }
+
+    @Override
+    public void onAfter() {
+        super.onAfter();
+        if (mViewRef.get() != null){
+            mViewRef.get().hideProgress();
+        }
+
+    }
+
 }

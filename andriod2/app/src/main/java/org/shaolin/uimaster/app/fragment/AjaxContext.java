@@ -5,10 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -27,11 +25,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.aty.LoginActivity;
-import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
-import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
-import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.utils.FileUtil;
 
@@ -175,6 +170,10 @@ public class AjaxContext extends Callback<String> {
             if (pageLoaded != null) {
                 pageLoaded.run();
             }
+            if (fragment != null){
+                ((WebFragment)fragment).hideProgress();
+            }
+
         }
 
         @Override

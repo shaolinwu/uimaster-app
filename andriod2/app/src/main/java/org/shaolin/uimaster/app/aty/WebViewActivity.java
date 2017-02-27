@@ -4,21 +4,22 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.shaolin.uimaster.app.R;
-
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.fragment.WebFragment;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.viewmodule.impl.HTMLPresenterImpl;
-import org.shaolin.uimaster.app.viewmodule.impl.LoginPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
 import butterknife.BindView;
@@ -32,6 +33,8 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     @BindView(R.id.webview)
     WebView webview;
     AjaxContext ajaxContext;
+    private LinearLayout loadingLayout;
+    private ImageView ivLoading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +50,8 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
 
     private void initView() {
         webview = (WebView)findViewById(R.id.webview);
-
+        loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
+        ivLoading = (ImageView) findViewById(R.id.iv_loading);
         WebView parentWebView = webview;
         ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
         String cookies = PreferencesUtils.getString(this.getBaseContext(), ConfigData.USER_COOKIES,"");
@@ -87,5 +91,18 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         cookieManager.removeSessionCookie();//移除
         cookieManager.setCookie(getIntent().getStringExtra("url"), cookies);//cookies是在HttpClient中获得的cookie
         CookieSyncManager.getInstance().sync();
+    }
+
+    @Override
+    public void showProgress() {
+        loadingLayout.setVisibility(View.VISIBLE);
+        Animation mRotateAnim = AnimationUtils.loadAnimation(this, R.anim.loading_rotate);
+        ivLoading.startAnimation(mRotateAnim);
+    }
+
+    @Override
+    public void hideProgress() {
+        ivLoading.clearAnimation();
+        loadingLayout.setVisibility(View.GONE);
     }
 }

@@ -6,11 +6,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseFragment;
@@ -20,6 +26,7 @@ import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.viewmodule.impl.HTMLPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 import de.greenrobot.event.ThreadMode;
@@ -32,8 +39,10 @@ import de.greenrobot.event.ThreadMode;
 
 public class WebFragment extends BaseFragment implements IHTMLWebView {
 
-
     private AjaxContext ajaxContext;
+    private LinearLayout loadingLayout;
+    private ImageView ivLoading;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +58,12 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
 
     private void initView() {
         mWebView = (WebView) mView.findViewById(R.id.webview);
+        loadingLayout = (LinearLayout) mView.findViewById(R.id.loading_layout);
+        ivLoading = (ImageView) mView.findViewById(R.id.iv_loading);
         WebView parentWebView = mWebView;
         ajaxContext = WebFragment.initWebView(this, parentWebView, mWebView, this.getActivity());
-        String cookies = PreferencesUtils.getString(getContext(), ConfigData.USER_COOKIES,"");
-        if (!TextUtils.isEmpty(cookies)){
+        String cookies = PreferencesUtils.getString(getContext(), ConfigData.USER_COOKIES, "");
+        if (!TextUtils.isEmpty(cookies)) {
             setWebViewCookies(cookies);
         }
         HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
@@ -66,7 +77,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
     public static AjaxContext initWebView(BaseFragment f, WebView parent, WebView webView, Activity activity) {
         webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         WebSettings settings = webView.getSettings();
-        if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
         settings.setDefaultFontSize(15);
@@ -91,13 +102,13 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
             settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
         } else if (mDensity == 160) {
             settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
-        } else if(mDensity == 120) {
+        } else if (mDensity == 120) {
             settings.setDefaultZoom(WebSettings.ZoomDensity.CLOSE);
-        }else if(mDensity == DisplayMetrics.DENSITY_XHIGH){
+        } else if (mDensity == DisplayMetrics.DENSITY_XHIGH) {
             settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        }else if (mDensity == DisplayMetrics.DENSITY_TV){
+        } else if (mDensity == DisplayMetrics.DENSITY_TV) {
             settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        }else{
+        } else {
             settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
         }
 
@@ -144,7 +155,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         mWebView.loadUrl(url);
     }
 
-    public void setWebViewCookies(String cookies){
+    public void setWebViewCookies(String cookies) {
         CookieSyncManager.createInstance(mContext);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -161,11 +172,22 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
 
     @Override
     public void showProgress() {
-
+        loadingLayout.setVisibility(View.VISIBLE);
+        Animation mRotateAnim = AnimationUtils.loadAnimation(mContext, R.anim.loading_rotate);
+        ivLoading.startAnimation(mRotateAnim);
     }
 
     @Override
     public void hideProgress() {
+        ivLoading.clearAnimation();
+        loadingLayout.setVisibility(View.GONE);
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // TODO: inflate a fragment view
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        ButterKnife.bind(this, rootView);
+        return rootView;
     }
 }

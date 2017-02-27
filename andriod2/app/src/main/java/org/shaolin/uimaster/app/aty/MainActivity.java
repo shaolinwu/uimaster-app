@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -16,7 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -41,9 +44,9 @@ import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
-import org.shaolin.uimaster.app.viewmodule.impl.ReadMePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MainModulePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MenuItemPresenterImpl;
+import org.shaolin.uimaster.app.viewmodule.impl.ReadMePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 import org.shaolin.uimaster.app.viewmodule.inter.IMenuView;
 
@@ -73,6 +76,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private Socket mSocket;
     private String userId;
     private boolean isLogin = false;
+    private LinearLayout llLoading;
+    private ImageView ivLoading;
     private MainModulePresenterImpl presenter;
     private ReadMePresenterImpl downFilePresenter;
 
@@ -117,7 +122,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         tabs = (RadioGroup) findViewById(R.id.tabs);
         listView = (ListView) findViewById(R.id.left_drawer);
-
+        llLoading = (LinearLayout) findViewById(R.id.loading_layout);
+        ivLoading = (ImageView) findViewById(R.id.iv_loading);
     }
 
     @Override
@@ -262,12 +268,15 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     @Override
     public void showProgress() {
-
+        llLoading.setVisibility(View.VISIBLE);
+        Animation mRotateAnim = AnimationUtils.loadAnimation(this, R.anim.loading_rotate);
+        ivLoading.startAnimation(mRotateAnim);
     }
 
     @Override
     public void hideProgress() {
-
+        ivLoading.clearAnimation();
+        llLoading.setVisibility(View.GONE);
     }
 
     @Subscribe(threadMode = ThreadMode.BackgroundThread)

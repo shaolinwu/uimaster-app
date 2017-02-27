@@ -12,6 +12,8 @@ import org.shaolin.uimaster.app.viewmodule.inter.IMenuView;
 
 import java.util.List;
 
+import okhttp3.Request;
+
 /**
  * Created by Administrator on 2017/1/20.
  */
@@ -37,5 +39,14 @@ public class MenuItemPresenterImpl extends BasePresenterImpl<IMenuView> {
                 mViewRef.get().showMenuList(menuItemLists);
             }
         }
+    }
+
+    @Override
+    public void onBefore(Request request) {
+
+    }
+
+    @Override
+    public void onAfter() {
     }
 }
