@@ -18,6 +18,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.baoyz.widget.PullRefreshLayout;
+
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.CookiesBean;
@@ -42,6 +44,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
     private AjaxContext ajaxContext;
     private LinearLayout loadingLayout;
     private ImageView ivLoading;
+    private PullRefreshLayout refreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         mWebView = (WebView) mView.findViewById(R.id.webview);
         loadingLayout = (LinearLayout) mView.findViewById(R.id.loading_layout);
         ivLoading = (ImageView) mView.findViewById(R.id.iv_loading);
+        refreshLayout = (PullRefreshLayout) mView.findViewById(R.id.refresh_layout);
+        refreshLayout.setRefreshStyle(PullRefreshLayout.STYLE_CIRCLES);
         WebView parentWebView = mWebView;
         ajaxContext = WebFragment.initWebView(this, parentWebView, mWebView, this.getActivity());
         String cookies = PreferencesUtils.getString(getContext(), ConfigData.USER_COOKIES, "");
