@@ -138,7 +138,7 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
 
     @Override
     public void loginResult(LoginBean loginBean) {
-        if (!TextUtils.isEmpty(loginBean.error)) {
+        if (!TextUtils.isEmpty(loginBean.error) || loginBean == null || TextUtils.isEmpty(loginBean.userName)) {
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT).show();
         } else {
             EventBus.getDefault().post(loginBean);
