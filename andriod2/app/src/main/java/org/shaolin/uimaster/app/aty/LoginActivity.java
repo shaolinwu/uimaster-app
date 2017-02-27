@@ -107,6 +107,12 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         startActivity(intent);
     }
 
+    @OnClick(R.id.et_verifycodequestion)
+    public void changeCodeQuestion(){
+        VerificationCodePresenterImpl verificationCodePresenter = new VerificationCodePresenterImpl(this);
+    }
+
+
     @Override
     public void showVerificationCode(VerificationCodeBean bean) {
         etVerifycodequestion.setText(bean.value);
