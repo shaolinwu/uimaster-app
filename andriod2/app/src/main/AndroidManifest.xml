@@ -32,12 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.shaolin.uimaster.app.aty.MainActivity" android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name="org.shaolin.uimaster.app.aty.MainActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.LoginActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.RegisterActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewActivity" android:screenOrientation="portrait"/>
