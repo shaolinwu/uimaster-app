@@ -53,7 +53,9 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         mView = View.inflate(mContext, R.layout.web_fragment_layout, null);
         initData();
         initView();
+        initListener();
     }
+
 
     private void initData() {
         url = (String) getArguments().get("url");
@@ -73,6 +75,17 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         }
         HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
     }
+
+    private void initListener() {
+        refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh() {
+                HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
+            }
+        });
+
+    }
+
 
     public void received(String html) {
         //mWebView.loadUrl(url); please DON'T use this one.
@@ -194,5 +207,9 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(this, rootView);
         return rootView;
+    }
+
+    public void refreshComplete(){
+        refreshLayout.setRefreshing(false);
     }
 }

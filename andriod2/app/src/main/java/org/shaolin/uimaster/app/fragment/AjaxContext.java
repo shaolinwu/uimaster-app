@@ -172,7 +172,9 @@ public class AjaxContext extends Callback<String> {
             }
             if (fragment != null){
                 ((WebFragment)fragment).hideProgress();
+                ((WebFragment)fragment).refreshComplete();
             }
+
 
         }
 
