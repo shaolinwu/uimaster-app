@@ -7,11 +7,9 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
-import org.shaolin.uimaster.app.bean.MainModuleBean;
 import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
-import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 
-import java.util.List;
+import okhttp3.Request;
 
 /**
  * Created Administrator
@@ -33,5 +31,14 @@ public class HTMLPresenterImpl extends BasePresenterImpl<IHTMLWebView> {
         if (!TextUtils.isEmpty(response)){
             mViewRef.get().received(response);
         }
+    }
+
+    @Override
+    public void onBefore(Request request) {
+
+    }
+
+    @Override
+    public void onAfter() {
     }
 }

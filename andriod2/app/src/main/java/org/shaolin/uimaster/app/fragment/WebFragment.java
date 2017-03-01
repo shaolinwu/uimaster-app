@@ -73,6 +73,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         if (!TextUtils.isEmpty(cookies)) {
             setWebViewCookies(cookies);
         }
+        showProgress();
         HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
     }
 
@@ -80,6 +81,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
             @Override
             public void onRefresh() {
+                showProgress();
                 HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
             }
         });
