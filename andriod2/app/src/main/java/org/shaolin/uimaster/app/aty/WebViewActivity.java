@@ -65,6 +65,8 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         String title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(url)){
             //webview.loadUrl(url);
+
+            showProgress();
             HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
         }
         if (!TextUtils.isEmpty(title)){
@@ -74,6 +76,7 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
 
     public void received(String html) {
         webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
+        hideProgress();
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
