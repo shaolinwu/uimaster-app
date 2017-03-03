@@ -26,8 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.aty.LoginActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
+import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.pay.alipay.PayActivity;
 import org.shaolin.uimaster.app.utils.FileUtil;
 
 import java.net.URI;
@@ -131,6 +133,17 @@ public class AjaxContext extends Callback<String> {
                 } else if ("closewindow".equals(jsHandler)) {
                     ((Activity)myWebView.getContext()).finish();
                     break;
+                } else if ("pay".equals(jsHandler)) {
+                    Bundle arguments = new Bundle();
+                    arguments.putString("js", item.getString("js"));
+                    arguments.putString("data", item.getString("data"));
+                    arguments.putString("uiid", item.getString("uiid"));
+                    arguments.putString("_framePrefix", item.getString("frameInfo"));
+
+                    Intent intent = new Intent(activity, PayActivity.class);
+                    intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+                    activity.startActivity(intent);
+                    break;
                 } else {
                     // find out the parent webview if neccesary.
                     // parentWebView.;
@@ -174,7 +187,9 @@ public class AjaxContext extends Callback<String> {
                 ((WebFragment)fragment).hideProgress();
                 ((WebFragment)fragment).refreshComplete();
             }
-
+            if (activity != null) {
+                ((BaseActivity)activity).hideProgress();
+            }
 
         }
 
