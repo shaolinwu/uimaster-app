@@ -42,6 +42,7 @@ import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
+import org.shaolin.uimaster.app.push.NoticePushUtil;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.MainModulePresenterImpl;
@@ -315,9 +316,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
                     JSONArray data = (JSONArray) args[0];
                     // add the message to view
                     if (data != null && !TextUtils.isEmpty(data.toString())){
-                        Toast.makeText(MainActivity.this,data.toString(),Toast.LENGTH_SHORT).show();
+                        NoticePushUtil.getInstance(MainActivity.this).showNoticePush(MainActivity.this,data.toString());
                     }
-
                 }
             });
         }
@@ -382,5 +382,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
             downFilePresenter.onDestroy();
         }
         PreferencesUtils.removeConfig(this, ConfigData.USER_COOKIES);
+        PreferencesUtils.removeConfig(this,ConfigData.MESSAGE_ACTIVITY_URL);
+        PreferencesUtils.removeConfig(this,ConfigData.MESSAGE_ACTIVITY_TITLE);
     }
 }

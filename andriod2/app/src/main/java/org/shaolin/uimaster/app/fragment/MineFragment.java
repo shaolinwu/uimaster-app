@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import org.shaolin.uimaster.app.R;
 
+import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.adpter.MineAdapter;
 import org.shaolin.uimaster.app.aty.LoginActivity;
 import org.shaolin.uimaster.app.aty.WebViewActivity;
@@ -22,7 +22,9 @@ import org.shaolin.uimaster.app.bean.MainModuleBean;
 import org.shaolin.uimaster.app.customeview.CircleImageView;
 import org.shaolin.uimaster.app.customeview.DividerItemDecoration;
 import org.shaolin.uimaster.app.customeview.RecyclerItemClickListener;
+import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.MineItemPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IMineView;
@@ -104,6 +106,8 @@ public class MineFragment extends BaseFragment implements IMineView {
     @Override
     public void initMineItem(final List<MainModuleBean> datas) {
         if (datas != null && datas.size() != 0){
+            PreferencesUtils.putString(mContext,ConfigData.MESSAGE_ACTIVITY_URL,generateWebUrl(datas.get(0)));
+            PreferencesUtils.putString(mContext,ConfigData.MESSAGE_ACTIVITY_TITLE,datas.get(0).name);
             MineAdapter adapter = new MineAdapter(getContext(),datas);
             LinearLayoutManager layoutManager =  new LinearLayoutManager(mView.getContext(), LinearLayoutManager.VERTICAL, false);
             recyclerview.addItemDecoration(new DividerItemDecoration(getContext(),LinearLayoutManager.HORIZONTAL,1,R.color.black_50));

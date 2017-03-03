@@ -54,7 +54,7 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
     public void onResponse(String response) {
     }
 
-    public  <V> ArrayList<V> jsonToArrayList(String json, Class<V> clazz)
+    public static  <V> ArrayList<V> jsonToArrayList(String json, Class<V> clazz)
     {
         Type type = new TypeToken<ArrayList<JsonObject>>()
         {}.getType();
