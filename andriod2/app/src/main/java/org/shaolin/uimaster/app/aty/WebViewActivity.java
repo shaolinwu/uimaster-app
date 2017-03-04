@@ -76,7 +76,6 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
 
     public void received(String html) {
         webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
-        hideProgress();
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
