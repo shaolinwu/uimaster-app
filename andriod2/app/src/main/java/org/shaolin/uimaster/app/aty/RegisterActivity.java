@@ -14,6 +14,8 @@ import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.fragment.WebFragment;
+import org.shaolin.uimaster.app.viewmodule.impl.HTMLPresenterImpl;
+import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
 import butterknife.BindView;
 
@@ -21,7 +23,7 @@ import butterknife.BindView;
  * Created by Administrator on 2017/1/20.
  */
 
-public class RegisterActivity extends BaseActivity {
+public class RegisterActivity extends BaseActivity implements IHTMLWebView {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.webview)
@@ -36,9 +38,17 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void initView() {
-        webview.loadUrl(UrlData.REGISTER_URL);
+        //webview.loadUrl(UrlData.REGISTER_URL);
         WebView parentWebView = webview;
         ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
+
+        showProgress();
+        HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, UrlData.REGISTER_URL);
+    }
+
+    public void received(String html) {
+        webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
+        hideProgress();
     }
 
     @Override
