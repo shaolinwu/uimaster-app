@@ -293,6 +293,15 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     }
 
+    @Subscribe(threadMode = ThreadMode.BackgroundThread)
+
+    public void loginOut(String loginOut){
+        if (!TextUtils.isEmpty(loginOut) && loginOut.equals("loginOut")){
+            isLogin = false;
+        }
+    }
+
+
     private Emitter.Listener connect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {

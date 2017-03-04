@@ -14,4 +14,5 @@
     <string name="please_edit_verificationcode">请输入验证码</string>
     <string name="login_error">登录失败</string>
     <string name="efforts_to_obtain">正在努力获取中</string>
+    <string name="login_out">退出登录</string>
 </resources>

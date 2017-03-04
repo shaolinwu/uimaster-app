@@ -35,4 +35,8 @@ public final class UrlData {
     public static final String MENU_ITEMS_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.commonmodel.page.AjaxService.functionList&_appclient=andriod";
     //获取我的items
     public static final String MINE_ITEMS_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.commonmodel.page.AjaxService.userPageItems&_appclient=andriod";
+
+    //登出
+    public static final String LOGIN_OUT_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userLogout&_appclient=andriod";
+
 }
