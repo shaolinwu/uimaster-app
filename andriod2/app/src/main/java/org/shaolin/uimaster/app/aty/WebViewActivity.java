@@ -53,7 +53,7 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
         ivLoading = (ImageView) findViewById(R.id.iv_loading);
         WebView parentWebView = webview;
-        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
+        ajaxContext = WebFragment.initWebView(null, null, webview, this);
         String cookies = PreferencesUtils.getString(this.getBaseContext(), ConfigData.USER_COOKIES,"");
         if (!TextUtils.isEmpty(cookies)){
             setWebViewCookies(cookies);

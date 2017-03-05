@@ -2,7 +2,9 @@ package org.shaolin.uimaster.app.aty;
 
 import android.app.Activity;
 import android.content.Context;
+import android.webkit.WebView;
 
+import java.util.HashMap;
 import java.util.Stack;
 
 /**
@@ -13,6 +15,7 @@ import java.util.Stack;
  */
 public class AppManager {
 
+    private static HashMap<String, WebView> webViewStack = new HashMap<String, WebView>();
     private static Stack<Activity> activityStack;
     private static AppManager instance;
 
@@ -26,6 +29,14 @@ public class AppManager {
             instance = new AppManager();
         }
         return instance;
+    }
+
+    public void addWebWiew(String key, WebView view) {
+        webViewStack.put(key, view);
+    }
+
+    public WebView popWebView(String key) {
+        return webViewStack.remove(key);
     }
 
     /**

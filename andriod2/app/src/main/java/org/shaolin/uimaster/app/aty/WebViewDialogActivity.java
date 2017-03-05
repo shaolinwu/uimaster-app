@@ -49,7 +49,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
     private void loadWebView(Bundle argus) {
         webview = (WebView)findViewById(R.id.webview);
 
-        WebView parentWebView = webview;
+        WebView parentWebView = AppManager.getAppManager().popWebView(argus.getString("parentWebView"));
         ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
 
         if (!TextUtils.isEmpty(argus.getString("title"))){

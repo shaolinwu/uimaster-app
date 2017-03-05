@@ -16,8 +16,16 @@
 #   public *;
 #}
 
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-verbose
+
 -libraryjars libs/alipaySDK-20150602.jar
- 
+
+-dontwarn android.net.**
+-keep class android.net.SSLCertificateSocketFactory{*;}
 -keep class com.alipay.android.app.IAlixPay{*;}
 -keep class com.alipay.android.app.IAlixPay$Stub{*;}
 -keep class com.alipay.android.app.IRemoteServiceCallback{*;}

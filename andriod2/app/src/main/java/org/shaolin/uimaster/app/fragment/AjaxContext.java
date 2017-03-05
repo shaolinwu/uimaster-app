@@ -24,6 +24,7 @@ import com.zhy.http.okhttp.callback.Callback;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.shaolin.uimaster.app.aty.AppManager;
 import org.shaolin.uimaster.app.aty.LoginActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
 import org.shaolin.uimaster.app.base.BaseActivity;
@@ -34,7 +35,9 @@ import org.shaolin.uimaster.app.utils.FileUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -86,79 +89,102 @@ public class AjaxContext extends Callback<String> {
     @Override
     public void onResponse(final String response) {
         try {
-            JSONArray array = new JSONArray(response);
+            final JSONArray array = new JSONArray(response);
             int length = array.length();
-            JSONObject loadJsItem = null;
+            final List<JSONObject> loadJsItem = new ArrayList<JSONObject>();
             for (int i = 0; i < length; i++) {
                 JSONObject item = array.getJSONObject(i);
                 String jsHandler = item.getString("jsHandler");
-                if ("sessiontimeout".equals(jsHandler)) {
-                    Intent intent = new Intent(activity, LoginActivity.class);
-                    activity.startActivity(intent);
-                    break;
-                } else if ("nopermission".equals(jsHandler)) {
-                    Toast.makeText(activity, "对不起！您没有访问权限！", Toast.LENGTH_SHORT).show();
-                    break;
-                } else if ("load_js".equals(jsHandler)) {
-                    JSONObject item1 = array.getJSONObject(i+1);
-                    if ("openwindow".equals(item1.getString("jsHandler"))) {
-                        loadJsItem = item;//prepare for openwindow.
-                    } else {
-                        String uiid = item.getString("uiid");
-                        final String itemJson = item.toString();
-                        myWebView.post(new Runnable() {
+                if ("closewindow".equals(jsHandler)) {
+                    ((Activity) myWebView.getContext()).finish();
+                    if (((i + 1) < array.length()) && parentWebView != null) {
+                        final int start = i + 1;
+                        parentWebView.post(new Runnable() {
                             @Override
                             public void run() {
-                                myWebView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+                                loadJsItem.clear();
+                                int start0 = start;
+                                for (; start0 < array.length(); start0++) {
+                                    try {
+                                        handle(parentWebView, start0, array, array.getJSONObject(start0), loadJsItem);
+                                    } catch (JSONException e) {
+                                        Log.w("UIMaster", "execute js command error: "+ e.getMessage(), e);
+                                    }
+                                }
                             }
                         });
                     }
-                } else if ("openwindow".equals(jsHandler)) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString("dialog", "yes");
-                    arguments.putString("js", item.getString("js"));
-                    arguments.putString("data", item.getString("data"));
-                    arguments.putString("uiid", item.getString("uiid"));
-                    arguments.putString("_framePrefix", item.getString("frameInfo"));
-                    JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
-                    arguments.putString("title", dialogInfo.getString("title"));
-                    arguments.putString("icon", dialogInfo.getString("icon"));
-                    if (loadJsItem != null) {
-                        arguments.putString("loadjs", loadJsItem.getString("data"));
-                    }
-
-                    Intent intent = new Intent(activity, WebViewDialogActivity.class);
-                    intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
-                    activity.startActivity(intent);
-                } else if ("closewindow".equals(jsHandler)) {
-                    ((Activity)myWebView.getContext()).finish();
-                    break;
-                } else if ("pay".equals(jsHandler)) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString("js", item.getString("js"));
-                    arguments.putString("data", item.getString("data"));
-                    arguments.putString("uiid", item.getString("uiid"));
-                    arguments.putString("_framePrefix", item.getString("frameInfo"));
-
-                    Intent intent = new Intent(activity, PayActivity.class);
-                    intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
-                    activity.startActivity(intent);
-                    break;
                 } else {
-                    // find out the parent webview if neccesary.
-                    // parentWebView.;
-                    String uiid = item.getString("uiid");
-                    final String itemJson = item.toString();
-                    myWebView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            myWebView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
-                        }
-                    });
+                    handle(myWebView, i, array, item, loadJsItem);
                 }
             }
         } catch (Exception e){
-            Log.w("Failed to load data: ", e);
+            Log.w("UIMaster", "Failed to load data: ", e);
+        }
+    }
+
+    private void handle(final WebView webView, final int i, final JSONArray array,
+                        final JSONObject item, List<JSONObject> loadJsItem) throws JSONException {
+        String jsHandler = item.getString("jsHandler");
+        if ("sessiontimeout".equals(jsHandler)) {
+            Toast.makeText(activity, "您的在线会话过期，请重新登录！", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity, LoginActivity.class);
+            activity.startActivity(intent);
+        } else if ("nopermission".equals(jsHandler)) {
+            Toast.makeText(activity, "对不起！您没有访问权限！", Toast.LENGTH_SHORT).show();
+        } else if ("load_js".equals(jsHandler)) {
+            JSONObject item1 = array.getJSONObject(i+1);
+            if ("openwindow".equals(item1.getString("jsHandler"))) {
+                loadJsItem.add(item);//prepare for openwindow.
+            } else {
+                String uiid = item.getString("uiid");
+                final String itemJson = item.toString();
+                webView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+                    }
+                });
+            }
+        } else if ("openwindow".equals(jsHandler)) {
+            Bundle arguments = new Bundle();
+            arguments.putString("dialog", "yes");
+            arguments.putString("js", item.getString("js"));
+            arguments.putString("data", item.getString("data"));
+            arguments.putString("uiid", item.getString("uiid"));
+            arguments.putString("_framePrefix", item.getString("frameInfo"));
+            JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
+            arguments.putString("title", dialogInfo.getString("title"));
+            arguments.putString("icon", dialogInfo.getString("icon"));
+            if (loadJsItem != null && loadJsItem.size() > 0) {
+                arguments.putString("loadjs", loadJsItem.get(0).getString("data"));
+            }
+            arguments.putString("parentWebView", webView.hashCode() + "");
+            AppManager.getAppManager().addWebWiew(webView.hashCode() + "", webView);
+
+            Intent intent = new Intent(activity, WebViewDialogActivity.class);
+            intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+
+            activity.startActivity(intent);
+        } else if ("pay".equals(jsHandler)) {
+            Bundle arguments = new Bundle();
+            arguments.putString("js", item.getString("js"));
+            arguments.putString("data", item.getString("data"));
+            arguments.putString("uiid", item.getString("uiid"));
+            arguments.putString("_framePrefix", item.getString("frameInfo"));
+
+            Intent intent = new Intent(activity, PayActivity.class);
+            intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+            activity.startActivity(intent);
+        } else {
+            String uiid = item.getString("uiid");
+            final String itemJson = item.toString();
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+                }
+            });
         }
     }
 
@@ -262,7 +288,9 @@ public class AjaxContext extends Callback<String> {
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");
 
-            fragment.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+            if (fragment != null) {
+                fragment.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+            }
         }
 
         protected String getFileUploadPromptLabel() {

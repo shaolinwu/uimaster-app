@@ -67,8 +67,8 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         ivLoading = (ImageView) mView.findViewById(R.id.iv_loading);
         refreshLayout = (PullRefreshLayout) mView.findViewById(R.id.refresh_layout);
         refreshLayout.setRefreshStyle(PullRefreshLayout.STYLE_CIRCLES);
-        WebView parentWebView = mWebView;
-        ajaxContext = WebFragment.initWebView(this, parentWebView, mWebView, this.getActivity());
+        //WebView parentWebView = mWebView;
+        ajaxContext = WebFragment.initWebView(this, null, mWebView, this.getActivity());
         String cookies = PreferencesUtils.getString(getContext(), ConfigData.USER_COOKIES, "");
         if (!TextUtils.isEmpty(cookies)) {
             setWebViewCookies(cookies);
