@@ -18,8 +18,8 @@ import com.bumptech.glide.Glide;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.adpter.MineAdapter;
+import org.shaolin.uimaster.app.aty.ChatActivity;
 import org.shaolin.uimaster.app.aty.LoginActivity;
-import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
@@ -140,10 +140,10 @@ public class MineFragment extends BaseFragment implements IMineView {
             recyclerview.addOnItemTouchListener(new RecyclerItemClickListener(recyclerview) {
                 @Override
                 public void onItemClick(View view, int position) {
-                    Intent intent = new Intent(getContext(), WebViewActivity.class);
-                    String url = generateWebUrl(datas.get(position));
-                    intent.putExtra("url", url);
-                    intent.putExtra("title", datas.get(position).name);
+                    Intent intent = new Intent(getContext(), ChatActivity.class);
+//                    String url = generateWebUrl(datas.get(position));
+//                    intent.putExtra("url", url);
+//                    intent.putExtra("title", datas.get(position).name);
                     startActivity(intent);
                 }
             });

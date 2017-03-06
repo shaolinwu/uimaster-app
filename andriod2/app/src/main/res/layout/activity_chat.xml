@@ -4,25 +4,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
         <include layout="@layout/commond_toolbar"/>
-
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/textView" />
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/chat_send"
-            android:id="@+id/button"
-            style="@style/button_chat_send" />
+            android:id="@+id/tv_order_info"
+            android:text="来自上海市的采购订单四组圆盘来自上海市的采购订单四组圆盘"
+            style="@style/order_text" />
+        <TextView
+            android:layout_marginTop="8dp"
+            android:id="@+id/tv_order_price"
+            android:text="出价：20w"
+            style="@style/order_text" />
+        <TextView
+            android:id="@+id/tv_order_sender"
+            android:layout_marginTop="8dp"
+            android:text="发送者"
+            style="@style/order_text" />
+        <TextView
+            android:id="@+id/tv_sender_recipient"
+            android:text="Android"
+            style="@style/order_text" />
+        <TextView
+            android:id="@+id/tv_order_"
+            android:layout_marginTop="8dp"
+            android:text="接受者"
+            style="@style/order_text" />
+        <TextView
+            android:id="@+id/tv_sender_name"
+            android:text="Android"
+            style="@style/order_text" />
+        <View
+            android:layout_marginTop="8dp"
+            android:background="@color/lightblue"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <org.shaolin.uimaster.app.chatview.view.DropdownListView
+            android:background="@color/white"
+            android:cacheColorHint="@color/transparent"
+            android:divider="@null"
+            android:listSelector="@color/transparent"
+            android:id="@+id/message_chat_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </org.shaolin.uimaster.app.chatview.view.DropdownListView>
     </LinearLayout>
 
-    <include layout="@layout/loading_view"/>
+    <include layout="@layout/chat_bottom_view"/>
+    <include layout="@layout/loading_view" />
 </RelativeLayout>

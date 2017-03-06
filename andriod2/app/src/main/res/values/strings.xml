@@ -21,5 +21,9 @@
     <string name="soft_updating">更新中。。。</string>
     <string name="update_progress">进度</string>
     <string name="soft_update_cancel">取消更新</string>
+    <string name="send">发送</string>
+    <string name="edittext_notice_0">请输入内容...</string>
+    <string name="copy">复制</string>
+    <string name="delete">删除</string>
 
 </resources>

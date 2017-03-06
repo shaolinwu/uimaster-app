@@ -38,7 +38,7 @@
         <activity android:name="org.shaolin.uimaster.app.aty.RegisterActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewDialogActivity" android:screenOrientation="portrait"/>
-
+        <activity android:name=".aty.ChatActivity" android:screenOrientation="portrait"/>
 		<activity
             android:name="com.alipay.sdk.app.H5PayActivity"
             android:configChanges="orientation|keyboardHidden|navigation"

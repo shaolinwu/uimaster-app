@@ -13,6 +13,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.baoyz.widget.PullRefreshLayout;
+
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.data.ConfigData;
@@ -35,12 +37,15 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     AjaxContext ajaxContext;
     private LinearLayout loadingLayout;
     private ImageView ivLoading;
+    private PullRefreshLayout refreshLayout;
+    private String url;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
         loadWebView();
+        initListener();
     }
 
     @Override
@@ -52,6 +57,8 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         webview = (WebView)findViewById(R.id.webview);
         loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
         ivLoading = (ImageView) findViewById(R.id.iv_loading);
+        refreshLayout = (PullRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setRefreshStyle(PullRefreshLayout.STYLE_CIRCLES);
         WebView parentWebView = webview;
         ajaxContext = WebFragment.initWebView(null, null, webview, this);
         String cookies = PreferencesUtils.getString(this.getBaseContext(), ConfigData.USER_COOKIES,"");
@@ -60,8 +67,18 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         }
     }
 
+    private void initListener() {
+        refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh() {
+                showProgress();
+                HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebViewActivity.this, url);
+            }
+        });
+    }
+
     private void loadWebView() {
-        String url = getIntent().getStringExtra("url");
+        url = getIntent().getStringExtra("url");
         String title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(url)){
             //webview.loadUrl(url);
@@ -106,5 +123,9 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     public void hideProgress() {
         ivLoading.clearAnimation();
         loadingLayout.setVisibility(View.GONE);
+    }
+
+    public void refreshComplete(){
+        refreshLayout.setRefreshing(false);
     }
 }

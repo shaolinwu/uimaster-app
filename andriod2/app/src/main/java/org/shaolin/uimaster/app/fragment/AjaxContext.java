@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.aty.AppManager;
 import org.shaolin.uimaster.app.aty.LoginActivity;
+import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
@@ -215,6 +216,9 @@ public class AjaxContext extends Callback<String> {
             }
             if (activity != null) {
                 ((BaseActivity)activity).hideProgress();
+                if (activity instanceof WebViewActivity){
+                    ((WebViewActivity)activity).refreshComplete();
+                }
             }
 
         }

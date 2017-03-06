@@ -85,7 +85,6 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
                 HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
             }
         });
-
     }
 
 
