@@ -26,6 +26,9 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
         mViewRef = new WeakReference<T>(view);
     }
 
+    public BasePresenterImpl(){}
+
+
     @Override
     public void onResume() {
     }
@@ -71,7 +74,7 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
     @Override
     public void onBefore(Request request) {
         super.onBefore(request);
-        if (mViewRef.get() != null){
+        if (mViewRef != null && mViewRef.get() != null){
             mViewRef.get().showProgress();
         }
 
@@ -80,7 +83,7 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
     @Override
     public void onAfter() {
         super.onAfter();
-        if (mViewRef.get() != null){
+        if (mViewRef != null && mViewRef.get() != null){
             mViewRef.get().hideProgress();
         }
 

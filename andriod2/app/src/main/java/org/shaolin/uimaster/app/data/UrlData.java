@@ -10,6 +10,7 @@ public final class UrlData {
 
     public static final String BASE_URL = "https://www.vogerp.com/uimaster/";
     public static final String RESOURCE_URL = "https://www.vogerp-res.com:8082/uimaster/";
+    public static final String RESOURCE_URL_1 = "https://www.vogerp-res.com:8082/uimaster";
     public static final String CHAT_URL = "https://www.vogerp.com:8090";
 
     public static final String HOST = "www.vogerp.com";//10.0.2.2
@@ -38,5 +39,8 @@ public final class UrlData {
 
     //登出
     public static final String LOGIN_OUT_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userLogout&_appclient=andriod";
+
+    //
+    public static final String AD_URL = "https://www.vogerp.com/uimaster/ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.campaign.page.AjaxService.getAppLuanchingAdv&_appclient=andriod";
 
 }
