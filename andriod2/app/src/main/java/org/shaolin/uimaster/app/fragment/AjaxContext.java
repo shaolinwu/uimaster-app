@@ -294,6 +294,10 @@ public class AjaxContext extends Callback<String> {
 
             if (fragment != null) {
                 fragment.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+            }else{
+                if (activity != null){
+                    activity.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+                }
             }
         }
 
