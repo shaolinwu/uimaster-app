@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import com.baoyz.widget.PullRefreshLayout;
 
 import org.shaolin.uimaster.app.R;
+import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.CookiesBean;
 import org.shaolin.uimaster.app.data.ConfigData;
@@ -68,7 +69,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         refreshLayout = (PullRefreshLayout) mView.findViewById(R.id.refresh_layout);
         refreshLayout.setRefreshStyle(PullRefreshLayout.STYLE_CIRCLES);
         //WebView parentWebView = mWebView;
-        ajaxContext = WebFragment.initWebView(this, null, mWebView, this.getActivity());
+        ajaxContext = WebFragment.initWebView(this, null, mWebView, (BaseActivity)this.getActivity());
         String cookies = PreferencesUtils.getString(getContext(), ConfigData.USER_COOKIES, "");
         if (!TextUtils.isEmpty(cookies)) {
             setWebViewCookies(cookies);
@@ -93,7 +94,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         mWebView.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
     }
 
-    public static AjaxContext initWebView(BaseFragment f, WebView parent, WebView webView, Activity activity) {
+    public static AjaxContext initWebView(BaseFragment f, WebView parent, WebView webView, BaseActivity activity) {
         webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         WebSettings settings = webView.getSettings();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

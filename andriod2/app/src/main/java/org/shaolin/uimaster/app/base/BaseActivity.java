@@ -1,9 +1,13 @@
 package org.shaolin.uimaster.app.base;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.webkit.ValueCallback;
 
 import org.shaolin.uimaster.app.R;
 
@@ -18,6 +22,13 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
 
     private Toolbar toolbar;
     protected  T mPresenter;
+
+    /** File upload callback for platform versions prior to Android 5.0 */
+    public ValueCallback<Uri> mFileUploadCallbackFirst;
+    /** File upload callback for Android 5.0+ */
+    public ValueCallback<Uri[]> mFileUploadCallbackSecond;
+
+    public final static int FILECHOOSER_RESULTCODE = 30;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,6 +74,42 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
     @Override
     public void hideProgress() {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == FILECHOOSER_RESULTCODE) {
+            //file chooser.
+            if (resultCode == Activity.RESULT_OK) {
+                if (intent != null) {
+                    if (mFileUploadCallbackFirst != null) {
+                        mFileUploadCallbackFirst.onReceiveValue(intent.getData());
+                        mFileUploadCallbackFirst = null;
+                    }
+                    else if (mFileUploadCallbackSecond != null) {
+                        Uri[] dataUris;
+                        try {
+                            dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
+                        }
+                        catch (Exception e) {
+                            dataUris = null;
+                        }
+
+                        mFileUploadCallbackSecond.onReceiveValue(dataUris);
+                        mFileUploadCallbackSecond = null;
+                    }
+                }
+            } else {
+                if (mFileUploadCallbackFirst != null) {
+                    mFileUploadCallbackFirst.onReceiveValue(null);
+                    mFileUploadCallbackFirst = null;
+                }
+                else if (mFileUploadCallbackSecond != null) {
+                    mFileUploadCallbackSecond.onReceiveValue(null);
+                    mFileUploadCallbackSecond = null;
+                }
+            }
+        }
     }
 
      @Override

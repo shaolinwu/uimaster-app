@@ -1,5 +1,8 @@
 package org.shaolin.uimaster.app.aty;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -97,6 +100,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-ui.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-mobile.js\"></script>\n");
+        sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-form.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/controls/swiper/swiper.jquery.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-dataTable.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-jstree.js\"></script>\n");

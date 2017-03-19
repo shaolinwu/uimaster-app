@@ -1,5 +1,6 @@
 package org.shaolin.uimaster.app.utils;
 
+import android.content.Context;
 import android.os.Environment;
 import android.os.Message;
 import android.text.TextUtils;
@@ -7,6 +8,8 @@ import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.Callback;
+
+import org.shaolin.uimaster.app.data.UrlData;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,11 +21,16 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -314,5 +322,45 @@ public class UrlParse {
                 }
             }
         });
+    }
+
+    public static void uploadImage(final Context context, final String url, final File file, final Map<String, Object> map) {
+        OkHttpClient client = new OkHttpClient();
+        // form 表单形式上传
+        MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        if(file != null){
+            // MediaType.parse() 里面是上传的文件类型。
+            RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
+            String filename = file.getName();
+            // 参数分别为， 请求key ，文件名称 ， RequestBody
+            requestBody.addFormDataPart("headImage", file.getName(), body);
+        }
+        if (map != null) {
+            // map 里面是请求中所需要的 key 和 value
+            for (Map.Entry entry : map.entrySet()) {
+                if (entry.getValue() != null) {
+                    requestBody.addFormDataPart(entry.getKey().toString(), entry.getValue().toString());
+                }
+            }
+        }
+        Request request = new Request.Builder().url(url).post(requestBody.build()).tag(context).build();
+        // readTimeout("请求超时时间" , 时间单位);
+        client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("UIMaster" ,"onFailure", e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String str = response.body().string();
+                    Log.i("UIMaster", response.message() + " , body " + str);
+                    //TODO: invoke javascript listener.
+                } else {
+                    Log.i("UIMaster" ,"upload file error: body " + response.body().string());
+                }
+            }
+        });
+
     }
 }

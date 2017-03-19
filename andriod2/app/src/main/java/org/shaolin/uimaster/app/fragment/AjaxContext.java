@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -33,7 +34,9 @@ import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.pay.alipay.PayActivity;
 import org.shaolin.uimaster.app.utils.FileUtil;
+import org.shaolin.uimaster.app.utils.UrlParse;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -52,20 +55,15 @@ public class AjaxContext extends Callback<String> {
 
     private final WebView myWebView;
 
-    private final Activity activity;
+    private final BaseActivity activity;
 
     private final BaseFragment fragment;
-
-    /** File upload callback for platform versions prior to Android 5.0 */
-    protected ValueCallback<Uri> mFileUploadCallbackFirst;
-    /** File upload callback for Android 5.0+ */
-    protected ValueCallback<Uri[]> mFileUploadCallbackSecond;
 
     private Runnable pageLoaded;
 
     private Runnable pageClosed;
 
-    public AjaxContext(BaseFragment f, WebView parentWebView, WebView myWebView, Activity activity) {
+    public AjaxContext(BaseFragment f, WebView parentWebView, WebView myWebView, BaseActivity activity) {
         this.fragment = f;
         this.parentWebView = myWebView;
         this.myWebView = myWebView;
@@ -252,12 +250,6 @@ public class AjaxContext extends Callback<String> {
             super.onProgressChanged(view, newProgress);
         }
 
-        // file upload callback (Android 2.2 (API level 8) -- Android 2.3 (API level 10)) (hidden method)
-        @SuppressWarnings("unused")
-        public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-            openFileChooser(uploadMsg, null);
-        }
-
         // file upload callback (Android 3.0 (API level 11) -- Android 4.0 (API level 15)) (hidden method)
         public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
             openFileChooser(uploadMsg, acceptType, null);
@@ -278,25 +270,25 @@ public class AjaxContext extends Callback<String> {
 
         @SuppressLint("NewApi")
         protected void openFileInput(final ValueCallback<Uri> fileUploadCallbackFirst, final ValueCallback<Uri[]> fileUploadCallbackSecond) {
-            if (mFileUploadCallbackFirst != null) {
-                mFileUploadCallbackFirst.onReceiveValue(null);
+            if (activity.mFileUploadCallbackFirst != null) {
+                activity.mFileUploadCallbackFirst.onReceiveValue(null);
             }
-            mFileUploadCallbackFirst = fileUploadCallbackFirst;
+            activity.mFileUploadCallbackFirst = fileUploadCallbackFirst;
 
-            if (mFileUploadCallbackSecond != null) {
-                mFileUploadCallbackSecond.onReceiveValue(null);
+            if (activity.mFileUploadCallbackSecond != null) {
+                activity.mFileUploadCallbackSecond.onReceiveValue(null);
             }
-            mFileUploadCallbackSecond = fileUploadCallbackSecond;
+            activity.mFileUploadCallbackSecond = fileUploadCallbackSecond;
 
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");
 
             if (fragment != null) {
-                fragment.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+                fragment.startActivityForResult(createDefaultOpenableIntent(), 30);
             }else{
                 if (activity != null){
-                    activity.startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), 30);
+                    activity.startActivityForResult(createDefaultOpenableIntent(), 30);
                 }
             }
         }
@@ -307,40 +299,46 @@ public class AjaxContext extends Callback<String> {
 
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == 30) {
-            //file chooser.
-            if (resultCode == Activity.RESULT_OK) {
-                if (intent != null) {
-                    if (mFileUploadCallbackFirst != null) {
-                        mFileUploadCallbackFirst.onReceiveValue(intent.getData());
-                        mFileUploadCallbackFirst = null;
-                    }
-                    else if (mFileUploadCallbackSecond != null) {
-                        Uri[] dataUris;
-                        try {
-                            dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
-                        }
-                        catch (Exception e) {
-                            dataUris = null;
-                        }
+    private Intent createDefaultOpenableIntent() {
+        // Create and return a chooser with the default OPENABLE
+        // actions including the camera, camcorder and sound
+        // recorder where available.
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
 
-                        mFileUploadCallbackSecond.onReceiveValue(dataUris);
-                        mFileUploadCallbackSecond = null;
-                    }
-                }
-            }
-            else {
-                if (mFileUploadCallbackFirst != null) {
-                    mFileUploadCallbackFirst.onReceiveValue(null);
-                    mFileUploadCallbackFirst = null;
-                }
-                else if (mFileUploadCallbackSecond != null) {
-                    mFileUploadCallbackSecond.onReceiveValue(null);
-                    mFileUploadCallbackSecond = null;
-                }
-            }
-        }
+        Intent chooser = createChooserIntent(createCameraIntent(), createCamcorderIntent(),
+                createSoundRecorderIntent());
+        chooser.putExtra(Intent.EXTRA_INTENT, i);
+        return chooser;
+    }
+
+    private Intent createChooserIntent(Intent... intents) {
+        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents);
+        chooser.putExtra(Intent.EXTRA_TITLE, "File Chooser");
+        return chooser;
+    }
+
+    private Intent createCameraIntent() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File externalDataDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM);
+        File cameraDataDir = new File(externalDataDir.getAbsolutePath() +
+                File.separator + "browser-photos");
+        cameraDataDir.mkdirs();
+        String mCameraFilePath = cameraDataDir.getAbsolutePath() + File.separator +
+                System.currentTimeMillis() + ".jpg";
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(mCameraFilePath)));
+        return cameraIntent;
+    }
+
+    private Intent createCamcorderIntent() {
+        return new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+    }
+
+    private Intent createSoundRecorderIntent() {
+        return new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
     }
 
     public void addPageLoadedListener(Runnable listener) {
@@ -386,6 +384,16 @@ public class AjaxContext extends Callback<String> {
         } catch (JSONException e) {
             Log.w("UIMaster", "ajax invocation error: " + jsonStr);
         }
+    }
+
+    @JavascriptInterface
+    public void uploadImage(String url, String filePath) {
+        UrlParse.uploadImage(activity, url, new File(filePath), null);
+    }
+
+    @JavascriptInterface
+    public void uploadFile(String url, String filePath) {
+        UrlParse.uploadImage(activity, url, new File(filePath), null);
     }
 
     @JavascriptInterface
