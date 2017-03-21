@@ -94,8 +94,10 @@ public class MineFragment extends BaseFragment implements IMineView {
 
     @OnClick(R.id.user_icon)
     public void login() {
-        Intent intent = new Intent(getContext(), LoginActivity.class);
-        startActivity(intent);
+        if (tvLoginOut.getVisibility() != View.VISIBLE){
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            startActivity(intent);
+        }
     }
 
     @OnClick(R.id.tv_login_out)

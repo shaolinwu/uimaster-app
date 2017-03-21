@@ -72,6 +72,18 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         return R.layout.activity_login;
     }
 
+    @Override
+    protected void initView() {
+        super.initView();
+
+        String userName = PreferencesUtils.getString(this,ConfigData.USER_NAME);
+        String userPassword = PreferencesUtils.getString(this,ConfigData.USER_PASSWORD);
+        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(userPassword)){
+            etUsername.setText(userName);
+            etPassword.setText(userPassword);
+        }
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
@@ -141,6 +153,7 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         if (!TextUtils.isEmpty(loginBean.error) || loginBean == null || TextUtils.isEmpty(loginBean.userName)) {
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT).show();
         } else {
+            saveUserInfo();
             EventBus.getDefault().post(loginBean);
             CookiesBean cookiesBean = new CookiesBean();
             cookiesBean.cookies = loginBean.cookies;
@@ -150,6 +163,10 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         }
     }
 
+    public void saveUserInfo(){
+        PreferencesUtils.putString(this, ConfigData.USER_NAME, etUsername.getText().toString());
+        PreferencesUtils.putString(this, ConfigData.USER_PASSWORD, etPassword.getText().toString());
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
