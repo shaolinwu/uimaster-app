@@ -1,45 +1,40 @@
-package org.shaolin.uimaster.app.aty;
+package org.shaolin.uimaster.app.utils;
   
-import java.io.File; 
-import java.io.FileOutputStream; 
-import java.io.IOException; 
-import java.io.InputStream; 
-import java.net.HttpURLConnection; 
-import java.net.MalformedURLException; 
-import java.net.URL; 
-import java.util.HashMap; 
-  
-import android.app.AlertDialog; 
-import android.app.Dialog; 
-import android.app.AlertDialog.Builder; 
-import android.content.Context; 
-import android.content.DialogInterface; 
-import android.content.Intent; 
-import android.content.DialogInterface.OnClickListener; 
-import android.content.pm.PackageManager.NameNotFoundException; 
-import android.net.Uri; 
-import android.os.Environment; 
-import android.os.Handler; 
-import android.os.Message; 
-import android.view.LayoutInflater; 
-import android.view.View; 
-import android.widget.ProgressBar; 
-import android.widget.Toast;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ProgressBar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.shaolin.uimaster.app.R;
-import org.shaolin.uimaster.app.base.BaseActivity;
-import org.shaolin.uimaster.app.viewmodule.impl.UpdateAppPresenterImpl;
+import org.shaolin.uimaster.app.data.UrlData;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
-public class UpdateApp
+public class UpdateAppHelp
 { 
   /* 下载中 */ 
   private static final int DOWNLOAD = 1; 
   /* 下载结束 */ 
   private static final int DOWNLOAD_FINISH = 2; 
-  /* 保存解析的XML信息 */ 
-  HashMap<String, String> mHashMap; 
-  /* 下载保存路径 */ 
+  /* 下载保存路径 */
   private String mSavePath; 
   /* 记录进度条数量 */ 
   private int progress; 
@@ -49,7 +44,8 @@ public class UpdateApp
   private Context mContext; 
   /* 更新进度条 */ 
   private ProgressBar mProgress; 
-  private Dialog mDownloadDialog; 
+  private Dialog mDownloadDialog;
+  private JSONObject jsonObject;
   
   private Handler mHandler = new Handler() 
   { 
@@ -72,11 +68,11 @@ public class UpdateApp
     }; 
   }; 
   
-  public UpdateApp(Context context)
+  public UpdateAppHelp(Context context,JSONObject jsonObject)
   { 
     this.mContext = context;
-    UpdateAppPresenterImpl presenter = new UpdateAppPresenterImpl(this, context);
-  } 
+    this.jsonObject = jsonObject;
+  }
 
   /** 
    * 显示软件更新对话框 
@@ -167,8 +163,15 @@ public class UpdateApp
         { 
           // 获得存储卡的路径 
           String sdpath = Environment.getExternalStorageDirectory() + "/"; 
-          mSavePath = sdpath + "download"; 
-          URL url = new URL(mHashMap.get("url")); 
+          mSavePath = sdpath + "download";
+          StringBuffer sb = new StringBuffer(UrlData.RESOURCE_URL);
+          sb.append("download/");
+          try {
+            sb.append(jsonObject.getString("resource"));
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+          URL url = new URL(sb.toString());
           // 创建连接 
           HttpURLConnection conn = (HttpURLConnection) url.openConnection(); 
           conn.connect(); 
@@ -182,8 +185,14 @@ public class UpdateApp
           if (!file.exists()) 
           { 
             file.mkdir(); 
-          } 
-          File apkFile = new File(mSavePath, mHashMap.get("name")); 
+          }
+          File apkFile = null;
+          try {
+            apkFile = new File(mSavePath, jsonObject.getString("resource"));
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
+
           FileOutputStream fos = new FileOutputStream(apkFile); 
           int count = 0; 
           // 缓存 
@@ -225,8 +234,13 @@ public class UpdateApp
    * 安装APK文件 
    */
   private void installApk() 
-  { 
-    File apkfile = new File(mSavePath, mHashMap.get("name")); 
+  {
+    File apkfile = null;
+    try {
+      apkfile = new File(mSavePath, jsonObject.getString("resource"));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
     if (!apkfile.exists()) 
     { 
       return; 

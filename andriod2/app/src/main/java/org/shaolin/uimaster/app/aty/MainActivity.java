@@ -44,12 +44,15 @@ import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
 import org.shaolin.uimaster.app.push.NoticePushUtil;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
+import org.shaolin.uimaster.app.utils.UpdateAppHelp;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.MainModulePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MenuItemPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.ReadMePresenterImpl;
+import org.shaolin.uimaster.app.viewmodule.impl.UpdateAppPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 import org.shaolin.uimaster.app.viewmodule.inter.IMenuView;
+import org.shaolin.uimaster.app.viewmodule.inter.IUpdateAppView;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -62,7 +65,7 @@ import de.greenrobot.event.ThreadMode;
 
 import static org.shaolin.uimaster.app.data.UrlData.GET_RESOURCES_README;
 
-public class MainActivity extends BaseActivity implements IMainModuleView,IMenuView {
+public class MainActivity extends BaseActivity implements IMainModuleView,IMenuView,IUpdateAppView {
 
     private ListView listView;
     private RadioGroup tabs;
@@ -93,9 +96,10 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        createModulePresenter();
+        createPresenter();
         registerEvent();
         downServerFiles();
+
     }
 
     //从服务下载文件
@@ -107,8 +111,9 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         EventBus.getDefault().register(this);
     }
 
-    private void createModulePresenter() {
+    private void createPresenter() {
         presenter = new MainModulePresenterImpl(this, UrlData.GET_TAB_URL);
+        UpdateAppPresenterImpl updateAppPresenter = new UpdateAppPresenterImpl(this);
     }
 
     @Override
@@ -393,5 +398,11 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         PreferencesUtils.removeConfig(this, ConfigData.USER_COOKIES);
         PreferencesUtils.removeConfig(this,ConfigData.MESSAGE_ACTIVITY_URL);
         PreferencesUtils.removeConfig(this,ConfigData.MESSAGE_ACTIVITY_TITLE);
+    }
+
+    @Override
+    public void showUpdateAppDialog(JSONObject jsonObject) {
+        UpdateAppHelp help = new UpdateAppHelp(this,jsonObject);
+        help.showNoticeDialog();
     }
 }
