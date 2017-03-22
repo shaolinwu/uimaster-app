@@ -63,6 +63,7 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initView();
         setToolBarTitle(R.string.login);
         VerificationCodePresenterImpl verificationCodePresenter = new VerificationCodePresenterImpl(this);
     }
@@ -72,9 +73,7 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         return R.layout.activity_login;
     }
 
-    @Override
     protected void initView() {
-        super.initView();
 
         String userName = PreferencesUtils.getString(this,ConfigData.USER_NAME);
         String userPassword = PreferencesUtils.getString(this,ConfigData.USER_PASSWORD);

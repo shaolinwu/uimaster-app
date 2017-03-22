@@ -36,7 +36,6 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         initToolBar();
-        initView();
     }
 
     protected void initToolBar(){
@@ -131,6 +130,6 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
          EventBus.getDefault().unregister(this);
      }
 
-     protected void initView(){}
+
 
 }
