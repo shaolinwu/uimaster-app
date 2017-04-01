@@ -100,7 +100,8 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-ui.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-mobile.js\"></script>\n");
-        sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-form.js\"></script>\n");
+        //useless now for jquery-form.js
+        //sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-form.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/controls/swiper/swiper.jquery.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-dataTable.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-jstree.js\"></script>\n");

@@ -32,12 +32,12 @@ public class DownFilePresenterImpl {
                 {
                     @Override
                     public void inProgress(float progress, long total) {
-                        Log.d("UIMaster","progress =" + progress + "===" + "total =" + total);
+                        Log.d("UIMaster","donwload file progress =" + progress + "===" + "total =" + total);
                     }
 
                     @Override
                     public void inProgress(float progress){
-                        Log.d("UIMaster","progress =" + progress);
+                        Log.d("UIMaster","donwload file progress =" + progress);
                     }
 
                     @Override

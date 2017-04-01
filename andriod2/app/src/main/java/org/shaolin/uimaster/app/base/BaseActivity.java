@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.webkit.ValueCallback;
 
 import org.shaolin.uimaster.app.R;
+import org.shaolin.uimaster.app.utils.UrlParse;
 
 import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
@@ -29,6 +31,8 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
     public ValueCallback<Uri[]> mFileUploadCallbackSecond;
 
     public final static int FILECHOOSER_RESULTCODE = 30;
+
+    public String selectedUploadFile = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,16 +89,16 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
                     if (mFileUploadCallbackFirst != null) {
                         mFileUploadCallbackFirst.onReceiveValue(intent.getData());
                         mFileUploadCallbackFirst = null;
-                    }
-                    else if (mFileUploadCallbackSecond != null) {
+                        //Log.w("UIMaster", "choosen path at first: " + intent.getData().toString());
+                    } else if (mFileUploadCallbackSecond != null) {
                         Uri[] dataUris;
                         try {
                             dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             dataUris = null;
                         }
-
+                        selectedUploadFile = UrlParse.getRealFilePath(this, dataUris[0]);
+                        Log.w("UIMaster", "choosen path: " + selectedUploadFile);
                         mFileUploadCallbackSecond.onReceiveValue(dataUris);
                         mFileUploadCallbackSecond = null;
                     }
@@ -120,7 +124,6 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
          }
      }
 
-
      @Override
      protected void onDestroy() {
          super.onDestroy();
@@ -129,7 +132,5 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
          }
          EventBus.getDefault().unregister(this);
      }
-
-
 
 }

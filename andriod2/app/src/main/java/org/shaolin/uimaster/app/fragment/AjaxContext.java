@@ -112,6 +112,7 @@ public class AjaxContext extends Callback<String> {
                                 }
                             }
                         });
+                        break;
                     }
                 } else {
                     handle(myWebView, i, array, item, loadJsItem);
@@ -286,10 +287,8 @@ public class AjaxContext extends Callback<String> {
 
             if (fragment != null) {
                 fragment.startActivityForResult(createDefaultOpenableIntent(), 30);
-            }else{
-                if (activity != null){
-                    activity.startActivityForResult(createDefaultOpenableIntent(), 30);
-                }
+            } else if (activity != null){
+                activity.startActivityForResult(createDefaultOpenableIntent(), 30);
             }
         }
 
@@ -369,7 +368,7 @@ public class AjaxContext extends Callback<String> {
     @JavascriptInterface
     public void ajax(String jsonStr) {
         try {
-            Log.d("UIMaster", "ajax invocation " + jsonStr);
+            Log.d("UIMaster", "invoke ajax with data: " + jsonStr);
             JSONObject json = new JSONObject(jsonStr);
             JSONObject data = json.getJSONObject("data");
 
@@ -386,14 +385,51 @@ public class AjaxContext extends Callback<String> {
         }
     }
 
+    private String uploadFileUIID;
+
     @JavascriptInterface
-    public void uploadImage(String url, String filePath) {
-        UrlParse.uploadImage(activity, url, new File(filePath), null);
+    public void uploadImage(final String url, final String uiid, final String filePath) {
+        this.uploadFileUIID = uiid;
+        if (activity != null && activity.selectedUploadFile != null) {
+            UrlParse.uploadImage(this, activity, url, new File(activity.selectedUploadFile), null);
+        } else {
+            UrlParse.uploadImage(this, activity, url, new File(filePath), null);
+        }
     }
 
     @JavascriptInterface
-    public void uploadFile(String url, String filePath) {
-        UrlParse.uploadImage(activity, url, new File(filePath), null);
+    public void uploadFile(final String url, final String uiid, final String filePath) {
+        this.uploadFileUIID = uiid;
+        if (activity != null && activity.selectedUploadFile != null) {
+            UrlParse.uploadImage(this, activity, url, new File(activity.selectedUploadFile), null);
+        } else {
+            UrlParse.uploadImage(this, activity, url, new File(filePath), null);
+        }
+    }
+
+    public void onProgress(final long totalBytes,final long remainingBytes, final boolean done) {
+        final long percent = (totalBytes - remainingBytes) * 100 / totalBytes;
+        Log.d("UIMaster", "uploading file percentage: " + percent);
+        myWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                myWebView.loadUrl("javascript:defaultname."+uploadFileUIID+".options.uploadProgress(null,"+remainingBytes+","+totalBytes+","+percent+");");
+            }
+        });
+    }
+
+    /**
+     * this is a notification after callback.
+     * @param state 1 success, 0 fail
+     */
+    @JavascriptInterface
+    public void fileUploaded(final int state) {
+        myWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                myWebView.loadUrl("javascript:defaultname."+uploadFileUIID+".appCallback("+state+");");
+            }
+        });
     }
 
     @JavascriptInterface
