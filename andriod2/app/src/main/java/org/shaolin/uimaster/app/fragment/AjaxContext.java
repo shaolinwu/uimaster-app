@@ -34,12 +34,14 @@ import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
+import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.pay.alipay.PayActivity;
 import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.UrlParse;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -431,6 +433,25 @@ public class AjaxContext extends Callback<String> {
             @Override
             public void run() {
                 myWebView.loadUrl("javascript:defaultname."+uploadFileUIID+".appCallback("+state+");");
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void downloadImage(final String url) {
+        String output = "vogerp-output-" + ((int)(Math.random()*10000)) + url.substring(url.lastIndexOf("."));
+        File f = new File(FileData.APP_ROOT_FILE + "/download");
+        if (!f.exists()) {
+            f.mkdirs();
+        }else if( !f.isDirectory() && f.canWrite() ){
+            f.delete();
+            f.mkdirs();
+        }
+        UrlParse.download(url, new File(f, output));
+        myWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activity, "下载成功！", Toast.LENGTH_SHORT).show();
             }
         });
     }
