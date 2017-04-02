@@ -46,8 +46,8 @@ public class ReadMePresenterImpl extends BasePresenterImpl<IMainModuleView> {
             DownFileBean downFileBean = downFileBeans.get(0);
             if (downFileBean != null && !TextUtils.isEmpty(downFileBean.version)){
                 String localFileVersion = PreferencesUtils.getString(mContext, ConfigData.FILE_VERSION, "");
-                if (!localFileVersion.equals(downFileBean.version)
-                        || !FileUtil.checkFilePathExists(FileData.APP_ROOT_FILE + "/uimaster.js")){
+                if (!localFileVersion.equals(downFileBean.version)){
+                    // || !FileUtil.checkFilePathExists(FileData.APP_ROOT_FILE + "/uimaster.js")
                     PreferencesUtils.putString(mContext, ConfigData.FILE_VERSION, downFileBean.version);
 
                     //下载服务端资源文件

@@ -25,8 +25,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
@@ -40,7 +42,9 @@ import org.shaolin.uimaster.app.chatview.adapter.FaceGVAdapter;
 import org.shaolin.uimaster.app.chatview.adapter.FaceVPAdapter;
 import org.shaolin.uimaster.app.chatview.view.DropdownListView;
 import org.shaolin.uimaster.app.chatview.view.MyEditText;
+import org.shaolin.uimaster.app.fragment.AjaxContext;
 
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -90,17 +94,16 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     @BindView(R.id.chat_face_container)
     LinearLayout chat_face_container;
 
-    private Socket mSocket;
-
-    private String userId;
-
+    private boolean isAdmin;
+    private long orgId;
+    private long userId;
     private String sessionId;
+    private long taskId;
+    private long toUserId;
+    private String userName;
+    private String toUserName;
 
-    private String toUserId;
-
-    private String orgId;
-
-    private SimpleDateFormat sd;
+    private SimpleDateFormat sd = new SimpleDateFormat("MM-dd HH:mm");
     private LinkedList<ChatInfo> infos = new LinkedList<ChatInfo>();
     private ChatLVAdapter mLvAdapter;
     private List<String> staticFacesList;
@@ -114,13 +117,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        initData(savedInstanceState);
+        initData(getIntent().getBundleExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS));
         initListener();
         initStaticFaces();
         initViewPager();
     }
-
-
 
     private void initListener() {
         inputSms.setOnClickListener(this);
@@ -146,88 +147,87 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void initView() {
-
     }
 
     private void initData(Bundle bundle) {
-//        sessionId = bundle.getString("sessionId");
-//        userId = bundle.getString("userId");//this.sentPartyIdUI.value;
-//        toUserId = bundle.getString("toUserId");//this.receivedPartyIdUI.value;
-//        orgId = bundle.getString("orgId");//this.orgIdUI.value;
-//
-//        try {
-//            mSocket = IO.socket("https://www.vogerp.com:8090");
-//            mSocket.on("connect", connect);
-//            mSocket.on("history", history);
-//            mSocket.on("chatTo", chat);
-//            mSocket.connect();
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();
-//        }
+        isAdmin = bundle.getBoolean("isAdmin");
+        sessionId = bundle.getString("sessionId");
+        orgId = bundle.getLong("orgId");
+        taskId = bundle.getLong("taskId");
+        userId = bundle.getLong("sentPartyId");
+        toUserId = bundle.getLong("receivedPartyId");
+        userName = bundle.getString("sentPartyName");
+        toUserName = bundle.getString("recievedPartyName");
 
-        sd = new SimpleDateFormat("MM-dd HH:mm");
-        //模拟收到信息
-        infos.add(getChatInfoFrom("你好啊！"));
-        infos.add(getChatInfoFrom("认识你很高兴#[face/png/f_static_018.png]#"));
+        Socket mSocket = AjaxContext.getWebService();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("fromPartyId", userId);
+            jsonObject.put("toPartyId", toUserId);
+            jsonObject.put("sessionId", sessionId);
+            mSocket.emit("history", jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.off("history");
+        mSocket.off("chatTo");
+        mSocket.on("history", history);
+        mSocket.on("chatTo", chat);
+
         mLvAdapter = new ChatLVAdapter(this, infos);
         mListView.setAdapter(mLvAdapter);
         mViewPager.setOnPageChangeListener(new PageChange());
     }
 
-    private Emitter.Listener connect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("fromPartyId", userId);
-                jsonObject.put("toPartyId", toUserId);
-                jsonObject.put("sessionId", sessionId);
-                mSocket.emit("history", jsonObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
     private Emitter.Listener history = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            ChatActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONArray data = (JSONArray) args[0];
-                    for (int i = 0; i < data.length(); i++) {
-                        //TODO:
-//                var color = ((i%2==0)?"uimaster_chat_item_even":"uimaster_chat_item_old");
-//                var row = "<div class=\"swiper-slide uimaster_chat_item_to "+color+"\"><div><div class=\"uimaster_chat_time\">"
-//                        + e[i].CREATEDATE + "</div><div class=\"uimaster_chat_message\"> " + e[i].MESSAGE + "</div></div></div>"
-
+        ChatActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONArray data = (JSONArray) args[0];
+                for (int i = 0; i < data.length(); i++) {
+                    try {
+                        if (data.getJSONObject(i).getLong("RECEIVEDPARTYID") == toUserId) {
+                            infos.add(getChatInfoTo(data.getJSONObject(i).getString("CREATEDATE"), data.getJSONObject(i).getString("MESSAGE")));
+                        } else {
+                            infos.add(getChatInfoFrom(data.getJSONObject(i).getString("CREATEDATE"), data.getJSONObject(i).getString("MESSAGE")));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            });
+            }
+        });
         }
     };
 
     private Emitter.Listener chat = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            // received message
             JSONObject jsonObject = (JSONObject) args[0];
-//            var row = "<div class=\"swiper-slide uimaster_chat_item_to "+color+"\"><div><div class=\"uimaster_chat_time\">"
-//                    + new Date() + "</div><div class=\"uimaster_chat_message\"> " + e.content + "</div></div></div>"
-            //TODO
+            try {
+                if (jsonObject.getLong("toPartyId") == toUserId) {
+                    infos.add(getChatInfoFrom(sd.format(new Date()), jsonObject.getString("content")));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 
     private void sendMessage(String message) {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("taskId", 0);
+            jsonObject.put("taskId", taskId);
+            jsonObject.put("orgId", orgId);
             jsonObject.put("fromPartyId", userId);
             jsonObject.put("toPartyId", toUserId);
             jsonObject.put("sessionId", sessionId);
             jsonObject.put("content", message);
 
-            mSocket.emit("chatTo", jsonObject);
+            AjaxContext.getWebService().emit("chatTo", jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -271,11 +271,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
      * @param message
      * @return
      */
-    private ChatInfo getChatInfoFrom(String message) {
+    private ChatInfo getChatInfoFrom(String date, String message) {
         ChatInfo info = new ChatInfo();
         info.content = message;
         info.fromOrTo = 0;
-        info.time=sd.format(new Date());
+        info.time= date;
         return info;
     }
 
@@ -298,19 +298,20 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.send_sms://发送
                 reply=inputSms.getText().toString();
                 if (!TextUtils.isEmpty(reply)) {
+                    sendMessage(reply);
                     infos.add(getChatInfoTo(reply));
                     mLvAdapter.setList(infos);
                     mLvAdapter.notifyDataSetChanged();
                     mListView.setSelection(infos.size() - 1);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            infos.add(getChatInfoFrom(reply));
-                            mLvAdapter.setList(infos);
-                            mLvAdapter.notifyDataSetChanged();
-                            mListView.setSelection(infos.size() - 1);
-                        }
-                    }, 1000);
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            infos.add(getChatInfoFrom(sd.format(new Date()), reply));
+//                            mLvAdapter.setList(infos);
+//                            mLvAdapter.notifyDataSetChanged();
+//                            mListView.setSelection(infos.size() - 1);
+//                        }
+//                    }, 1000);
                     inputSms.setText("");
                 }
                 break;
@@ -335,7 +336,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             }
         }.start();
     }
-
 
     /**
      * 表情页改变时，dots效果也要跟着改变
@@ -485,6 +485,14 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         info.content = message;
         info.fromOrTo = 1;
         info.time=sd.format(new Date());
+        return info;
+    }
+
+    private ChatInfo getChatInfoTo(String date, String message) {
+        ChatInfo info = new ChatInfo();
+        info.content = message;
+        info.fromOrTo = 1;
+        info.time= date;
         return info;
     }
 

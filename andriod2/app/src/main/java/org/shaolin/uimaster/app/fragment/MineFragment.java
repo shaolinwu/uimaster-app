@@ -18,8 +18,8 @@ import com.bumptech.glide.Glide;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.adpter.MineAdapter;
-import org.shaolin.uimaster.app.aty.ChatActivity;
 import org.shaolin.uimaster.app.aty.LoginActivity;
+import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
@@ -105,10 +105,10 @@ public class MineFragment extends BaseFragment implements IMineView {
         loginOutPresenter = new LoginOutPresenterImpl(this);
     }
 
-
     @Subscribe(threadMode = ThreadMode.MainThread)
     public void showUserLoginView(LoginBean bean) {
         if (bean != null) {
+            PreferencesUtils.putString(this.getContext(), "userId", bean.userId);
             if (!TextUtils.isEmpty(bean.userName)) {
                 username.setText(bean.userName);
             }
@@ -142,10 +142,10 @@ public class MineFragment extends BaseFragment implements IMineView {
             recyclerview.addOnItemTouchListener(new RecyclerItemClickListener(recyclerview) {
                 @Override
                 public void onItemClick(View view, int position) {
-                    Intent intent = new Intent(getContext(), ChatActivity.class);
-//                    String url = generateWebUrl(datas.get(position));
-//                    intent.putExtra("url", url);
-//                    intent.putExtra("title", datas.get(position).name);
+                    Intent intent = new Intent(getContext(), WebViewActivity.class);
+                    String url = generateWebUrl(datas.get(position));
+                    intent.putExtra("url", url);
+                    intent.putExtra("title", datas.get(position).name);
                     startActivity(intent);
                 }
             });
@@ -158,6 +158,8 @@ public class MineFragment extends BaseFragment implements IMineView {
         username.setText(getString(R.string.unLogin));
         userIcon.setImageResource(R.mipmap.widget_dface);
         PreferencesUtils.removeConfig(getContext(),ConfigData.USER_COOKIES);
+        String userId = PreferencesUtils.getString(this.getContext(), "userId");
+        AjaxContext.closeWebSocket(Long.valueOf(userId));
         EventBus.getDefault().post("loginOut");
     }
 

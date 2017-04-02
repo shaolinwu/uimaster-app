@@ -18,6 +18,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.Callback;
@@ -26,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.aty.AppManager;
+import org.shaolin.uimaster.app.aty.ChatActivity;
 import org.shaolin.uimaster.app.aty.LoginActivity;
 import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
@@ -455,6 +458,27 @@ public class AjaxContext extends Callback<String> {
     }
 
     @JavascriptInterface
+    public void openChatWindow(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            Bundle arguments = new Bundle();
+            arguments.putBoolean("isAdmin", jsonObject.getBoolean("isAdmin"));
+            arguments.putString("sessionId", jsonObject.getString("sessionId"));
+            arguments.putLong("orgId", jsonObject.getLong("orgId"));
+            arguments.putLong("taskId", jsonObject.getLong("taskId"));
+            arguments.putLong("sentPartyId", jsonObject.getLong("sentPartyId"));
+            arguments.putLong("receivedPartyId", jsonObject.getLong("receivedPartyId"));
+            arguments.putString("sentPartyName", jsonObject.getString("sentPartyName"));
+            arguments.putString("recievedPartyName", jsonObject.getString("recievedPartyName"));
+            Intent intent = new Intent(this.activity, ChatActivity.class);
+            intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+            activity.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @JavascriptInterface
     public int getScreenHeight() {
         return 0;
     }
@@ -464,25 +488,35 @@ public class AjaxContext extends Callback<String> {
         return "www.vogerp.com";
     }
 
+    public static Socket socket = null;
+
+    public static Socket getWebService() {
+        if (socket != null) {
+            return socket;
+        }
+        try {
+            socket = IO.socket(UrlData.CHAT_URL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return socket;
+    }
+
+    public static void closeWebSocket(long userId) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("partyId",userId);
+            socket.emit("unregister", jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        socket.close();
+        socket = null;
+    }
 
     @JavascriptInterface
     public Object getWebSocket() {
-        return null;
-    }
-
-    public void closeWebSocket() {
-
-    }
-
-    private Object connectWebSocket() {
-        URI uri;
-        try {
-            uri = new URI("wss://wwww.vogerp.com:8090/uimaster/wschart");
-        } catch (URISyntaxException e) {
-            Log.w(e.getMessage(), e);
-            return null;
-        }
-
-        return null;
+        return socket;
     }
 }

@@ -26,7 +26,6 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
@@ -40,6 +39,7 @@ import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
 import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
 import org.shaolin.uimaster.app.push.NoticePushUtil;
@@ -54,7 +54,6 @@ import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 import org.shaolin.uimaster.app.viewmodule.inter.IMenuView;
 import org.shaolin.uimaster.app.viewmodule.inter.IUpdateAppView;
 
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +76,6 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private BaseFragment mCurrentFragment;
     private List<MainModuleBean> moduleBeans;
     private long mExitTime;
-    private Socket mSocket;
     private String userId;
     private boolean isLogin = false;
     private LinearLayout llLoading;
@@ -85,13 +83,6 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private MainModulePresenterImpl presenter;
     private ReadMePresenterImpl downFilePresenter;
 
-    {
-        try {
-            mSocket = IO.socket("https://www.vogerp.com:8090");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,11 +210,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     }
 
     protected void setListener() {
-
         tabs.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-
                 switch (checkedId) {
                     case R.id.main_tab:
                         setToolBarTitle(titleMap.get(R.id.main_tab));
@@ -291,33 +279,34 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         userId = loginBean.userId;
         MenuItemPresenterImpl presenter = new MenuItemPresenterImpl(this);
 
+        Socket mSocket = AjaxContext.getWebService();
+        mSocket.off("connect");
+        mSocket.off("loginSuccess");
+        mSocket.off("notifyFrom");
         mSocket.on("connect", connect);
         mSocket.on("loginSuccess", loginSuccess);
         mSocket.on("notifyFrom", notifyFrom);
         mSocket.connect();
-
     }
 
     @Subscribe(threadMode = ThreadMode.BackgroundThread)
-
     public void loginOut(String loginOut){
         if (!TextUtils.isEmpty(loginOut) && loginOut.equals("loginOut")){
             isLogin = false;
         }
     }
 
-
     private Emitter.Listener connect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            mSocket.emit("register",getMsg());
+            AjaxContext.getWebService().emit("register", getMsg());
         }
     };
 
     private Emitter.Listener loginSuccess = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            mSocket.emit("notifihistory",getMsg());
+            AjaxContext.getWebService().emit("notifihistory", getMsg());
         }
     };
 
