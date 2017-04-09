@@ -40,7 +40,6 @@ public class NoticePushUtil {
         return mInstance;
     }
 
-
     public void  showNoticePush(Context context, String response){
         if (!TextUtils.isEmpty(response)){
             List<NoticeBean> noticeList = BasePresenterImpl.jsonToArrayList(response,NoticeBean.class);

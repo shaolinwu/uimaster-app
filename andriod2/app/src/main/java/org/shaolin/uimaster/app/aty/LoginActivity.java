@@ -1,11 +1,13 @@
 package org.shaolin.uimaster.app.aty;
 
 import android.content.Intent;
+import android.location.Criteria;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,6 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.bean.CookiesBean;
@@ -23,6 +30,7 @@ import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.VerificationCodeBean;
 import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.utils.PositionUtils;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.LoginPresenterImpl;
@@ -38,7 +46,7 @@ import de.greenrobot.event.EventBus;
  * Created by Administrator on 2017/1/18.
  */
 
-public class LoginActivity extends BaseActivity implements IVerificationCodeView, ILoginView {
+public class LoginActivity extends BaseActivity implements IVerificationCodeView, ILoginView, AMapLocationListener {
     @BindView(R.id.et_username)
     AppCompatEditText etUsername;
     @BindView(R.id.et_password)
@@ -59,6 +67,10 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     LinearLayout loadingLayout;
 
     private ActionBar actionBar;
+    //声明AMapLocationClient类对象
+    private AMapLocationClient mLocationClient = null;
+
+    private AMapLocation location;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,11 +87,55 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
 
     protected void initView() {
 
-        String userName = PreferencesUtils.getString(this,ConfigData.USER_NAME);
-        String userPassword = PreferencesUtils.getString(this,ConfigData.USER_PASSWORD);
-        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(userPassword)){
+        String userName = PreferencesUtils.getString(this, ConfigData.USER_NAME);
+        String userPassword = PreferencesUtils.getString(this, ConfigData.USER_PASSWORD);
+        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(userPassword)) {
             etUsername.setText(userName);
             etPassword.setText(userPassword);
+        }
+
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位参数
+        mLocationClient.setLocationOption(getDefaultOption());
+        //设置定位回调监听
+        mLocationClient.setLocationListener(this);
+        mLocationClient.startLocation();
+    }
+
+    /**
+     * 默认的定位参数
+     * @since 2.8.0
+     * @author hongming.wang
+     *
+     */
+    private AMapLocationClientOption getDefaultOption(){
+        AMapLocationClientOption mOption = new AMapLocationClientOption();
+        mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
+        mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
+        mOption.setHttpTimeOut(10000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
+        mOption.setInterval(2000);//可选，设置定位间隔。默认为2秒
+        mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是true
+        mOption.setOnceLocation(true);//可选，设置是否单次定位。默认是false
+        mOption.setOnceLocationLatest(true);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
+        mOption.setLocationCacheEnable(true);
+        AMapLocationClientOption.setLocationProtocol(AMapLocationClientOption.AMapLocationProtocol.HTTP);//可选， 设置网络请求的协议。可选HTTP或者HTTPS。默认为HTTP
+        mOption.setSensorEnable(false);//可选，设置是否使用传感器。默认是false
+        mOption.setWifiScan(true); //可选，设置是否开启wifi扫描。默认为true，如果设置为false会同时停止主动刷新，停止以后完全依赖于系统刷新，定位位置可能存在误差
+        mOption.setLocationCacheEnable(true); //可选，设置是否使用缓存定位，默认为true
+        return mOption;
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation location) {
+        this.location = location;
+        if (null != location) {
+            //解析定位结果
+            String result = PositionUtils.getLocationStr(location);
+            Log.i("UIMaster", "GPS定位成功: " + result);
+            //Toast.makeText(this, "GPS定位成功: " + result, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "GPS定位失败，将影响您的订单推送功能!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -105,10 +161,16 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
             Toast.makeText(this, R.string.please_edit_verificationcode, Toast.LENGTH_SHORT).show();
             return;
         }
+
         UrlParse urlParse = new UrlParse(UrlData.LOGIN_URL);
         urlParse.putValue("username", etUsername.getText().toString());
         urlParse.putValue("pwd", etPassword.getText().toString());
         urlParse.putValue("verifyCode", etVerifycode.getText().toString());
+        if (location != null && location.getErrorCode() == 0) {
+            urlParse.putValue("latitude", location.getLatitude() + "");
+            urlParse.putValue("longitude", location.getLongitude() + "");
+            Toast.makeText(this, "latitude: " + location.getLatitude() + ",longitude" + location.getLongitude(), Toast.LENGTH_LONG);
+        }
         LoginPresenterImpl loginPresenter = new LoginPresenterImpl(this, urlParse.toString());
     }
 
@@ -119,7 +181,7 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     }
 
     @OnClick(R.id.et_verifycodequestion)
-    public void changeCodeQuestion(){
+    public void changeCodeQuestion() {
         VerificationCodePresenterImpl verificationCodePresenter = new VerificationCodePresenterImpl(this);
     }
 
@@ -162,12 +224,14 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         }
     }
 
-    public void saveUserInfo(){
+    public void saveUserInfo() {
         PreferencesUtils.putString(this, ConfigData.USER_NAME, etUsername.getText().toString());
         PreferencesUtils.putString(this, ConfigData.USER_PASSWORD, etPassword.getText().toString());
     }
+
     @Override
     protected void onDestroy() {
+        mLocationClient.stopLocation();
         super.onDestroy();
     }
 }
