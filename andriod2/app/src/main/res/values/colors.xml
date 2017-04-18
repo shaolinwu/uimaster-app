@@ -23,8 +23,8 @@
     <color name="main_black">#333</color>
     <color name="black_50">#7f000000</color>
     <color name="login_activity_bg">#fafafa</color>
-    <color name="toolbar_color">#0b751e</color>
+    <color name="toolbar_color">#e78f08</color>
     <color name="menu_bg">#f6f6f6</color>
-    <color name="title_bar_bg">#40aa52</color>
+    <color name="title_bar_bg">#e78f08</color>
     <color name="transparent">#00000000</color>
 </resources>

@@ -82,6 +82,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private ImageView ivLoading;
     private MainModulePresenterImpl presenter;
     private ReadMePresenterImpl downFilePresenter;
+    private MainActivity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,6 +278,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     public void getMenuItems(LoginBean loginBean) {
         isLogin = true;
         userId = loginBean.userId;
+
         MenuItemPresenterImpl presenter = new MenuItemPresenterImpl(this);
 
         Socket mSocket = AjaxContext.getWebService();
@@ -285,7 +287,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         mSocket.off("notifyFrom");
         mSocket.on("connect", connect);
         mSocket.on("loginSuccess", loginSuccess);
-        mSocket.on("notifyFrom", notifyFrom);
+        mSocket.on("notifySingleItem", notifySingleItem);
+        mSocket.on("chatTo", chatTo);
         mSocket.connect();
     }
 
@@ -299,18 +302,25 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     private Emitter.Listener connect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            AjaxContext.getWebService().emit("register", getMsg());
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("partyId",userId);
+                AjaxContext.getWebService().emit("register", jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     };
 
     private Emitter.Listener loginSuccess = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            AjaxContext.getWebService().emit("notifihistory", getMsg());
+            //AjaxContext.getWebService().emit("notifihistory", getMsg());
+            //no need, user will check from Notification module!
         }
     };
 
-    private Emitter.Listener notifyFrom = new Emitter.Listener() {
+    private Emitter.Listener notifySingleItem = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             MainActivity.this.runOnUiThread(new Runnable() {
@@ -326,15 +336,35 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         }
     };
 
-    private JSONObject getMsg(){
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("partyId",userId);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private Emitter.Listener chatTo = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        JSONObject jsonObject = (JSONObject)args[0];
+                        if (ChatActivity.sessionId == null && !jsonObject.getString("sessionId").equals(ChatActivity.sessionId)) {
+                            NoticePushUtil.getInstance(MainActivity.this).showChatPush(MainActivity.this, jsonObject);
+                        }
+//                        Bundle arguments = new Bundle();
+//                        arguments.putLong("orgId", jsonObject.getLong("orgId"));
+//                        arguments.putLong("taskId", jsonObject.getLong("taskId"));
+//                        arguments.putLong("fromPartyId", jsonObject.getLong("fromPartyId"));
+//                        arguments.putLong("fromPartyName", jsonObject.getLong("fromPartyName"));
+//                        arguments.putLong("toPartyId", jsonObject.getLong("toPartyId"));
+//                        arguments.putString("sessionId", jsonObject.getString("sessionId"));
+//                        arguments.putString("content", jsonObject.getString("content"));
+//                        Intent intent = new Intent(activity, ChatActivity.class);
+//                        intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+//                        activity.startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
-        return jsonObject;
-    }
+    };
 
     @Override
     public void showMenuList(final List<org.shaolin.uimaster.app.bean.MenuItem> items) {

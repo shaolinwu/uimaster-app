@@ -11,12 +11,12 @@
         <include layout="@layout/commond_toolbar"/>
         <TextView
             android:id="@+id/tv_order_info"
-            android:text="来自上海市的采购订单四组圆盘来自上海市的采购订单四组圆盘"
+            android:text=""
             style="@style/order_text" />
         <TextView
             android:layout_marginTop="8dp"
             android:id="@+id/tv_order_price"
-            android:text="出价：20w"
+            android:text=""
             style="@style/order_text" />
         <TextView
             android:id="@+id/tv_order_sender"
@@ -24,16 +24,16 @@
             android:text="发送者"
             style="@style/order_text" />
         <TextView
-            android:id="@+id/tv_sender_recipient"
+            android:id="@+id/tv_sender_name"
             android:text="Android"
             style="@style/order_text" />
         <TextView
-            android:id="@+id/tv_order_"
+            android:id="@+id/tv_order_receiver"
             android:layout_marginTop="8dp"
             android:text="接受者"
             style="@style/order_text" />
         <TextView
-            android:id="@+id/tv_sender_name"
+            android:id="@+id/tv_receiver_name"
             android:text="Android"
             style="@style/order_text" />
         <View

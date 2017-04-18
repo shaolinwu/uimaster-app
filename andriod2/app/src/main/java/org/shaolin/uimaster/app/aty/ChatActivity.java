@@ -43,6 +43,7 @@ import org.shaolin.uimaster.app.chatview.adapter.FaceVPAdapter;
 import org.shaolin.uimaster.app.chatview.view.DropdownListView;
 import org.shaolin.uimaster.app.chatview.view.MyEditText;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
+import org.shaolin.uimaster.app.push.NoticePushUtil;
 
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -67,14 +68,10 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     TextView tvOrderInfo;
     @BindView(R.id.tv_order_price)
     TextView tvOrderPrice;
-    @BindView(R.id.tv_order_sender)
-    TextView tvOrderSender;
-    @BindView(R.id.tv_sender_recipient)
-    TextView tvSenderRecipient;
-    @BindView(R.id.tv_order_)
-    TextView tvOrder;
     @BindView(R.id.tv_sender_name)
     TextView tvSenderName;
+    @BindView(R.id.tv_receiver_name)
+    TextView tvReceiverName;
     @BindView(R.id.image_face)
     ImageView imageFace;
     @BindView(R.id.send_sms)
@@ -97,7 +94,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private boolean isAdmin;
     private long orgId;
     private long userId;
-    private String sessionId;
+    public static String sessionId; //this is shared for status check
     private long taskId;
     private long toUserId;
     private String userName;
@@ -112,7 +109,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private int rows = 4;
     private List<View> views = new ArrayList<View>();
     private String reply;
-
+    ChatActivity activity = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,7 +155,16 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         toUserId = bundle.getLong("receivedPartyId");
         userName = bundle.getString("sentPartyName");
         toUserName = bundle.getString("recievedPartyName");
-
+        tvSenderName.setText(userName);
+        tvReceiverName.setText(toUserName);
+        if (bundle.getString("orderInfo") != null) {
+            tvOrderInfo.setText("订单信息： " + bundle.getString("orderInfo"));
+        } else {
+            tvOrderInfo.setText("没有相关订单信息。");
+        }
+        if (bundle.getString("price") != null) {
+            tvOrderPrice.setText("当前出价： " + bundle.getString("price"));
+        }
         Socket mSocket = AjaxContext.getWebService();
         try {
             JSONObject jsonObject = new JSONObject();
@@ -169,14 +175,21 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mSocket.off("history");
-        mSocket.off("chatTo");
         mSocket.on("history", history);
         mSocket.on("chatTo", chat);
 
         mLvAdapter = new ChatLVAdapter(this, infos);
         mListView.setAdapter(mLvAdapter);
         mViewPager.setOnPageChangeListener(new PageChange());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sessionId = null;
+        Socket mSocket = AjaxContext.getWebService();
+        mSocket.off("history", history);
+        mSocket.off("chatTo", chat);
     }
 
     private Emitter.Listener history = new Emitter.Listener() {
@@ -193,6 +206,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                         } else {
                             infos.add(getChatInfoFrom(data.getJSONObject(i).getString("CREATEDATE"), data.getJSONObject(i).getString("MESSAGE")));
                         }
+                        mLvAdapter.setList(infos);
+                        mLvAdapter.notifyDataSetChanged();
+                        mListView.onRefreshCompleteHeader();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -208,8 +224,15 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             // received message
             JSONObject jsonObject = (JSONObject) args[0];
             try {
-                if (jsonObject.getLong("toPartyId") == toUserId) {
+                if (jsonObject.getString("sessionId").equals(sessionId)) {
+                    // this is the session message.
                     infos.add(getChatInfoFrom(sd.format(new Date()), jsonObject.getString("content")));
+                    mLvAdapter.setList(infos);
+                    mLvAdapter.notifyDataSetChanged();
+                    mListView.onRefreshCompleteHeader();
+                } else {
+                    // this is another session message
+                    NoticePushUtil.getInstance(activity).showChatPush(activity, jsonObject);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -223,6 +246,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             jsonObject.put("taskId", taskId);
             jsonObject.put("orgId", orgId);
             jsonObject.put("fromPartyId", userId);
+            jsonObject.put("fromPartyName", userName);
             jsonObject.put("toPartyId", toUserId);
             jsonObject.put("sessionId", sessionId);
             jsonObject.put("content", message);
@@ -323,18 +347,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onRefresh() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sleep(1000);
-                    Message msg = mHandler.obtainMessage(0);
-                    mHandler.sendMessage(msg);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+
     }
 
     /**

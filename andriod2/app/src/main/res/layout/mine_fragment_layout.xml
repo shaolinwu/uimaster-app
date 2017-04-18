@@ -21,7 +21,7 @@
         android:id="@+id/tv_login_out"
         android:textSize="@dimen/text_size_16"
         android:textColor="@color/black"
-        android:background="@color/red"
+        android:background="@color/orange"
         android:gravity="center"
         android:text="@string/login_out"
         android:layout_marginLeft="30dp"

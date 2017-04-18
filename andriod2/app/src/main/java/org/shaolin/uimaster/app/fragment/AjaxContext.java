@@ -76,7 +76,7 @@ public class AjaxContext extends Callback<String> {
 
         myWebView.setWebViewClient(new WebViewClientA());
         myWebView.setWebChromeClient(new WebChromeClientA());
-        //myWebView.loadDataWithBaseURL("file:///", data, "text/html", "UTF-8",null);
+        //myWebView.("file:///", data, "text/html", "UTF-8",null);
     }
 
     @Override

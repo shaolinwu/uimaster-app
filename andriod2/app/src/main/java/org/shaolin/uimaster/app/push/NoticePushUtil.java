@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
@@ -58,7 +60,7 @@ public class NoticePushUtil {
                             // bar上显示的提示文字
                             .setContentTitle(bean.SUBJECT)// 设置在下拉status
                             // bar后Activity，本例子中的NotififyMessage的TextView中显示的标题
-                            .setContentText(bean.DESCRIPTION)// TextView中显示的详细内容
+                            //.setContentText(bean.DESCRIPTION)// TextView中显示的详细内容
                             .setContentIntent(pendingIntent2) // 关联PendingIntent
                             .getNotification(); // 需要注意build()是在API level 16及之后增加的，在API11中可以使用getNotificatin()来代替
                     notify2.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -66,6 +68,19 @@ public class NoticePushUtil {
                 }
             }
         }
+    }
+
+    public void showChatPush(Context context, JSONObject jsonObject) throws JSONException {
+        // 通过Notification.Builder来创建通知，注意API Level
+        // API11之后才支持
+        Notification notify2 = new Notification.Builder(context)
+                .setTicker("您有新短消息，请注意查收！")// 设置在status
+                .setSmallIcon(R.mipmap.ic_launcher)
+                // bar上显示的提示文字
+                .setContentTitle(jsonObject.getString("fromPartyName") + ": " + jsonObject.getString("content"))// 设置在下拉status
+                .getNotification(); // 需要注意build()是在API level 16及之后增加的，在API11中可以使用getNotificatin()来代替
+        notify2.flags |= Notification.FLAG_AUTO_CANCEL;
+        manager.notify(id++, notify2);
     }
 
 }
