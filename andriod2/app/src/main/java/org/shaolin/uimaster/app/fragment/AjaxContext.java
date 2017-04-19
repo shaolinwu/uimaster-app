@@ -70,7 +70,7 @@ public class AjaxContext extends Callback<String> {
 
     public AjaxContext(BaseFragment f, WebView parentWebView, WebView myWebView, BaseActivity activity) {
         this.fragment = f;
-        this.parentWebView = myWebView;
+        this.parentWebView = parentWebView;
         this.myWebView = myWebView;
         this.activity = activity;
 
@@ -144,12 +144,7 @@ public class AjaxContext extends Callback<String> {
             } else {
                 String uiid = item.getString("uiid");
                 final String itemJson = item.toString();
-                webView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
-                    }
-                });
+                webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
             }
         } else if ("openwindow".equals(jsHandler)) {
             Bundle arguments = new Bundle();
@@ -184,12 +179,7 @@ public class AjaxContext extends Callback<String> {
         } else {
             String uiid = item.getString("uiid");
             final String itemJson = item.toString();
-            webView.post(new Runnable() {
-                @Override
-                public void run() {
-                    webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
-                }
-            });
+            webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
         }
     }
 

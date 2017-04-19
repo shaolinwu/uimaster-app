@@ -109,7 +109,14 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster-widget.js\"></script>\n");
         sb.append(argus.get("loadjs"));
         sb.append("</head>\n");
-        sb.append("<body>\n");
+        sb.append("<body data-role=\"page\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||AJAX_EXCEPTION_REQUEST_WAIT\" msg=\"请求处理中，请稍候...\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||VERIFY_FAIL\" msg=\"校验不通过.\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||ALLOW_BLANK\" msg=\"不允许为空.\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||REGULAR_EXPRESSION\" msg=\"输入值不符合规定的格式.\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||MINIMUM_LENGTH\" msg=\"输入值的长度不符合要求.\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||MUST_CHECK\" msg=\"必须勾选中其中某项.\">\n");
+        sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||SELECT_VALUE\" msg=\"必须选择其中某项.\">\n");
         sb.append("<form action=\"#\" method=\"post\" name=\"everything\"");
         sb.append(" onsubmit=\"return false;\" _framePrefix=\"").append(argus.getString("_framePrefix")).append("\">\n");
         sb.append(argus.get("data"));
