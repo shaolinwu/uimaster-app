@@ -164,6 +164,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         }
         if (bundle.getString("price") != null) {
             tvOrderPrice.setText("当前出价： " + bundle.getString("price"));
+        } else {
+            tvOrderPrice.setText("当前出价： 未知");
         }
         Socket mSocket = AjaxContext.getWebService();
         try {
@@ -209,6 +211,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                         mLvAdapter.setList(infos);
                         mLvAdapter.notifyDataSetChanged();
                         mListView.onRefreshCompleteHeader();
+                        mListView.setSelection(infos.size() - 1);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -230,6 +233,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                     mLvAdapter.setList(infos);
                     mLvAdapter.notifyDataSetChanged();
                     mListView.onRefreshCompleteHeader();
+                    mListView.setSelection(infos.size() - 1);
                 } else {
                     // this is another session message
                     NoticePushUtil.getInstance(activity).showChatPush(activity, jsonObject);
@@ -275,21 +279,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    /*------------------------------------------------------------------*/
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    mLvAdapter.setList(infos);
-                    mLvAdapter.notifyDataSetChanged();
-                    mListView.onRefreshCompleteHeader();
-                    break;
-            }
-        }
-    };
-
     /**
      * 接收的信息
      * @param message
@@ -327,15 +316,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                     mLvAdapter.setList(infos);
                     mLvAdapter.notifyDataSetChanged();
                     mListView.setSelection(infos.size() - 1);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            infos.add(getChatInfoFrom(sd.format(new Date()), reply));
-//                            mLvAdapter.setList(infos);
-//                            mLvAdapter.notifyDataSetChanged();
-//                            mListView.setSelection(infos.size() - 1);
-//                        }
-//                    }, 1000);
+
                     inputSms.setText("");
                 }
                 break;
@@ -347,7 +328,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onRefresh() {
-
     }
 
     /**

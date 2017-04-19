@@ -485,6 +485,8 @@ public class AjaxContext extends Callback<String> {
             Bundle arguments = new Bundle();
             arguments.putBoolean("isAdmin", jsonObject.getBoolean("isAdmin"));
             arguments.putString("sessionId", jsonObject.getString("sessionId"));
+            arguments.putString("orderInfo", jsonObject.getString("orderInfo"));
+            arguments.putString("price", jsonObject.getString("price"));
             arguments.putLong("orgId", jsonObject.getLong("orgId"));
             arguments.putLong("taskId", jsonObject.getLong("taskId"));
             arguments.putLong("sentPartyId", jsonObject.getLong("sentPartyId"));

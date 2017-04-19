@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -77,9 +79,14 @@ public class NoticePushUtil {
                 .setTicker("您有新短消息，请注意查收！")// 设置在status
                 .setSmallIcon(R.mipmap.ic_launcher)
                 // bar上显示的提示文字
-                .setContentTitle(jsonObject.getString("fromPartyName") + ": " + jsonObject.getString("content"))// 设置在下拉status
+                .setContentTitle("来信留言: " + jsonObject.getString("fromPartyName") + "--" + jsonObject.getString("content"))// 设置在下拉status
                 .getNotification(); // 需要注意build()是在API level 16及之后增加的，在API11中可以使用getNotificatin()来代替
         notify2.flags |= Notification.FLAG_AUTO_CANCEL;
+        long[] vibrates = { 0, 1000, 1000, 1000 };
+        notify2.vibrate = vibrates;
+//        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+//        notify2.sound = uri;
+        //notify2.defaults = Notification.DEFAULT_ALL;
         manager.notify(id++, notify2);
     }
 
