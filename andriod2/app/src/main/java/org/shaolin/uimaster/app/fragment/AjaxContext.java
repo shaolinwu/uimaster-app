@@ -8,6 +8,7 @@ import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -18,8 +19,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.alipay.sdk.app.PayTask;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.Callback;
@@ -36,17 +39,16 @@ import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.data.UrlData;
-import org.shaolin.uimaster.app.pay.alipay.PayActivity;
+import org.shaolin.uimaster.app.pay.alipay.PayResult;
+import org.shaolin.uimaster.app.pay.wepay.PayManager;
 import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.UrlParse;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -167,15 +169,7 @@ public class AjaxContext extends Callback<String> {
 
             activity.startActivity(intent);
         } else if ("pay".equals(jsHandler)) {
-            Bundle arguments = new Bundle();
-            arguments.putString("js", item.getString("js"));
-            arguments.putString("data", item.getString("data"));
-            arguments.putString("uiid", item.getString("uiid"));
-            arguments.putString("_framePrefix", item.getString("frameInfo"));
-
-            Intent intent = new Intent(activity, PayActivity.class);
-            intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
-            activity.startActivity(intent);
+            //TODO:
         } else {
             String uiid = item.getString("uiid");
             final String itemJson = item.toString();
@@ -469,6 +463,15 @@ public class AjaxContext extends Callback<String> {
     }
 
     @JavascriptInterface
+    public void openURLDialog(String title, String url) {
+        Intent intent = new Intent(activity, WebViewActivity.class);
+        intent.putExtra("title", title);
+        intent.putExtra("url", UrlData.RESOURCE_URL +  url);
+
+        activity.startActivity(intent);
+    }
+
+    @JavascriptInterface
     public void openChatWindow(String json) {
         try {
             JSONObject jsonObject = new JSONObject(json);
@@ -488,6 +491,49 @@ public class AjaxContext extends Callback<String> {
             activity.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @JavascriptInterface
+    public void appPay(String orderInfo, String paymethod) {
+        if ("alipay".equalsIgnoreCase(paymethod)) {
+            Toast.makeText(activity, "正常调起支付宝", Toast.LENGTH_SHORT).show();
+            PayTask alipay = new PayTask(this.activity);
+            Map<String, String> result = alipay.payV2(orderInfo, true);
+            PayResult payResult = new PayResult(result);
+            /**
+             对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
+             */
+            String resultInfo = payResult.getResult();// 同步返回需要验证的信息
+            String resultStatus = payResult.getResultStatus();
+            // 判断resultStatus 为9000则代表支付成功
+            if (TextUtils.equals(resultStatus, "9000")) {
+                // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
+                Toast.makeText(activity, "您的支付宝已支付成功。", Toast.LENGTH_SHORT).show();
+            } else {
+                // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
+                Toast.makeText(activity, "支付宝支付失败!请刷新页面重试，谢谢！", Toast.LENGTH_SHORT).show();
+            }
+        } else if ("wepay".equalsIgnoreCase(paymethod)) {
+            try {
+                JSONObject json = new JSONObject(orderInfo);
+                PayReq req = new PayReq();
+                req.appId			= json.getString("appid");
+                req.partnerId		= json.getString("partnerid");
+                req.prepayId		= json.getString("prepayid");
+                req.nonceStr		= json.getString("noncestr");
+                req.timeStamp		= json.getString("timestamp");
+                req.packageValue	= json.getString("package");
+                req.sign			= json.getString("sign");
+                req.extData			= "app data"; // optional
+                Toast.makeText(activity, "正常调起微信支付", Toast.LENGTH_SHORT).show();
+                // 在支付之前，如果应用没有注册到微信，应该先调用IWXMsg.registerApp将应用注册到微信
+                PayManager.getWXAPI(activity).sendReq(req);
+            } catch (Exception e) {
+                Toast.makeText(activity, "微信支付调用异常!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            throw new UnsupportedOperationException("Unsupported payment method: " + paymethod);
         }
     }
 
