@@ -467,6 +467,7 @@ public class AjaxContext extends Callback<String> {
         Intent intent = new Intent(activity, WebViewActivity.class);
         intent.putExtra("title", title);
         intent.putExtra("url", UrlData.RESOURCE_URL +  url);
+        intent.putExtra("static_res", "true");
 
         activity.startActivity(intent);
     }

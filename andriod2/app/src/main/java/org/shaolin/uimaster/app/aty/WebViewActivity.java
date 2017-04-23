@@ -81,10 +81,12 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         url = getIntent().getStringExtra("url");
         String title = getIntent().getStringExtra("title");
         if (!TextUtils.isEmpty(url)){
-            //webview.loadUrl(url);
-
-            showProgress();
-            HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
+            if (getIntent().getStringExtra("static_res") != null) {
+                webview.loadUrl(url);
+            } else {
+                showProgress();
+                HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
+            }
         }
         if (!TextUtils.isEmpty(title)){
             setToolBarTitle(title);
