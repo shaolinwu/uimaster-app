@@ -31,7 +31,7 @@ public final class UrlData {
     //注册用户url
     public static final String REGISTER_URL = BASE_URL + "webflow.do?_timestamp=97&_chunkname=org.shaolin.bmdp.adminconsole.diagram.LoginAuthentication&_nodename=Registration&_appclient=andriod";
     //登录url
-    public static final String LOGIN_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userLogin&username=&pwd=&verifyCode=a&_appclient=andriod";
+    public static final String LOGIN_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userLogin&_appclient=andriod";
     //获取menuitems
     public static final String MENU_ITEMS_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.commonmodel.page.AjaxService.functionList&_appclient=andriod";
     //获取我的items
@@ -41,6 +41,6 @@ public final class UrlData {
     public static final String LOGIN_OUT_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userLogout&_appclient=andriod";
 
     //
-    public static final String AD_URL = "https://www.vogerp.com/uimaster/ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.campaign.page.AjaxService.getAppLuanchingAdv&_appclient=andriod";
+    public static final String AD_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.campaign.page.AjaxService.getAppLuanchingAdv&_appclient=andriod";
 
 }

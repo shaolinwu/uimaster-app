@@ -123,12 +123,13 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("\n");
         sb.append("</form>\n");
         sb.append("<script type=\"text/javascript\">\n");
-        sb.append("getElementList();\n");
         sb.append("var defaultname = new Object();\n");
         sb.append("defaultname.initPageJs = function(){};\n");
+        sb.append("$(window).load(function(){\n");
+        sb.append("getElementList();\n");
         sb.append(argus.get("js"));
-        sb.append("\ndefaultname.initPageJs();\n");
-        sb.append("\n</script>\n</body>\n</html>");
+        sb.append("postInit();\n");
+        sb.append("});\n</script>\n</body>\n</html>");
 
         webview.loadDataWithBaseURL("", sb.toString(), "text/html", "UTF-8", "");
     }

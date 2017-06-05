@@ -32,7 +32,7 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
 
     public final static int FILECHOOSER_RESULTCODE = 30;
 
-    public String selectedUploadFile = null;
+    public String[] selectedUploadFile = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,15 +91,16 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
                         mFileUploadCallbackFirst = null;
                         //Log.w("UIMaster", "choosen path at first: " + intent.getData().toString());
                     } else if (mFileUploadCallbackSecond != null) {
-                        Uri[] dataUris;
                         try {
-                            dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
+                            Uri[] dataUris = new Uri[] { Uri.parse(intent.getDataString()) };
+                            selectedUploadFile = new String[dataUris.length];
+                            for (int i=0;i<dataUris.length;i++) {
+                                selectedUploadFile[i] = UrlParse.getRealFilePath(this, dataUris[i]);
+                                Log.w("UIMaster", "choosen file path: " + selectedUploadFile[i]);
+                            }
+                            mFileUploadCallbackSecond.onReceiveValue(dataUris);
                         } catch (Exception e) {
-                            dataUris = null;
                         }
-                        selectedUploadFile = UrlParse.getRealFilePath(this, dataUris[0]);
-                        Log.w("UIMaster", "choosen path: " + selectedUploadFile);
-                        mFileUploadCallbackSecond.onReceiveValue(dataUris);
                         mFileUploadCallbackSecond = null;
                     }
                 }

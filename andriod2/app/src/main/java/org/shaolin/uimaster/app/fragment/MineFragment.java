@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -21,6 +22,7 @@ import org.shaolin.uimaster.app.adpter.MineAdapter;
 import org.shaolin.uimaster.app.aty.LoginActivity;
 import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
+import org.shaolin.uimaster.app.bean.CookiesBean;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
 import org.shaolin.uimaster.app.customeview.CircleImageView;
@@ -31,10 +33,14 @@ import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.LoginOutPresenterImpl;
+import org.shaolin.uimaster.app.viewmodule.impl.LoginPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.MineItemPresenterImpl;
+import org.shaolin.uimaster.app.viewmodule.inter.ILoginView;
 import org.shaolin.uimaster.app.viewmodule.inter.IMineView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,7 +55,7 @@ import de.greenrobot.event.ThreadMode;
  * deprecated:
  */
 
-public class MineFragment extends BaseFragment implements IMineView {
+public class MineFragment extends BaseFragment implements IMineView, ILoginView {
     public static MineFragment mineFragmentInstance;
     @BindView(R.id.user_icon)
     CircleImageView userIcon;
@@ -74,13 +80,13 @@ public class MineFragment extends BaseFragment implements IMineView {
         mView = View.inflate(mContext, R.layout.mine_fragment_layout, null);
         ButterKnife.bind(this, mView);
         mineItemPresenter = new MineItemPresenterImpl(this);
+        autoLogin();
     }
 
     public static MineFragment getInstance() {
         if (mineFragmentInstance == null) {
             mineFragmentInstance = new MineFragment();
         }
-
         return mineFragmentInstance;
     }
 
@@ -88,8 +94,34 @@ public class MineFragment extends BaseFragment implements IMineView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // TODO: inflate a fragment view
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-
         return rootView;
+    }
+
+    private void autoLogin() {
+        String userName = PreferencesUtils.getString(this.getContext(), ConfigData.USER_NAME);
+        String userPassword = PreferencesUtils.getString(this.getContext(), ConfigData.USER_PASSWORD);
+        String autoSumCheck = PreferencesUtils.getString(this.getContext(), ConfigData.USER_LOGIN_SUMCHECK);
+        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(userPassword) && !TextUtils.isEmpty(autoSumCheck)) {
+            Map<String, String> urlParse = new HashMap<String, String>();
+            urlParse.put("username", userName);
+            urlParse.put("pwd", userPassword);
+            urlParse.put("autosumcheck", autoSumCheck);
+            LoginPresenterImpl loginPresenter = new LoginPresenterImpl(this, urlParse);
+        }
+    }
+
+    public void loginResult(LoginBean loginBean) {
+        if (loginBean == null || !TextUtils.isEmpty(loginBean.error) || TextUtils.isEmpty(loginBean.userName)) {
+            Toast.makeText(this.getContext(), R.string.login_error, Toast.LENGTH_SHORT).show();
+            PreferencesUtils.putString(this.getContext(), ConfigData.USER_PASSWORD, "");
+            PreferencesUtils.putString(this.getContext(), ConfigData.USER_LOGIN_SUMCHECK, "");
+        } else {
+            EventBus.getDefault().post(loginBean);
+            CookiesBean cookiesBean = new CookiesBean();
+            cookiesBean.cookies = loginBean.cookies;
+            PreferencesUtils.putString(this.getContext(), ConfigData.USER_COOKIES, loginBean.cookies);
+            EventBus.getDefault().post(cookiesBean);
+        }
     }
 
     @OnClick(R.id.user_icon)

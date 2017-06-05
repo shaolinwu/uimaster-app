@@ -15,4 +15,6 @@ public class ConfigData {
     public static String AD_VERSION = "ad_version";
     public static String USER_NAME = "user_name";
     public static String USER_PASSWORD = "user_password";
+    public static String USER_LOGIN_SUMCHECK = "user_autosumcheck";
+
 }

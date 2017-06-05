@@ -130,4 +130,10 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     public void refreshComplete(){
         refreshLayout.setRefreshing(false);
     }
+
+    @Override
+    protected void onDestroy() {
+        //TODO: send a http notification {serviceName:"closepage",_framePrefix:UIMaster.getFramePrefix()}
+        super.onDestroy();
+    }
 }

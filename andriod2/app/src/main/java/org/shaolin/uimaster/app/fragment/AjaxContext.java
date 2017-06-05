@@ -81,6 +81,10 @@ public class AjaxContext extends Callback<String> {
         //myWebView.("file:///", data, "text/html", "UTF-8",null);
     }
 
+    public WebView getWebView() {
+        return myWebView;
+    }
+
     @Override
     public String parseNetworkResponse(Response response) throws Exception {
         String content = response.body().string();
@@ -97,6 +101,7 @@ public class AjaxContext extends Callback<String> {
         try {
             final JSONArray array = new JSONArray(response);
             int length = array.length();
+            myWebView.loadUrl("javascript:UIMaster.ui.mask.close()");
             final List<JSONObject> loadJsItem = new ArrayList<JSONObject>();
             for (int i = 0; i < length; i++) {
                 JSONObject item = array.getJSONObject(i);
@@ -379,10 +384,15 @@ public class AjaxContext extends Callback<String> {
     @JavascriptInterface
     public void uploadImage(final String url, final String uiid, final String filePath) {
         this.uploadFileUIID = uiid;
-        if (activity != null && activity.selectedUploadFile != null) {
-            UrlParse.uploadImage(this, activity, url, new File(activity.selectedUploadFile), null);
+        if (activity != null && activity.selectedUploadFile != null && activity.selectedUploadFile.length > 0) {
+            File[] files = new File[activity.selectedUploadFile.length];
+            for (int i=0;i<activity.selectedUploadFile.length;i++) {
+                files[i] = new File(activity.selectedUploadFile[i]);
+            }
+            UrlParse.uploadImage(this, activity, url, files, null);
+            activity.selectedUploadFile = null;
         } else {
-            UrlParse.uploadImage(this, activity, url, new File(filePath), null);
+            UrlParse.uploadImage(this, activity, url, new File[]{new File(filePath)}, null);
         }
     }
 
@@ -390,9 +400,14 @@ public class AjaxContext extends Callback<String> {
     public void uploadFile(final String url, final String uiid, final String filePath) {
         this.uploadFileUIID = uiid;
         if (activity != null && activity.selectedUploadFile != null) {
-            UrlParse.uploadImage(this, activity, url, new File(activity.selectedUploadFile), null);
+            File[] files = new File[activity.selectedUploadFile.length];
+            for (int i=0;i<activity.selectedUploadFile.length;i++) {
+                files[i] = new File(activity.selectedUploadFile[i]);
+            }
+            UrlParse.uploadImage(this, activity, url, files, null);
+            activity.selectedUploadFile = null;
         } else {
-            UrlParse.uploadImage(this, activity, url, new File(filePath), null);
+            UrlParse.uploadImage(this, activity, url, new File[]{new File(filePath)}, null);
         }
     }
 
@@ -466,7 +481,7 @@ public class AjaxContext extends Callback<String> {
     public void openURLDialog(String title, String url) {
         Intent intent = new Intent(activity, WebViewActivity.class);
         intent.putExtra("title", title);
-        intent.putExtra("url", UrlData.RESOURCE_URL +  url);
+        intent.putExtra("url", UrlData.RESOURCE_URL +  url + "&r=" + Math.random());
         intent.putExtra("static_res", "true");
 
         activity.startActivity(intent);

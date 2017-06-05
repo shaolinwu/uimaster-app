@@ -335,16 +335,22 @@ public class UrlParse {
         });
     }
 
-    public static void uploadImage(final AjaxContext ajaxContext, final Context context, final String url, final File file, final Map<String, Object> map) {
+    public static void uploadImage(final AjaxContext ajaxContext, final Context context, final String url, final File[] files, final Map<String, Object> map) {
+        if (files == null || files.length ==0) {
+            ajaxContext.getWebView().post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "请选择图片，再点击上传！", Toast.LENGTH_SHORT).show();
+                }
+            });
+            return;
+        }
         OkHttpClient client = OkHttpUtils.getInstance().getOkHttpClient();
         // form 表单形式上传
         MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        if(file != null){
-            // MediaType.parse() 里面是上传的文件类型。
-            //RequestBody body = RequestBody.create(MediaType.parse("image/*"), file);
-            //String filename = file.getName();
-            // 参数分别为， 请求key ，文件名称 ， RequestBody
-            requestBody.addFormDataPart("headImage", file.getName(), createCustomRequestBody(MediaType.parse("image/*"), file, ajaxContext));
+        for (File f: files) {
+            RequestBody body = createCustomRequestBody(MediaType.parse("image/*"), f, ajaxContext);
+            requestBody.addFormDataPart("headImage", f.getName(), body);
         }
         if (map != null) {
             // map 里面是请求中所需要的 key 和 value

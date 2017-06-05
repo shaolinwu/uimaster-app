@@ -4,14 +4,17 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.cookie.CookieJarImpl;
 import com.zhy.http.okhttp.cookie.store.MemoryCookieStore;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.LoginBean;
+import org.shaolin.uimaster.app.data.UrlData;
 import org.shaolin.uimaster.app.viewmodule.inter.ILoginView;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
@@ -22,14 +25,13 @@ import okhttp3.HttpUrl;
 
 public class LoginPresenterImpl extends BasePresenterImpl<ILoginView> {
 
-    private String url;
-    public LoginPresenterImpl(ILoginView view, String url) {
+    public LoginPresenterImpl(ILoginView view, Map<String, String> values) {
         super(view);
-        this.url = url;
-        OkHttpUtils.get()
-                .url(url)
-                .build()
-                .execute(this);
+        PostFormBuilder postForm = OkHttpUtils.post();
+        for (Map.Entry<String, String> entry: values.entrySet()) {
+            postForm.addParams(entry.getKey(), entry.getValue());
+        }
+        postForm.url(UrlData.LOGIN_URL).build().execute(this);
     }
 
     @Override
@@ -38,9 +40,9 @@ public class LoginPresenterImpl extends BasePresenterImpl<ILoginView> {
 
         if (!TextUtils.isEmpty(response)){
             Gson gson = new Gson();
-            LoginBean bean = gson.fromJson(response,LoginBean.class);
+            LoginBean bean = gson.fromJson(response, LoginBean.class);
             CookieJarImpl cookieJar = (CookieJarImpl) OkHttpUtils.getInstance().getOkHttpClient().cookieJar();
-            HttpUrl httpUrl = HttpUrl.parse(url);
+            HttpUrl httpUrl = HttpUrl.parse(UrlData.LOGIN_URL);
             List<Cookie> allCookies = ((MemoryCookieStore)cookieJar.getCookieStore()).get(httpUrl);
             if (allCookies != null && allCookies.size() != 0){
                 bean.cookies = allCookies.get(0).toString();

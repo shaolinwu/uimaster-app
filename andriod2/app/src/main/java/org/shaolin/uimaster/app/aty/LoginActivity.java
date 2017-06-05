@@ -1,7 +1,6 @@
 package org.shaolin.uimaster.app.aty;
 
 import android.content.Intent;
-import android.location.Criteria;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -37,6 +36,10 @@ import org.shaolin.uimaster.app.viewmodule.impl.LoginPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.VerificationCodePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.ILoginView;
 import org.shaolin.uimaster.app.viewmodule.inter.IVerificationCodeView;
+
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -88,10 +91,10 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     protected void initView() {
 
         String userName = PreferencesUtils.getString(this, ConfigData.USER_NAME);
-        String userPassword = PreferencesUtils.getString(this, ConfigData.USER_PASSWORD);
-        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(userPassword)) {
+        //String userPassword = PreferencesUtils.getString(this, ConfigData.USER_PASSWORD);
+        if (!TextUtils.isEmpty(userName)) {
             etUsername.setText(userName);
-            etPassword.setText(userPassword);
+            //etPassword.setText(userPassword);
         }
 
         //初始化定位
@@ -162,16 +165,16 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
             return;
         }
 
-        UrlParse urlParse = new UrlParse(UrlData.LOGIN_URL);
-        urlParse.putValue("username", etUsername.getText().toString());
-        urlParse.putValue("pwd", etPassword.getText().toString());
-        urlParse.putValue("verifyCode", etVerifycode.getText().toString());
+        Map<String, String> urlParse = new HashMap<String, String>();
+        urlParse.put("username", etUsername.getText().toString());
+        urlParse.put("pwd", LoginActivity.genPasswordHash(etPassword.getText().toString()));
+        urlParse.put("verifyCode", etVerifycode.getText().toString());
         if (location != null && location.getErrorCode() == 0) {
-            urlParse.putValue("latitude", location.getLatitude() + "");
-            urlParse.putValue("longitude", location.getLongitude() + "");
-            Toast.makeText(this, "latitude: " + location.getLatitude() + ",longitude" + location.getLongitude(), Toast.LENGTH_LONG);
+            urlParse.put("latitude", location.getLatitude() + "");
+            urlParse.put("longitude", location.getLongitude() + "");
+            //Toast.makeText(this, "latitude: " + location.getLatitude() + ",longitude" + location.getLongitude(), Toast.LENGTH_LONG);
         }
-        LoginPresenterImpl loginPresenter = new LoginPresenterImpl(this, urlParse.toString());
+        LoginPresenterImpl loginPresenter = new LoginPresenterImpl(this, urlParse);
     }
 
     @OnClick(R.id.btn_register)
@@ -213,8 +216,10 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     public void loginResult(LoginBean loginBean) {
         if (!TextUtils.isEmpty(loginBean.error) || loginBean == null || TextUtils.isEmpty(loginBean.userName)) {
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT).show();
+            PreferencesUtils.putString(this, ConfigData.USER_PASSWORD, "");
+            PreferencesUtils.putString(this, ConfigData.USER_LOGIN_SUMCHECK, "");
         } else {
-            saveUserInfo();
+            saveUserInfo(loginBean);
             if (location != null && location.getErrorCode() == 0) {
                 loginBean.latitude = location.getLatitude();
                 loginBean.longitude = location.getLongitude();
@@ -228,14 +233,39 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
         }
     }
 
-    public void saveUserInfo() {
+    public void saveUserInfo(LoginBean loginBean) {
         PreferencesUtils.putString(this, ConfigData.USER_NAME, etUsername.getText().toString());
-        PreferencesUtils.putString(this, ConfigData.USER_PASSWORD, etPassword.getText().toString());
+        PreferencesUtils.putString(this, ConfigData.USER_PASSWORD, LoginActivity.genPasswordHash(etPassword.getText().toString()));
+        PreferencesUtils.putString(this, ConfigData.USER_LOGIN_SUMCHECK,  loginBean.sumCheck);
     }
 
     @Override
     protected void onDestroy() {
         mLocationClient.stopLocation();
         super.onDestroy();
+    }
+
+    public static synchronized String genPasswordHash(String password) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.reset();
+            md5.update(password.getBytes("UTF-8"));
+            byte[] hash = md5.digest();
+            return byte2hex(hash);
+        } catch (Exception e) {
+            return password;
+        }
+    }
+
+    private static String byte2hex(byte[] b) {
+        StringBuffer sb = new StringBuffer(32);
+        for (int n = 0; n < b.length; n++) {
+            String hex = Integer.toHexString(b[n] & 0XFF).toUpperCase();
+            if (hex.length() == 1) {
+                sb.append('0');
+            }
+            sb.append(hex);
+        }
+        return new String(sb);
     }
 }

@@ -15,8 +15,9 @@ public class LoginBean {
     public String userName;
     public String userIcon;
     public String cookies;
+    public String sumCheck;
     public double longitude;
-    public double latitude ;
+    public double latitude;
 
     @SerializedName("verifyCode.error")
     public String error;
