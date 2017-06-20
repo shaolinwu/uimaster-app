@@ -44,7 +44,6 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        loadWebView();
         initListener();
     }
 
@@ -65,6 +64,19 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         if (!TextUtils.isEmpty(cookies)){
             setWebViewCookies(cookies);
         }
+        showProgress();
+        url = getIntent().getStringExtra("url");
+        String title = getIntent().getStringExtra("title");
+        if (!TextUtils.isEmpty(url)){
+            if (getIntent().getStringExtra("static_res") != null) {
+                webview.loadUrl(url);
+            } else {
+                HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
+            }
+        }
+        if (!TextUtils.isEmpty(title)){
+            setToolBarTitle(title);
+        }
     }
 
     private void initListener() {
@@ -75,22 +87,6 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
                 HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebViewActivity.this, url);
             }
         });
-    }
-
-    private void loadWebView() {
-        url = getIntent().getStringExtra("url");
-        String title = getIntent().getStringExtra("title");
-        if (!TextUtils.isEmpty(url)){
-            if (getIntent().getStringExtra("static_res") != null) {
-                webview.loadUrl(url);
-            } else {
-                showProgress();
-                HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
-            }
-        }
-        if (!TextUtils.isEmpty(title)){
-            setToolBarTitle(title);
-        }
     }
 
     public void received(String html) {

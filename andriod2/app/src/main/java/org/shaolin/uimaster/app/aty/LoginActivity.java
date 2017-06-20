@@ -179,7 +179,9 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
 
     @OnClick(R.id.btn_register)
     public void register() {
-        Intent intent = new Intent(this, RegisterActivity.class);
+        Intent intent = new Intent(this, WebViewActivity.class);
+        intent.putExtra("url", UrlData.REGISTER_URL);
+        intent.putExtra("title", "用户注册");
         startActivity(intent);
     }
 

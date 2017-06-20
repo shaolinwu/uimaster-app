@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
     <uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <supports-screens
         android:anyDensity="true"
@@ -43,9 +44,9 @@
         </activity>
         <activity android:name="org.shaolin.uimaster.app.aty.MainActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.LoginActivity" android:screenOrientation="portrait"/>
-        <activity android:name="org.shaolin.uimaster.app.aty.RegisterActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewDialogActivity" android:screenOrientation="portrait"/>
+        <activity android:name="org.shaolin.uimaster.app.aty.ImageActivity" android:screenOrientation="portrait"/>
         <activity android:name=".aty.ChatActivity" android:screenOrientation="portrait"/>
 		<activity
             android:name="com.alipay.sdk.app.H5PayActivity"

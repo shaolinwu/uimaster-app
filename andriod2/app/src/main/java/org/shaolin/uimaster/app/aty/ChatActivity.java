@@ -1,10 +1,12 @@
 package org.shaolin.uimaster.app.aty;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -110,9 +112,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private List<View> views = new ArrayList<View>();
     private String reply;
     ChatActivity activity = this;
+    private Vibrator vibrator;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
         initView();
         initData(getIntent().getBundleExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS));
         initListener();
@@ -189,6 +193,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     protected void onDestroy() {
         super.onDestroy();
         sessionId = null;
+        vibrator.cancel();
         Socket mSocket = AjaxContext.getWebService();
         mSocket.off("history", history);
         mSocket.off("chatTo", chat);
@@ -227,6 +232,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             // received message
             JSONObject jsonObject = (JSONObject) args[0];
             try {
+                long [] pattern = {100,400};   // 停止 开启
+                vibrator.vibrate(pattern, 1);
                 if (jsonObject.getString("sessionId").equals(sessionId)) {
                     // this is the session message.
                     infos.add(getChatInfoFrom(sd.format(new Date()), jsonObject.getString("content")));

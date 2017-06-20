@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseActivity;
@@ -37,6 +42,9 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
     WebView webview;
     AjaxContext ajaxContext;
 
+    private LinearLayout loadingLayout;
+    private ImageView ivLoading;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +59,9 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
 
     private void loadWebView(Bundle argus) {
         webview = (WebView)findViewById(R.id.webview);
-
+        loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
+        ivLoading = (ImageView) findViewById(R.id.iv_loading);
+        showProgress();
         WebView parentWebView = AppManager.getAppManager().popWebView(argus.getString("parentWebView"));
         ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
 
@@ -125,17 +135,32 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\">\n");
         sb.append("var defaultname = new Object();\n");
         sb.append("defaultname.initPageJs = function(){};\n");
-        sb.append("$(window).load(function(){\n");
+        sb.append("$(document).ready(function(){\n");
         sb.append("getElementList();\n");
         sb.append(argus.get("js"));
         sb.append("postInit();\n");
         sb.append("});\n</script>\n</body>\n</html>");
 
         webview.loadDataWithBaseURL("", sb.toString(), "text/html", "UTF-8", "");
+
+        hideProgress();
     }
 
     public void received(String html) {
         webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
+    }
+
+    @Override
+    public void showProgress() {
+        loadingLayout.setVisibility(View.VISIBLE);
+        Animation mRotateAnim = AnimationUtils.loadAnimation(this, R.anim.loading_rotate);
+        ivLoading.startAnimation(mRotateAnim);
+    }
+
+    @Override
+    public void hideProgress() {
+        ivLoading.clearAnimation();
+        loadingLayout.setVisibility(View.GONE);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {

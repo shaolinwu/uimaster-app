@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.aty.AppManager;
 import org.shaolin.uimaster.app.aty.ChatActivity;
+import org.shaolin.uimaster.app.aty.ImageActivity;
 import org.shaolin.uimaster.app.aty.LoginActivity;
 import org.shaolin.uimaster.app.aty.WebViewActivity;
 import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
@@ -173,6 +174,9 @@ public class AjaxContext extends Callback<String> {
             intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
 
             activity.startActivity(intent);
+        } else if ("form_refresh".equals(jsHandler) && activity instanceof WebViewDialogActivity) {
+            //TODO: dialog update.
+
         } else if ("pay".equals(jsHandler)) {
             //TODO:
         } else {
@@ -475,6 +479,13 @@ public class AjaxContext extends Callback<String> {
                 }
             }
         });
+    }
+
+    @JavascriptInterface
+    public void openImage(final String url) {
+        Intent intent = new Intent(activity, ImageActivity.class);
+        intent.putExtra("url", url);
+        activity.startActivity(intent);
     }
 
     @JavascriptInterface
