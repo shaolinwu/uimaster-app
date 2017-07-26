@@ -9,7 +9,10 @@
     <string name="mine">我的</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
+    <string name="findpwd">找回密码</string>
     <string name="please_edit_name">请输入用户名/手机</string>
+    <string name="please_edit_phone">请输入手机号</string>
+    <string name="findpwd_sentsms">已发送短信到您手机，请注意查收！</string>
     <string name="please_edit_password">请输入密码</string>
     <string name="please_edit_verificationcode">请输入验证码</string>
     <string name="login_error">登录失败</string>
@@ -25,5 +28,7 @@
     <string name="edittext_notice_0">请输入内容...</string>
     <string name="copy">复制</string>
     <string name="delete">删除</string>
-
+    <string name="str_audiorecbtn_want_cancel">松开手指，取消发送</string>
+    <string name="str_audiorecdlg_label_recording">手指上滑，取消发送</string>
+    <string name="str_audiorecdlg_label_too_short">录音时间过短</string>
 </resources>

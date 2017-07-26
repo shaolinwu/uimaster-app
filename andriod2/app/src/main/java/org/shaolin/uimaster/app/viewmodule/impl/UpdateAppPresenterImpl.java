@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.aty.MyApplication;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.utils.AppInfoUtil;
 import org.shaolin.uimaster.app.viewmodule.inter.IUpdateAppView;
 
@@ -22,7 +22,7 @@ public class UpdateAppPresenterImpl extends BasePresenterImpl<IUpdateAppView> {
     public UpdateAppPresenterImpl(IUpdateAppView view) {
         super(view);
         OkHttpUtils.get()
-                .url(UrlData.RESOURCE_URL + "download/appupdate.json")
+                .url(URLData.RESOURCE_URL + "download/appupdate.json")
                 .build()
                 .execute(this);
     }

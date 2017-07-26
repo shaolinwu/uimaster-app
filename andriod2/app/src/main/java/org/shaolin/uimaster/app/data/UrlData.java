@@ -6,12 +6,14 @@ package org.shaolin.uimaster.app.data;
  * deprecated:
  */
 
-public final class UrlData {
+public final class URLData {
 
     public static final String BASE_URL = "https://www.vogerp.com/uimaster/";
     public static final String RESOURCE_URL = "https://www.vogerp-res.com:8082/uimaster/";
     public static final String RESOURCE_URL_1 = "https://www.vogerp-res.com:8082/uimaster";
     public static final String CHAT_URL = "https://www.vogerp.com:8090";
+    public static final String CHAT_SEND_AUDIO_URL = "https://www.vogerp.com:8090/audio/add";
+    public static final String CHAT_GET_AUDIO_URL = "https://www.vogerp.com:8090/audio/get";
 
     public static final String HOST = "www.vogerp.com";//10.0.2.2
     public static final String Origin = "https://www.vogerp.com";//10.0.2.2:8080
@@ -32,6 +34,8 @@ public final class UrlData {
     public static final String REGISTER_URL = BASE_URL + "webflow.do?_timestamp=97&_chunkname=org.shaolin.bmdp.adminconsole.diagram.LoginAuthentication&_nodename=Registration&_appclient=andriod";
     //登录url
     public static final String LOGIN_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userLogin&_appclient=andriod";
+    //找回密码url
+    public static final String FINDPWD_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.findPwd&_appclient=andriod";
     //获取menuitems
     public static final String MENU_ITEMS_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.commonmodel.page.AjaxService.functionList&_appclient=andriod";
     //获取我的items

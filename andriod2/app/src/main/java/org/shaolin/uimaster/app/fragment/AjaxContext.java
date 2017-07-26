@@ -39,7 +39,7 @@ import org.shaolin.uimaster.app.aty.WebViewDialogActivity;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.data.FileData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.pay.alipay.PayResult;
 import org.shaolin.uimaster.app.pay.wepay.PayManager;
 import org.shaolin.uimaster.app.utils.FileUtil;
@@ -217,7 +217,6 @@ public class AjaxContext extends Callback<String> {
                     ((WebViewActivity)activity).refreshComplete();
                 }
             }
-
         }
 
         @Override
@@ -370,7 +369,7 @@ public class AjaxContext extends Callback<String> {
             JSONObject json = new JSONObject(jsonStr);
             JSONObject data = json.getJSONObject("data");
 
-            PostFormBuilder form = OkHttpUtils.post().url(UrlData.AJAX_SERVICE_URL);
+            PostFormBuilder form = OkHttpUtils.post().url(URLData.AJAX_SERVICE_URL);
             Iterator<String> i = (Iterator<String>) data.keys();
             while(i.hasNext()) {
                 String key = i.next();
@@ -492,7 +491,7 @@ public class AjaxContext extends Callback<String> {
     public void openURLDialog(String title, String url) {
         Intent intent = new Intent(activity, WebViewActivity.class);
         intent.putExtra("title", title);
-        intent.putExtra("url", UrlData.RESOURCE_URL +  url + "&r=" + Math.random());
+        intent.putExtra("url", URLData.RESOURCE_URL +  url + "&r=" + Math.random());
         intent.putExtra("static_res", "true");
 
         activity.startActivity(intent);
@@ -581,7 +580,7 @@ public class AjaxContext extends Callback<String> {
             return socket;
         }
         try {
-            socket = IO.socket(UrlData.CHAT_URL);
+            socket = IO.socket(URLData.CHAT_URL);
         } catch (Exception e) {
             e.printStackTrace();
         }

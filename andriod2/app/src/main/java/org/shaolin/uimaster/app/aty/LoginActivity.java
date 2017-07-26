@@ -28,10 +28,9 @@ import org.shaolin.uimaster.app.bean.CookiesBean;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.VerificationCodeBean;
 import org.shaolin.uimaster.app.data.ConfigData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.utils.PositionUtils;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
-import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.LoginPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.impl.VerificationCodePresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.ILoginView;
@@ -64,6 +63,8 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     Button btnLogin;
     @BindView(R.id.btn_register)
     Button btnRegister;
+    @BindView(R.id.btn_rindpwd)
+    Button btnFindpwd;
     @BindView(R.id.iv_loading)
     ImageView ivLoading;
     @BindView(R.id.loading_layout)
@@ -180,8 +181,15 @@ public class LoginActivity extends BaseActivity implements IVerificationCodeView
     @OnClick(R.id.btn_register)
     public void register() {
         Intent intent = new Intent(this, WebViewActivity.class);
-        intent.putExtra("url", UrlData.REGISTER_URL);
+        intent.putExtra("url", URLData.REGISTER_URL);
         intent.putExtra("title", "用户注册");
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.btn_rindpwd)
+    public void findpwd() {
+        Intent intent = new Intent(this, FindPwdActivity.class);
+        intent.putExtra("title", "找回密码");
         startActivity(intent);
     }
 

@@ -7,7 +7,14 @@ import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
@@ -30,7 +37,12 @@ import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.bean.ChatInfo;
 import org.shaolin.uimaster.app.chatview.gif.AnimatedGifDrawable;
 import org.shaolin.uimaster.app.chatview.gif.AnimatedImageSpan;
+import org.shaolin.uimaster.app.data.FileData;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -84,58 +96,104 @@ public class ChatLVAdapter extends BaseAdapter {
 		return position;
 	}
 
+	class ViewHodler {
+		ImageView fromIcon, toIcon;
+		TextView fromContent, toContent, time;
+		ViewGroup fromContainer, toContainer, fromAudio, toAudio;
+		View toAnim, fromAnim;
+	}
+
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
-		ViewHodler hodler;
+		final ViewHodler hodler;
 		if (convertView == null) {
 			hodler = new ViewHodler();
 			convertView = LayoutInflater.from(mContext).inflate(R.layout.chat_lv_item, null);
-			hodler.fromContainer = (ViewGroup) convertView.findViewById(R.id.chart_from_container);
 			hodler.toContainer = (ViewGroup) convertView.findViewById(R.id.chart_to_container);
-			hodler.fromContent = (TextView) convertView.findViewById(R.id.chatfrom_content);
 			hodler.toContent = (TextView) convertView.findViewById(R.id.chatto_content);
+			hodler.toAudio = (ViewGroup) convertView.findViewById(R.id.id_recoder_to);
+			hodler.toAnim = (View) convertView.findViewById(R.id.id_recoder_to_anim);
+			hodler.fromContainer = (ViewGroup) convertView.findViewById(R.id.chart_from_container);
+			hodler.fromContent = (TextView) convertView.findViewById(R.id.chatfrom_content);
+			hodler.fromAudio = (ViewGroup) convertView.findViewById(R.id.id_recoder_from);
+			hodler.fromAnim = (View)convertView.findViewById(R.id.id_recoder_from_anim);
+
 			hodler.time = (TextView) convertView.findViewById(R.id.chat_time);
 			convertView.setTag(hodler);
 		} else {
 			hodler = (ViewHodler) convertView.getTag();
 		}
-
+		final String msg = list.get(position).content;
 		if (list.get(position).fromOrTo == 0) {
 			// 收到消息 from显示
 			hodler.toContainer.setVisibility(View.GONE);
 			hodler.fromContainer.setVisibility(View.VISIBLE);
-
-			// 对内容做处理
-			SpannableStringBuilder sb = handler(hodler.fromContent,
-					list.get(position).content);
-			hodler.fromContent.setText(sb);
-			hodler.time.setText(list.get(position).time);
-		} else {
+			if (msg.startsWith("[/audio]:")) {
+				// 对语音处理
+				hodler.fromContent.setVisibility(View.GONE);
+				hodler.fromAudio.setVisibility(View.VISIBLE);
+				hodler.fromAnim.setBackgroundResource(R.drawable.adj);
+			} else {
+				// 对内容做处理
+				SpannableStringBuilder sb = handler(hodler.fromContent, msg);
+				hodler.fromContent.setText(sb);
+				hodler.time.setText(list.get(position).time);
+			}
+        } else {
 			// 发送消息 to显示
 			hodler.toContainer.setVisibility(View.VISIBLE);
 			hodler.fromContainer.setVisibility(View.GONE);
-
-			// 对内容做处理
-			SpannableStringBuilder sb = handler(hodler.toContent,
-					list.get(position).content);
-			hodler.toContent.setText(sb);
-			hodler.time.setText(list.get(position).time);
+			if (msg.startsWith("[/audio]:")) {
+				// 对语音处理
+				hodler.toContent.setVisibility(View.GONE);
+				hodler.toAudio.setVisibility(View.VISIBLE);
+				hodler.toAnim.setBackgroundResource(R.drawable.adj);
+			} else {
+				// 对内容做处理
+				SpannableStringBuilder sb = handler(hodler.toContent, msg);
+				hodler.toContent.setText(sb);
+				hodler.time.setText(list.get(position).time);
+			}
 		}
-		hodler.fromContent.setOnClickListener(new View.OnClickListener() {
+		hodler.fromAudio.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				if (msg.startsWith("[/audio]:")) {
+					hodler.fromAnim.setBackgroundResource(R.drawable.play_anim);
+					BitmapDrawable animation = (BitmapDrawable) hodler.fromAnim.getBackground();
+					//animation.start();
+					//AnimationDrawable
+					String path = msg.substring("[/audio]:".length());
+					PlayTask playTask = new PlayTask(new File(FileData.APP_AUDIO_ROOT + path), new MediaPlayer.OnCompletionListener() {
+						public void onCompletion(MediaPlayer mp) {
+							//播放完成后修改图片
+							hodler.fromAnim.setBackgroundResource(R.drawable.adj);
+						}
+					});
+					playTask.execute();
+				}
 			}
 		});
-		hodler.toContent.setOnClickListener(new View.OnClickListener() {
+		hodler.toAudio.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				if (msg.startsWith("[/audio]:")) {
+					hodler.fromAnim.setBackgroundResource(R.drawable.play_anim);
+					BitmapDrawable animation = (BitmapDrawable) hodler.toAnim.getBackground();
+					//animation.start();
 
+					String path = msg.substring("[/audio]:".length());
+					PlayTask playTask = new PlayTask(new File(FileData.APP_AUDIO_ROOT + path), new MediaPlayer.OnCompletionListener() {
+						public void onCompletion(MediaPlayer mp) {
+							//播放完成后修改图片
+							hodler.toAnim.setBackgroundResource(R.drawable.adj);
+						}
+					});
+					playTask.execute();
+				}
 			}
 		});
 
@@ -184,10 +242,59 @@ public class ChatLVAdapter extends BaseAdapter {
 		return sb;
 	}
 
-	class ViewHodler {
-		ImageView fromIcon, toIcon;
-		TextView fromContent, toContent, time;
-		ViewGroup fromContainer, toContainer;
+
+	private static final int frequence = 16000;// 8000;
+	private static final int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+	private static final int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+
+	static class PlayTask extends AsyncTask<Void, Integer, Void> {
+		private boolean isPlaying = false;
+		private File audioFile;
+
+		private MediaPlayer.OnCompletionListener onCompletionListener;
+
+		public PlayTask(final File audioFile, MediaPlayer.OnCompletionListener onCompletionListener) {
+			this.audioFile = audioFile;
+			this.onCompletionListener = onCompletionListener;
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			isPlaying = true;
+			int bufferSize = AudioTrack.getMinBufferSize(frequence,
+					channelConfig, audioEncoding);
+			short[] buffer = new short[bufferSize / 4];
+			try {
+				DataInputStream dis = new DataInputStream(
+						new BufferedInputStream(new FileInputStream(audioFile)));
+				// 实例AudioTrack
+				AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
+						frequence, channelConfig, audioEncoding, bufferSize,
+						AudioTrack.MODE_STREAM);
+				track.play();
+				// 由于AudioTrack播放的是流，所以，我们需要一边播放一边读取
+				while (isPlaying && dis.available() > 0) {
+					int i = 0;
+					while (dis.available() > 0 && i < buffer.length) {
+						buffer[i] = dis.readShort();
+						i++;
+					}
+					// 然后将数据写入到AudioTrack中
+					track.write(buffer, 0, buffer.length);
+				}
+
+				track.stop();
+				dis.close();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			onCompletionListener.onCompletion(null);
+		}
 	}
 
 	/**

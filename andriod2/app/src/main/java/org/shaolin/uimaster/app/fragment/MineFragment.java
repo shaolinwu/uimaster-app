@@ -29,7 +29,7 @@ import org.shaolin.uimaster.app.customeview.CircleImageView;
 import org.shaolin.uimaster.app.customeview.DividerItemDecoration;
 import org.shaolin.uimaster.app.customeview.RecyclerItemClickListener;
 import org.shaolin.uimaster.app.data.ConfigData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 import org.shaolin.uimaster.app.viewmodule.impl.LoginOutPresenterImpl;
@@ -116,6 +116,7 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
             PreferencesUtils.putString(this.getContext(), ConfigData.USER_PASSWORD, "");
             PreferencesUtils.putString(this.getContext(), ConfigData.USER_LOGIN_SUMCHECK, "");
         } else {
+            PreferencesUtils.putString(this.getContext(), ConfigData.USER_LOGIN_SUMCHECK, loginBean.sumCheck);
             EventBus.getDefault().post(loginBean);
             CookiesBean cookiesBean = new CookiesBean();
             cookiesBean.cookies = loginBean.cookies;
@@ -214,7 +215,7 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
     }
 
     private String generateWebUrl(MainModuleBean bean) {
-        UrlParse urlParse = new UrlParse(UrlData.MODULE_WEB_URL);
+        UrlParse urlParse = new UrlParse(URLData.MODULE_WEB_URL);
         urlParse.putValue("_nodename", bean._nodename);
         urlParse.putValue("_chunkname", bean._chunkname);
         urlParse.putValue("_page", bean._page);

@@ -38,7 +38,7 @@ import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
 import org.shaolin.uimaster.app.data.ConfigData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.fragment.MineFragment;
 import org.shaolin.uimaster.app.fragment.WebFragment;
@@ -62,7 +62,7 @@ import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 import de.greenrobot.event.ThreadMode;
 
-import static org.shaolin.uimaster.app.data.UrlData.GET_RESOURCES_README;
+import static org.shaolin.uimaster.app.data.URLData.GET_RESOURCES_README;
 
 public class MainActivity extends BaseActivity implements IMainModuleView,IMenuView,IUpdateAppView {
 
@@ -103,7 +103,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     }
 
     private void createPresenter() {
-        presenter = new MainModulePresenterImpl(this, UrlData.GET_TAB_URL);
+        presenter = new MainModulePresenterImpl(this, URLData.GET_TAB_URL);
         UpdateAppPresenterImpl updateAppPresenter = new UpdateAppPresenterImpl(this);
     }
 
@@ -194,7 +194,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     }
 
     private String generateWebUrl(MainModuleBean bean) {
-        UrlParse urlParse = new UrlParse(UrlData.MODULE_WEB_URL);
+        UrlParse urlParse = new UrlParse(URLData.MODULE_WEB_URL);
         urlParse.putValue("_nodename",bean._nodename);
         urlParse.putValue("_chunkname",bean._chunkname);
         urlParse.putValue("_page",bean._page);
@@ -368,7 +368,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-                StringBuilder sb = new StringBuilder(UrlData.BASE_URL);
+                StringBuilder sb = new StringBuilder(URLData.BASE_URL);
                 sb.append(items.get(position).a_attr.href);
                 sb.append("&_appclient=andriod");
                 intent.putExtra("url",sb.toString());

@@ -10,7 +10,7 @@ import com.zhy.http.okhttp.cookie.store.MemoryCookieStore;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.LoginBean;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.viewmodule.inter.ILoginView;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<ILoginView> {
         for (Map.Entry<String, String> entry: values.entrySet()) {
             postForm.addParams(entry.getKey(), entry.getValue());
         }
-        postForm.url(UrlData.LOGIN_URL).build().execute(this);
+        postForm.url(URLData.LOGIN_URL).build().execute(this);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<ILoginView> {
             Gson gson = new Gson();
             LoginBean bean = gson.fromJson(response, LoginBean.class);
             CookieJarImpl cookieJar = (CookieJarImpl) OkHttpUtils.getInstance().getOkHttpClient().cookieJar();
-            HttpUrl httpUrl = HttpUrl.parse(UrlData.LOGIN_URL);
+            HttpUrl httpUrl = HttpUrl.parse(URLData.LOGIN_URL);
             List<Cookie> allCookies = ((MemoryCookieStore)cookieJar.getCookieStore()).get(httpUrl);
             if (allCookies != null && allCookies.size() != 0){
                 bean.cookies = allCookies.get(0).toString();

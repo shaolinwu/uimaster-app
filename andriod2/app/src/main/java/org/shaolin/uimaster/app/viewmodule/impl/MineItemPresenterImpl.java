@@ -10,7 +10,7 @@ import org.shaolin.uimaster.app.viewmodule.inter.IMineView;
 
 import java.util.List;
 
-import static org.shaolin.uimaster.app.data.UrlData.MINE_ITEMS_URL;
+import static org.shaolin.uimaster.app.data.URLData.MINE_ITEMS_URL;
 
 /**
  * Created Administrator

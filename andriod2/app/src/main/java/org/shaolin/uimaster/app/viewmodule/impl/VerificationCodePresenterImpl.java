@@ -7,7 +7,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.VerificationCodeBean;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.viewmodule.inter.IVerificationCodeView;
 
 /**
@@ -18,7 +18,7 @@ public class VerificationCodePresenterImpl extends BasePresenterImpl<IVerificati
     public VerificationCodePresenterImpl(IVerificationCodeView view) {
         super(view);
         OkHttpUtils.get()
-                .url(UrlData.GET_VERIFICATION_CODE)
+                .url(URLData.GET_VERIFICATION_CODE)
                 .build()
                 .execute(this);
     }

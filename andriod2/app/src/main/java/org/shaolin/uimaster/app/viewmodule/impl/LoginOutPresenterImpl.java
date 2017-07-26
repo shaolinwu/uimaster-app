@@ -3,7 +3,7 @@ package org.shaolin.uimaster.app.viewmodule.impl;
 import com.zhy.http.okhttp.OkHttpUtils;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.viewmodule.inter.IMineView;
 
 /**
@@ -15,7 +15,7 @@ public class LoginOutPresenterImpl extends BasePresenterImpl<IMineView> {
     public LoginOutPresenterImpl(IMineView view) {
         super(view);
         OkHttpUtils.get()
-                .url(UrlData.LOGIN_OUT_URL)
+                .url(URLData.LOGIN_OUT_URL)
                 .build()
                 .execute(this);
     }

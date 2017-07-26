@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.Callback;
 
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.UrlParse;
 
@@ -58,7 +58,7 @@ public class SyncServerResources extends Service{
     private void syncData() {
         try {
             OkHttpUtils.get()
-                    .url(UrlData.GET_RESOURCES_README)
+                    .url(URLData.GET_RESOURCES_README)
                     .build()
                     .execute(new Callback<String>() {
                         @Override
@@ -76,7 +76,7 @@ public class SyncServerResources extends Service{
                             jsonObjects.addAll((ArrayList<JsonObject>)new Gson().fromJson(response, type));
                             //download server js, css & image resources.
                             for (JsonObject jsonObject : jsonObjects) {
-                                UrlParse.download(UrlData.GET_DOWNLOAD_RESOURCES + jsonObject.get("resource").getAsString(),
+                                UrlParse.download(URLData.GET_DOWNLOAD_RESOURCES + jsonObject.get("resource").getAsString(),
                                                 new File(FileUtil.getSDRoot() + "/uimaster", jsonObject.get("resourceType").getAsString()));
 
                             }

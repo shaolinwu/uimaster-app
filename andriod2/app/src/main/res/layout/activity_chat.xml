@@ -48,7 +48,8 @@
             android:listSelector="@color/transparent"
             android:id="@+id/message_chat_listview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="80px">
         </org.shaolin.uimaster.app.chatview.view.DropdownListView>
     </LinearLayout>
 

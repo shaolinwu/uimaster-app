@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH"></uses-permission>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"></uses-permission>
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <supports-screens
         android:anyDensity="true"
@@ -46,6 +48,7 @@
         <activity android:name="org.shaolin.uimaster.app.aty.LoginActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WebViewDialogActivity" android:screenOrientation="portrait"/>
+        <activity android:name="org.shaolin.uimaster.app.aty.FindPwdActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.ImageActivity" android:screenOrientation="portrait"/>
         <activity android:name=".aty.ChatActivity" android:screenOrientation="portrait"/>
 		<activity

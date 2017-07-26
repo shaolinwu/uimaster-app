@@ -405,7 +405,9 @@ public class UrlParse {
                     Long remaining = contentLength();
                     for (long readCount; (readCount = source.read(buf, 2048)) != -1; ) {
                         sink.write(buf, readCount);
-                        ajaxContext.onProgress(contentLength(), remaining -= readCount, remaining == 0);
+                        if (ajaxContext != null) {
+                            ajaxContext.onProgress(contentLength(), remaining -= readCount, remaining == 0);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

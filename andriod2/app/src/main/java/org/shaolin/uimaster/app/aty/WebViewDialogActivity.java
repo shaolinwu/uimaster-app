@@ -1,8 +1,5 @@
 package org.shaolin.uimaster.app.aty;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -10,20 +7,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseActivity;
-import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.FileData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.fragment.WebFragment;
-import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
 import java.util.Calendar;
@@ -97,8 +90,8 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("var IS_SERVLETMODE=true;\n");
         sb.append("var IS_MOBILEVIEW=true;\n");
         sb.append("var MOBILE_APP_TYPE=\"andriod\";\n");
-        sb.append("var UPLOAD_CONTEXTPATH=\"").append(UrlData.UPLOAD_URL).append("\";\n");
-        sb.append("var AJAX_SERVICE_URL=\"").append(UrlData.AJAX_SERVICE_URL).append("\";\n");
+        sb.append("var UPLOAD_CONTEXTPATH=\"").append(URLData.UPLOAD_URL).append("\";\n");
+        sb.append("var AJAX_SERVICE_URL=\"").append(URLData.AJAX_SERVICE_URL).append("\";\n");
         sb.append("</script>\n");
         String root = FileData.APP_ROOT_FILE;
         sb.append("<link rel=\"stylesheet\" href=\"file:///").append(root).append("/js/controls/swiper/swiper.css\" type=\"text/css\">\n");

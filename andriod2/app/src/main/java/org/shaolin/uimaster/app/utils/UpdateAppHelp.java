@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.shaolin.uimaster.app.R;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -164,7 +164,7 @@ public class UpdateAppHelp
           // 获得存储卡的路径 
           String sdpath = Environment.getExternalStorageDirectory() + "/"; 
           mSavePath = sdpath + "download";
-          StringBuffer sb = new StringBuffer(UrlData.RESOURCE_URL);
+          StringBuffer sb = new StringBuffer(URLData.RESOURCE_URL);
           sb.append("download/");
           try {
             sb.append(jsonObject.getString("resource"));

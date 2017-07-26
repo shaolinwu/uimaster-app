@@ -23,12 +23,38 @@
             android:src="@mipmap/chat_emo_normal"
             android:visibility="visible" />
 
+        <ImageView
+            android:id="@+id/image_voice"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="40dip"
+            android:src="@mipmap/chat_voice"
+            android:visibility="visible" />
+
+        <org.shaolin.uimaster.app.chatview.view.RecordButton
+            android:id="@+id/recordButton"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="80dip"
+            android:layout_marginRight="60dip"
+            android:background="@null"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:padding="5dp"
+            android:text="按住说话"
+            android:textColor="#727272"
+            android:visibility="invisible">
+        </org.shaolin.uimaster.app.chatview.view.RecordButton>
+
         <org.shaolin.uimaster.app.chatview.view.MyEditText
             android:id="@+id/input_sms"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="9dip"
+            android:layout_marginLeft="50dip"
             android:layout_marginRight="9dip"
             android:layout_toLeftOf="@+id/send_sms"
             android:layout_toRightOf="@id/image_face"

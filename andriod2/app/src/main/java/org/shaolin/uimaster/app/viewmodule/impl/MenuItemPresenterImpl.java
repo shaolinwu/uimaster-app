@@ -7,7 +7,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.MenuItem;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.viewmodule.inter.IMenuView;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class MenuItemPresenterImpl extends BasePresenterImpl<IMenuView> {
     public MenuItemPresenterImpl(IMenuView view) {
         super(view);
         OkHttpUtils.get()
-                .url(UrlData.MENU_ITEMS_URL)
+                .url(URLData.MENU_ITEMS_URL)
                 .build()
                 .execute(this);
     }

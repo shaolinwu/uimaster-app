@@ -47,6 +47,36 @@ public class FileUtil {
 		}
 	}
 
+	public static void copyFile(final File src, final File dest) throws IOException {
+		if (!src.exists()) {
+			throw new IOException("The source file does not exist! path: " + src);
+		}
+		if (!dest.exists()) {
+			if (dest.isDirectory()) {
+				dest.mkdirs();
+			} else {
+				File p = new File(dest.getParent());
+				if (!p.exists()) {
+					p.mkdirs();
+				}
+			}
+		}
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = new FileInputStream(src);
+			out = new FileOutputStream(dest);
+			final byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+		} finally {
+			in.close();
+			out.close();
+		}
+	}
+
 	/**
 	 * 读取文本文件
 	 * 

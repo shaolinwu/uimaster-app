@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Vibrator;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +13,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -27,11 +26,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.zhy.http.okhttp.OkHttpUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,17 +42,30 @@ import org.shaolin.uimaster.app.chatview.adapter.FaceGVAdapter;
 import org.shaolin.uimaster.app.chatview.adapter.FaceVPAdapter;
 import org.shaolin.uimaster.app.chatview.view.DropdownListView;
 import org.shaolin.uimaster.app.chatview.view.MyEditText;
+import org.shaolin.uimaster.app.chatview.view.RecordButton;
+import org.shaolin.uimaster.app.data.FileData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.push.NoticePushUtil;
+import org.shaolin.uimaster.app.utils.UrlParse;
 
-import java.net.URISyntaxException;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static com.zhy.http.okhttp.OkHttpUtils.delete;
 
@@ -62,7 +73,8 @@ import static com.zhy.http.okhttp.OkHttpUtils.delete;
  * Created by Administrator on 2017/1/22.
  */
 
-public class ChatActivity extends BaseActivity implements View.OnClickListener, DropdownListView.OnRefreshListenerHeader {
+public class ChatActivity extends BaseActivity implements View.OnClickListener,
+        DropdownListView.OnRefreshListenerHeader, RecordButton.OnFinishedRecordListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -76,8 +88,12 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     TextView tvReceiverName;
     @BindView(R.id.image_face)
     ImageView imageFace;
+    @BindView(R.id.image_voice)
+    ImageView imageVoice;
     @BindView(R.id.send_sms)
     Button sendSms;
+    @BindView(R.id.recordButton)
+    RecordButton recordButton;
     @BindView(R.id.face_viewpager)
     ViewPager mViewPager;
     @BindView(R.id.face_dots_container)
@@ -113,6 +129,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private String reply;
     ChatActivity activity = this;
     private Vibrator vibrator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +145,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         inputSms.setOnClickListener(this);
         imageFace.setOnClickListener(this);
         sendSms.setOnClickListener(this);
+        imageVoice.setOnClickListener(this);
         mListView.setOnRefreshListenerHead(this);
         mListView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -140,6 +158,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 return false;
             }
         });
+        recordButton.setSavePath(FileData.APP_AUDIO_ROOT + userId+"/"+sessionId);
+        recordButton.setOnFinishedRecordListener(this);
     }
 
     @Override
@@ -306,6 +326,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                 if(chat_face_container.getVisibility()==View.VISIBLE){
                     chat_face_container.setVisibility(View.GONE);
                 }
+                if(recordButton.getVisibility()==View.VISIBLE){
+                    recordButton.setVisibility(View.GONE);
+                }
                 break;
             case R.id.image_face://表情
                 hideSoftInputView();//隐藏软键盘
@@ -313,6 +336,22 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
                     chat_face_container.setVisibility(View.VISIBLE);
                 }else{
                     chat_face_container.setVisibility(View.GONE);
+                }
+                if(recordButton.getVisibility()==View.VISIBLE){
+                    recordButton.setVisibility(View.GONE);
+                } else {
+                    recordButton.setVisibility(View.VISIBLE);
+                    inputSms.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.image_voice://声音
+                hideSoftInputView();//隐藏软键盘
+                if(recordButton.getVisibility()==View.GONE){
+                    recordButton.setVisibility(View.VISIBLE);
+                    inputSms.setVisibility(View.GONE);
+                }else{
+                    recordButton.setVisibility(View.GONE);
+                    inputSms.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.send_sms://发送
@@ -406,7 +445,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         // 单击表情执行的操作
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     String png = ((TextView) ((LinearLayout) view).getChildAt(1)).getText().toString();
                     if (!png.contains("emotion_del_normal")) {// 如果不是删除图标
@@ -512,5 +551,57 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onFinishedRecord(File audioFile) {
+        Log.i("RECORD!!!", "finished!!!!!!!!!! save to " + audioFile.getAbsolutePath());
+
+        uploadAMRRecord(activity, URLData.CHAT_SEND_AUDIO_URL + "?uid="+userId+"&sid="+sessionId, audioFile);
+    }
+
+    public void uploadAMRRecord(final Context context, final String url, final File uploadFile) {
+        if (uploadFile == null || !uploadFile.exists()) {
+            return;
+        }
+        OkHttpClient client = OkHttpUtils.getInstance().getOkHttpClient();
+        // form 表单形式上传
+        MultipartBody.Builder requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        RequestBody body = UrlParse.createCustomRequestBody(MediaType.parse("audio/amr"), uploadFile, null);
+        requestBody.addFormDataPart("headImage", uploadFile.getName(), body);
+        //requestBody.addFormDataPart("filename", "audio");
+
+        Request request = new Request.Builder().url(url).post(requestBody.build()).tag(context).build();
+        // readTimeout("请求超时时间" , 时间单位);
+        client.newBuilder().readTimeout(5000, TimeUnit.MILLISECONDS).build().newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("UIMaster" ,"onFailure", e);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String str = response.body().string();
+                    Log.i("UIMaster", response.message() + " , body " + str);
+                    //Toast.makeText(context, "上传成功！", Toast.LENGTH_SHORT);
+                } else {
+                    //Toast.makeText(context, "上传失败！", Toast.LENGTH_SHORT);
+                    Log.i("UIMaster" ,"upload uploadFile error: body " + response.body().string());
+                }
+
+                //send message
+                sendMessage("[/audio]:"+userId+"/"+sessionId + "/" + uploadFile.getName());
+                infos.add(getChatInfoTo("[/audio]:"+userId+"/"+sessionId + "/" + uploadFile.getName()));
+                mLvAdapter.setList(infos);
+                mListView.post(new Runnable() {
+                                   @Override
+                                   public void run() {
+                                       mLvAdapter.notifyDataSetChanged();
+                                       mListView.setSelection(infos.size() - 1);
+                                   }
+                               });
+                }
+        });
+
     }
 }

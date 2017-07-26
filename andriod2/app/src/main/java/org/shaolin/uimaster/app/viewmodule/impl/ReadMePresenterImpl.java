@@ -9,14 +9,12 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.DownFileBean;
 import org.shaolin.uimaster.app.data.ConfigData;
-import org.shaolin.uimaster.app.data.FileData;
-import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 
 import java.util.List;
 
-import static org.shaolin.uimaster.app.data.UrlData.GET_DOWNLOAD_RESOURCES;
+import static org.shaolin.uimaster.app.data.URLData.GET_DOWNLOAD_RESOURCES;
 
 /**
  * Created Administrator

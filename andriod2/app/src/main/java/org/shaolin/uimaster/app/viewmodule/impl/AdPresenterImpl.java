@@ -9,7 +9,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.bean.AdBean;
 import org.shaolin.uimaster.app.data.ConfigData;
-import org.shaolin.uimaster.app.data.UrlData;
+import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 
 import okhttp3.Request;
@@ -27,7 +27,7 @@ public class AdPresenterImpl extends BasePresenterImpl{
         super();
         this.context = context;
         OkHttpUtils.get()
-                .url(UrlData.AD_URL)
+                .url(URLData.AD_URL)
                 .build()
                 .execute(this);
     }
@@ -37,7 +37,7 @@ public class AdPresenterImpl extends BasePresenterImpl{
         super.onResponse(response);
         AdBean bean = (new Gson()).fromJson(response,AdBean.class);
         if (!TextUtils.isEmpty(bean.path)){
-            StringBuilder sb = new StringBuilder(UrlData.RESOURCE_URL_1);
+            StringBuilder sb = new StringBuilder(URLData.RESOURCE_URL_1);
             sb.append(bean.path);
             String adVersion = PreferencesUtils.getString(context, ConfigData.AD_VERSION);
             if (TextUtils.isEmpty(adVersion) || !adVersion.equals(bean.version)){
