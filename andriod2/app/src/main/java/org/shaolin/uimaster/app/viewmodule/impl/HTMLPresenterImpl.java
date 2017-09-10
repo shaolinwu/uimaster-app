@@ -20,9 +20,12 @@ import okhttp3.Request;
 public class HTMLPresenterImpl extends BasePresenterImpl<IHTMLWebView> {
     public HTMLPresenterImpl(IHTMLWebView view, String url) {
         super(view);
-    PostFormBuilder form = OkHttpUtils.post().url(url);
-    form.addParams("_appstore", Environment.getExternalStorageDirectory().getAbsolutePath());
-    form.build().execute(this);
+        // all page links only supports GET method from the server side.
+//    PostFormBuilder form = OkHttpUtils.post().url(url);
+//    form.addParams("_appstore", Environment.getExternalStorageDirectory().getAbsolutePath());
+//    form.build().execute(this);
+        String requestURL = url + "&_appstore=" + Environment.getExternalStorageDirectory().getAbsolutePath();
+        OkHttpUtils.get().url(requestURL).build().execute(this);
 }
 
     @Override

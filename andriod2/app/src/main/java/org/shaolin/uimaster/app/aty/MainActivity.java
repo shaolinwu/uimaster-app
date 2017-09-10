@@ -195,8 +195,8 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
     private String generateWebUrl(MainModuleBean bean) {
         UrlParse urlParse = new UrlParse(URLData.MODULE_WEB_URL);
-        urlParse.putValue("_nodename",bean._nodename);
         urlParse.putValue("_chunkname",bean._chunkname);
+        urlParse.putValue("_nodename",bean._nodename);
         urlParse.putValue("_page",bean._page);
         urlParse.putValue("_framename",bean._framename);
         urlParse.putValue("_appclient","android");
