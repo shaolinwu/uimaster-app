@@ -11,12 +11,15 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.baoyz.widget.PullRefreshLayout;
+
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
 import org.shaolin.uimaster.app.fragment.WebFragment;
+import org.shaolin.uimaster.app.viewmodule.impl.HTMLPresenterImpl;
 import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
 import java.util.Calendar;
@@ -37,6 +40,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
 
     private LinearLayout loadingLayout;
     private ImageView ivLoading;
+    private PullRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +58,13 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         webview = (WebView)findViewById(R.id.webview);
         loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
         ivLoading = (ImageView) findViewById(R.id.iv_loading);
+        refreshLayout = (PullRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh() {
+                hideProgress();
+            }
+        });
         showProgress();
         WebView parentWebView = AppManager.getAppManager().popWebView(argus.getString("parentWebView"));
         ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
@@ -135,8 +146,6 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("});\n</script>\n</body>\n</html>");
 
         webview.loadDataWithBaseURL("", sb.toString(), "text/html", "UTF-8", "");
-
-        hideProgress();
     }
 
     public void received(String html) {
@@ -154,6 +163,10 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
     public void hideProgress() {
         ivLoading.clearAnimation();
         loadingLayout.setVisibility(View.GONE);
+    }
+
+    public void refreshComplete(){
+        refreshLayout.setRefreshing(false);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {

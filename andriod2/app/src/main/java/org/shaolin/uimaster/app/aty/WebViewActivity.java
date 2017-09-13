@@ -39,7 +39,7 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     private ImageView ivLoading;
     private PullRefreshLayout refreshLayout;
     private String url;
-
+    private boolean isRefreshing = false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +83,10 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
             @Override
             public void onRefresh() {
+                if (isRefreshing) {
+                    return;
+                }
+                isRefreshing = true;
                 showProgress();
                 HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebViewActivity.this, url);
             }
@@ -119,6 +123,7 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
 
     @Override
     public void hideProgress() {
+        isRefreshing = false;
         ivLoading.clearAnimation();
         loadingLayout.setVisibility(View.GONE);
     }

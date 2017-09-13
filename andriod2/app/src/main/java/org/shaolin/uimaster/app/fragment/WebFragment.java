@@ -57,7 +57,6 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         initListener();
     }
 
-
     private void initData() {
         url = (String) getArguments().get("url");
     }
@@ -78,10 +77,16 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         HTMLPresenterImpl presenter = new HTMLPresenterImpl(this, url);
     }
 
+    private boolean isRefreshing = false;
+
     private void initListener() {
         refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
             @Override
             public void onRefresh() {
+                if (isRefreshing) {
+                    return;
+                }
+                isRefreshing = true;
                 showProgress();
                 HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
             }
@@ -150,7 +155,6 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
     }
 
     public static WebFragment newWebFragment(Bundle args) {
-
         WebFragment fragment = new WebFragment();
         fragment.setArguments(args);
         return fragment;
@@ -199,6 +203,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
 
     @Override
     public void hideProgress() {
+        isRefreshing = false;
         ivLoading.clearAnimation();
         loadingLayout.setVisibility(View.GONE);
     }
