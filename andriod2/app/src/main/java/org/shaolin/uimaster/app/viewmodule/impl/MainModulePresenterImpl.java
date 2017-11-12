@@ -1,6 +1,7 @@
 package org.shaolin.uimaster.app.viewmodule.impl;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 
@@ -9,6 +10,8 @@ import org.shaolin.uimaster.app.bean.MainModuleBean;
 import org.shaolin.uimaster.app.viewmodule.inter.IMainModuleView;
 
 import java.util.List;
+
+import okhttp3.Call;
 
 /**
  * Created Administrator
@@ -23,6 +26,11 @@ public class MainModulePresenterImpl extends BasePresenterImpl<IMainModuleView> 
                 .url(url)
                 .build()
                 .execute(this);
+    }
+
+    @Override
+    public void onError(Call call, Exception e) {
+        Log.e("UIMaster","Exception ="+ e.toString());
     }
 
     @Override
