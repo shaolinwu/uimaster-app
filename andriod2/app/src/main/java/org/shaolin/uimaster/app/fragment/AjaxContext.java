@@ -521,6 +521,12 @@ public class AjaxContext extends Callback<String> {
     }
 
     @JavascriptInterface
+    public void registerSuccessNotify() {
+        Toast.makeText(activity, "恭喜您的手机帐号注册成功！请登录加工达人。", Toast.LENGTH_LONG).show();
+        this.close();
+    }
+
+        @JavascriptInterface
     public void appPay(String orderInfo, String paymethod) {
         if ("alipay".equalsIgnoreCase(paymethod)) {
             Toast.makeText(activity, "正常调起支付宝", Toast.LENGTH_SHORT).show();
