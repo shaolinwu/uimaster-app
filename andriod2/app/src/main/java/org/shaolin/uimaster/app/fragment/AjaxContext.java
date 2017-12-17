@@ -491,7 +491,7 @@ public class AjaxContext extends Callback<String> {
     public void openURLDialog(String title, String url) {
         Intent intent = new Intent(activity, WebViewActivity.class);
         intent.putExtra("title", title);
-        intent.putExtra("url", URLData.RESOURCE_URL +  url + "&r=" + Math.random());
+        intent.putExtra("url", URLData.RESOURCE_URL +  url);
         intent.putExtra("static_res", "true");
 
         activity.startActivity(intent);
