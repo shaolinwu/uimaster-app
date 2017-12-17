@@ -27,7 +27,6 @@ public final class URLData {
     //获取四个tab栏的url
     public static final String GET_TAB_URL = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.vogerp.commonmodel.page.AjaxService.mobileBottomFunctionList&_appclient=andriod";
     //点击每个tab访问web url
-    public static final String MODULE_WEB_URL = BASE_URL + "https://www.vogerp.com/uimaster/webflow.do?";
     //获取验证码
     public static final String GET_VERIFICATION_CODE = BASE_URL + "ajaxservice?_ajaxUserEvent=webservice&_serviceName=org.shaolin.bmdp.adminconsole.page.AjaxService.userPreLogin&_appclient=andriod";
     //注册用户url

@@ -194,7 +194,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     }
 
     private String generateWebUrl(MainModuleBean bean) {
-        UrlParse urlParse = new UrlParse(URLData.MODULE_WEB_URL);
+        UrlParse urlParse = new UrlParse(URLData.BASE_URL + "webflow.do?");
         urlParse.putValue("_chunkname",bean._chunkname);
         urlParse.putValue("_nodename",bean._nodename);
         urlParse.putValue("_page",bean._page);

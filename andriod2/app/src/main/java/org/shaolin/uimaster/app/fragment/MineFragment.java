@@ -215,7 +215,7 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
     }
 
     private String generateWebUrl(MainModuleBean bean) {
-        UrlParse urlParse = new UrlParse(URLData.MODULE_WEB_URL);
+        UrlParse urlParse = new UrlParse(URLData.BASE_URL + "webflow.do?");
         urlParse.putValue("_nodename", bean._nodename);
         urlParse.putValue("_chunkname", bean._chunkname);
         urlParse.putValue("_page", bean._page);
