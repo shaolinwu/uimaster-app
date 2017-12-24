@@ -186,14 +186,14 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
     }
 
     @Override
-    public void loginOut() {
+    public void logout() {
         tvLoginOut.setVisibility(View.GONE);
         username.setText(getString(R.string.unLogin));
         userIcon.setImageResource(R.mipmap.widget_dface);
         PreferencesUtils.removeConfig(getContext(),ConfigData.USER_COOKIES);
         String userId = PreferencesUtils.getString(this.getContext(), "userId");
         AjaxContext.closeWebSocket(Long.valueOf(userId));
-        EventBus.getDefault().post("loginOut");
+        EventBus.getDefault().post("logout");
     }
 
     @Override

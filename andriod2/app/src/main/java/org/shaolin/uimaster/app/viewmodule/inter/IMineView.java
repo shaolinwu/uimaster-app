@@ -11,5 +11,5 @@ import java.util.List;
 
 public interface IMineView extends BaseView {
     public void initMineItem(List<MainModuleBean> datas);
-    public void loginOut();
+    public void logout();
 }

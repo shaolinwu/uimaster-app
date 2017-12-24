@@ -23,6 +23,6 @@ public class LoginOutPresenterImpl extends BasePresenterImpl<IMineView> {
     @Override
     public void onResponse(String response) {
         super.onResponse(response);
-        mViewRef.get().loginOut();
+        mViewRef.get().logout();
     }
 }

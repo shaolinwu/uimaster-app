@@ -241,6 +241,10 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
      * @param fragment
      */
     public void showFragment(BaseFragment fragment) {
+        if (fragment != MineFragment.getInstance() && !isLogin) {
+            Toast.makeText(activity, "对不起！您还没有登录！", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (fragment == mCurrentFragment){
             return;
         }
@@ -248,6 +252,12 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         ft.replace(R.id.tab_content, fragment);
         ft.addToBackStack(null);
         ft.commitAllowingStateLoss();
+
+        if (fragment.getClass() == WebFragment.class) {
+            if(((WebFragment)fragment).isRefreshAgain()) {
+                ((WebFragment)fragment).manualRefresh();
+            }
+        }
     }
 
     @Override
@@ -287,9 +297,11 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
     }
 
     @Subscribe(threadMode = ThreadMode.BackgroundThread)
-    public void loginOut(String loginOut){
-        if (!TextUtils.isEmpty(loginOut) && loginOut.equals("loginOut")){
+    public void logout(String loginOut){
+        if (!TextUtils.isEmpty(loginOut) && loginOut.equals("logout")){
             isLogin = false;
+            ((WebFragment)fragmentMap.get(R.id.main_tab)).refreshNextTime();
+            ((WebFragment)fragmentMap.get(R.id.product_tab)).refreshNextTime();
         }
     }
 
@@ -367,6 +379,10 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (!isLogin) {
+                    Toast.makeText(activity, "对不起！您还没有登录！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
                 StringBuilder sb = new StringBuilder(URLData.BASE_URL);
                 sb.append(items.get(position).a_attr.href);

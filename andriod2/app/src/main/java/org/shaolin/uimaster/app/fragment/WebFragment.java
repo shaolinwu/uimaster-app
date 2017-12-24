@@ -78,21 +78,40 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
     }
 
     private boolean isRefreshing = false;
+    private boolean isRefreshNextTime = false;
 
     private void initListener() {
         refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
             @Override
             public void onRefresh() {
-                if (isRefreshing) {
-                    return;
-                }
-                isRefreshing = true;
-                showProgress();
-                HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
+                manualRefresh();
             }
         });
     }
 
+    /**
+     * for re-login support.
+     */
+    public void refreshNextTime() {
+        this.isRefreshNextTime = true;
+    }
+
+    public boolean isRefreshAgain() {
+        if (this.isRefreshNextTime) {
+            this.isRefreshNextTime = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void manualRefresh() {
+        if (isRefreshing) {
+            return;
+        }
+        isRefreshing = true;
+        showProgress();
+        HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
+    }
 
     public void received(String html) {
         //mWebView.loadUrl(url); please DON'T use this one.
