@@ -1,11 +1,12 @@
 package org.shaolin.uimaster.app.base;
 
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.zhy.http.okhttp.callback.Callback;
+
+import org.shaolin.uimaster.app.utils.FileLog;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
@@ -50,7 +51,7 @@ public class BasePresenterImpl<T extends BaseView> extends Callback<String> impl
 
     @Override
     public void onError(Call call, Exception e) {
-        Log.e("UIMaster","Exception ="+ e.toString());
+        FileLog.e("UIMaster", e.getMessage(), e);
     }
 
     @Override

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
+import org.shaolin.uimaster.app.utils.FileLog;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
@@ -94,7 +94,7 @@ public class AjaxContext extends Callback<String> {
 
     @Override
     public void onError(Call call, Exception e) {
-        Log.e("UIMaster", "Ajax call exception : " + e);
+        FileLog.e("UIMaster", "Ajax call exception : " + e);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class AjaxContext extends Callback<String> {
                                     try {
                                         handle(parentWebView, start0, array, array.getJSONObject(start0), loadJsItem);
                                     } catch (JSONException e) {
-                                        Log.w("UIMaster", "execute js command error: "+ e.getMessage(), e);
+                                        FileLog.w("UIMaster", "execute js command error: "+ e.getMessage(), e);
                                     }
                                 }
                             }
@@ -132,7 +132,7 @@ public class AjaxContext extends Callback<String> {
                 }
             }
         } catch (Exception e){
-            Log.w("UIMaster", "Failed to load data: ", e);
+            FileLog.w("UIMaster", "Failed to load data: ", e);
         }
     }
 
@@ -194,7 +194,7 @@ public class AjaxContext extends Callback<String> {
     class WebViewClientA extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.d("UIMaster", "url: " + url);
+            FileLog.d("UIMaster", "url: " + url);
             //  重写此方法表明点击网页里面的链接还是在当前的webview里跳转，不跳到浏览器那边
             view.loadUrl(url);
             return true;
@@ -229,7 +229,7 @@ public class AjaxContext extends Callback<String> {
 
         @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            Log.d("[" + consoleMessage.messageLevel() + "]", consoleMessage.message()
+            FileLog.d("[" + consoleMessage.messageLevel() + "]", consoleMessage.message()
                     + " -- From line " + consoleMessage.lineNumber()
                     + " of " + consoleMessage.sourceId());
             return true;
@@ -237,7 +237,7 @@ public class AjaxContext extends Callback<String> {
 
         @Override
         public void onCloseWindow(WebView window) {
-            Log.d("UIMaster", "WebView closed" + window.getOriginalUrl());
+            FileLog.d("UIMaster", "WebView closed" + window.getOriginalUrl());
             if (pageClosed != null) {
                 pageClosed.run();
             }
@@ -365,7 +365,7 @@ public class AjaxContext extends Callback<String> {
     @JavascriptInterface
     public void ajax(String jsonStr) {
         try {
-            Log.d("UIMaster", "invoke ajax with data: " + jsonStr);
+            FileLog.d("UIMaster", "invoke ajax with data: " + jsonStr);
             JSONObject json = new JSONObject(jsonStr);
             JSONObject data = json.getJSONObject("data");
 
@@ -378,7 +378,7 @@ public class AjaxContext extends Callback<String> {
             form.addParams("_appstore", Environment.getExternalStorageDirectory().getAbsolutePath());
             form.build().execute(this);
         } catch (JSONException e) {
-            Log.w("UIMaster", "ajax invocation error: " + jsonStr);
+            FileLog.w("UIMaster", "ajax invocation error: " + jsonStr);
         }
     }
 
@@ -416,7 +416,7 @@ public class AjaxContext extends Callback<String> {
 
     public void onProgress(final long totalBytes,final long remainingBytes, final boolean done) {
         final long percent = (totalBytes - remainingBytes) * 100 / totalBytes;
-        Log.d("UIMaster", "uploading file percentage: " + percent);
+        FileLog.d("UIMaster", "uploading file percentage: " + percent);
         myWebView.post(new Runnable() {
             @Override
             public void run() {
@@ -465,7 +465,7 @@ public class AjaxContext extends Callback<String> {
 
     @JavascriptInterface
     public void addResource(final String url) {
-        Log.d("UIMaster", "dynamic loading URL: " + url);
+        FileLog.d("UIMaster", "dynamic loading URL: " + url);
         this.myWebView.post(new Runnable() {
             @Override
             public void run() {

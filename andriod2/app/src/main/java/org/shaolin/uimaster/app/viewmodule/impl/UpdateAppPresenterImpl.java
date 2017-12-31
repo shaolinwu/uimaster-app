@@ -10,6 +10,7 @@ import org.shaolin.uimaster.app.aty.MyApplication;
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
 import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.utils.AppInfoUtil;
+import org.shaolin.uimaster.app.utils.FileLog;
 import org.shaolin.uimaster.app.viewmodule.inter.IUpdateAppView;
 
 /**
@@ -40,7 +41,7 @@ public class UpdateAppPresenterImpl extends BasePresenterImpl<IUpdateAppView> {
             }
 
         } catch (JSONException e) {
-
+            FileLog.w("UIMaster", e.getMessage(), e);
         }
     }
 }

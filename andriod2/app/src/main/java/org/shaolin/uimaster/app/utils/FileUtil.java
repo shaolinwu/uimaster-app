@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -739,10 +740,6 @@ public class FileUtil {
 
 	/**
 	 * 解压assets的zip压缩文件到指定目录
-	 * @param context上下文对象
-	 * @param assetName压缩文件名
-	 * @param outputDirectory输出目录
-	 * @param isReWrite是否覆盖
 	 * @throws IOException
 	 */
 	public static void unZip(Context context, String assetName,

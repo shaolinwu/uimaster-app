@@ -1,13 +1,13 @@
 package org.shaolin.uimaster.app.viewmodule.impl;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 
 import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.FileData;
+import org.shaolin.uimaster.app.utils.FileLog;
 import org.shaolin.uimaster.app.utils.FileUtil;
 import org.shaolin.uimaster.app.utils.PreferencesUtils;
 
@@ -31,17 +31,17 @@ public class AdFilePresenterImpl {
                 {
                     @Override
                     public void inProgress(float progress, long total) {
-                        Log.d("UIMaster","progress =" + progress + "===" + "total =" + total);
+                        FileLog.d("UIMaster","progress =" + progress + "===" + "total =" + total);
                     }
 
                     @Override
                     public void inProgress(float progress){
-                        Log.d("UIMaster","progress =" + progress);
+                        FileLog.d("UIMaster","progress =" + progress);
                     }
 
                     @Override
                     public void onError(Call call, Exception e) {
-                        Log.e("e =", e.toString());
+                        FileLog.e("e =", e.toString());
                     }
 
                     @Override

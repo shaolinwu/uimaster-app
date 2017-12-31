@@ -2,12 +2,11 @@ package org.shaolin.uimaster.app.viewmodule.impl;
 
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.builder.PostFormBuilder;
 
 import org.shaolin.uimaster.app.base.BasePresenterImpl;
+import org.shaolin.uimaster.app.utils.FileLog;
 import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
 import okhttp3.Call;
@@ -33,7 +32,7 @@ public class HTMLPresenterImpl extends BasePresenterImpl<IHTMLWebView> {
 
     @Override
     public void onError(Call call, Exception e) {
-        Log.e("UIMaster","Exception ="+ e.toString());
+        FileLog.e("UIMaster", e.getMessage(), e);
         StringBuffer sb = new StringBuffer();
         sb.append("<!DOCTYPE html><html><head><title>Oops! 打开本功能出错了。</title>");
         sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");

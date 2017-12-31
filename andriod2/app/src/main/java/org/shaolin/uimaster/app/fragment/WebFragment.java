@@ -109,6 +109,10 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
             return;
         }
         isRefreshing = true;
+        if (loadingLayout == null) {
+            //not initialized
+            return;
+        }
         showProgress();
         HTMLPresenterImpl presenter = new HTMLPresenterImpl(WebFragment.this, url);
     }

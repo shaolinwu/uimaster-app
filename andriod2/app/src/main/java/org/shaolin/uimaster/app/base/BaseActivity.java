@@ -11,6 +11,7 @@ import android.util.Log;
 import android.webkit.ValueCallback;
 
 import org.shaolin.uimaster.app.R;
+import org.shaolin.uimaster.app.aty.CrashHandler;
 import org.shaolin.uimaster.app.utils.UrlParse;
 
 import butterknife.ButterKnife;
@@ -40,6 +41,7 @@ public abstract class BaseActivity<T extends  BasePresenter> extends AppCompatAc
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         initToolBar();
+        CrashHandler.getInstance().init(this);
     }
 
     protected void initToolBar(){
