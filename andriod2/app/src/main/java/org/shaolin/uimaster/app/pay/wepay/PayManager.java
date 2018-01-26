@@ -10,16 +10,9 @@ import org.json.JSONObject;
 import org.shaolin.uimaster.app.base.BaseActivity;
 
 /**
+ *
  */
+@Deprecated
 public class PayManager {
-
-    // APP_ID 替换为你的应用从官方网站申请到的合法appId
-    public static String APP_ID = "wxd930ea5d5a258f4f";
-
-    public static IWXAPI getWXAPI(BaseActivity activity) {
-        IWXAPI msgApi = WXAPIFactory.createWXAPI(activity, APP_ID);
-        msgApi.registerApp(APP_ID);
-        return msgApi;
-    }
 
 }

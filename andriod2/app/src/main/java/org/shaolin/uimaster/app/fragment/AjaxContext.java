@@ -23,6 +23,8 @@ import com.alipay.sdk.app.PayTask;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.Callback;
@@ -43,13 +45,18 @@ import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.pay.alipay.PayResult;
 import org.shaolin.uimaster.app.pay.wepay.PayManager;
 import org.shaolin.uimaster.app.utils.FileUtil;
+import org.shaolin.uimaster.app.utils.MD5Util;
+import org.shaolin.uimaster.app.utils.StringUtils;
 import org.shaolin.uimaster.app.utils.UrlParse;
 
 import java.io.File;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -551,22 +558,42 @@ public class AjaxContext extends Callback<String> {
                 JSONObject json = new JSONObject(orderInfo);
                 PayReq req = new PayReq();
                 req.appId			= json.getString("appid");
-                req.partnerId		= json.getString("partnerid");
-                req.prepayId		= json.getString("prepayid");
-                req.nonceStr		= json.getString("noncestr");
-                req.timeStamp		= json.getString("timestamp");
-                req.packageValue	= json.getString("package");
-                req.sign			= json.getString("sign");
-                req.extData			= "app data"; // optional
-                Toast.makeText(activity, "正常调起微信支付", Toast.LENGTH_SHORT).show();
-                // 在支付之前，如果应用没有注册到微信，应该先调用IWXMsg.registerApp将应用注册到微信
-                PayManager.getWXAPI(activity).sendReq(req);
+                req.partnerId		= json.getString("mch_id");
+                req.prepayId		= json.getString("prepay_id");
+                req.nonceStr		= StringUtils.genRandomAlphaBits(32);//json.getString("nonce_str");
+                req.timeStamp		= genTimeStamp() + "";
+                req.packageValue	= "Sign=WXPay";
+                //req.sign			= json.getString("sign");
+
+                //https://pay.weixin.qq.com/wiki/tools/signverify/
+                //final SortedMap<Object, Object> parameters = new TreeMap<Object, Object>();
+                StringBuffer keyValues = new StringBuffer();
+                keyValues.append("appid=").append(req.appId);
+                keyValues.append("&noncestr=").append(req.nonceStr);
+                keyValues.append("&package=").append(req.packageValue);
+                keyValues.append("&partnerid=").append(req.partnerId);
+                keyValues.append("&prepayid=").append(req.prepayId);
+                keyValues.append("&timestamp=").append(req.timeStamp);
+                keyValues.append("&key=").append(json.getString("mch_skey"));
+
+                // 调用获得签名的方法,这里直接把服务器返回来的sign给覆盖了,
+                // 所以我不是很明白服务器为什么返回这个sign值,然后调起支付,mch_id基本上就可以了.
+                req.sign = MD5Util.MD5Encode(keyValues.toString(), "UTF-8").toUpperCase();
+
+                IWXAPI msgApi = WXAPIFactory.createWXAPI(activity, req.appId, true);
+                msgApi.registerApp(req.appId);
+                boolean result = msgApi.sendReq(req);
+                //Toast.makeText(activity, "正常调起微信支付: " + keyValues.toString() + " sign="+req.sign+", result: " + result, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                Toast.makeText(activity, "微信支付调用异常!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "微信支付调用异常!" + StringUtils.getException(e), Toast.LENGTH_SHORT).show();
             }
         } else {
             throw new UnsupportedOperationException("Unsupported payment method: " + paymethod);
         }
+    }
+
+    private long genTimeStamp() {
+        return System.currentTimeMillis() / 1000;
     }
 
     @JavascriptInterface

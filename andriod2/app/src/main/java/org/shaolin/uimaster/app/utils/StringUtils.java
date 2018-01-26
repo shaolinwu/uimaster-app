@@ -480,4 +480,14 @@ public class StringUtils {
         return df.format(new Date());
     }
 
+    private static final String CHATS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    public static String genRandomAlphaBits(int i) {
+        StringBuffer sb = new StringBuffer();
+        while (i-- > 0) {
+            sb.append(CHATS.charAt((int)(Math.random() * 52)));
+        }
+        return sb.toString();
+    }
+
 }
