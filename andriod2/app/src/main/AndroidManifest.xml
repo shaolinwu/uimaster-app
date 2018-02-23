@@ -51,6 +51,7 @@
         <activity android:name="org.shaolin.uimaster.app.aty.FindPwdActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.ImageActivity" android:screenOrientation="portrait"/>
         <activity android:name="org.shaolin.uimaster.app.aty.WXEntryActivity" android:screenOrientation="portrait"/>
+        <activity android:name="org.shaolin.uimaster.app.aty.AboutUsActivity" android:screenOrientation="portrait"/>
         <activity android:name=".aty.ChatActivity" android:screenOrientation="portrait"/>
 		<activity
             android:name="com.alipay.sdk.app.H5PayActivity"

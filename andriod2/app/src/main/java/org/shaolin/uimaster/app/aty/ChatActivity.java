@@ -252,11 +252,15 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
             // received message
             JSONObject jsonObject = (JSONObject) args[0];
             try {
-                long [] pattern = {100,400};   // 停止 开启
+                long [] pattern = {100,200};   // 停止 开启
                 vibrator.vibrate(pattern, 1);
                 if (jsonObject.getString("sessionId").equals(sessionId)) {
                     // this is the session message.
-                    infos.add(getChatInfoFrom(sd.format(new Date()), jsonObject.getString("content")));
+                    if (jsonObject.getLong("toPartyId") == toUserId) {
+                        infos.add(getChatInfoTo(sd.format(new Date()), jsonObject.getString("content")));
+                    } else {
+                        infos.add(getChatInfoFrom(sd.format(new Date()), jsonObject.getString("content")));
+                    }
                     mLvAdapter.setList(infos);
                     mLvAdapter.notifyDataSetChanged();
                     mListView.onRefreshCompleteHeader();
@@ -358,11 +362,14 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
                 reply=inputSms.getText().toString();
                 if (!TextUtils.isEmpty(reply)) {
                     sendMessage(reply);
-                    infos.add(getChatInfoTo(reply));
+                    /**
+                     *
+                    infos.add(getChatInfoFrom(sd.format(new Date()), reply));
                     mLvAdapter.setList(infos);
                     mLvAdapter.notifyDataSetChanged();
+                    mListView.onRefreshCompleteHeader();
                     mListView.setSelection(infos.size() - 1);
-
+                    */
                     inputSms.setText("");
                 }
                 break;

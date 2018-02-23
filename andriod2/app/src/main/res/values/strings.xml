@@ -19,6 +19,7 @@
     <string name="efforts_to_obtain">正在努力获取中</string>
     <string name="login_out">退出登录</string>
     <string name="chat_send">发送</string>
+    <string name="about_us">关于我们</string>
     <string name="soft_update_title">更新</string>
     <string name="soft_update_info">我们有新的版本更新。</string>
     <string name="soft_updating">更新中。。。</string>

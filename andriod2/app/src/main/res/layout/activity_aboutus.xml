@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <include layout="@layout/commond_toolbar" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:editable="false"
+            android:ems="10"
+            android:inputType="none|textMultiLine"
+            android:text="关于我们：加工达人App由上海抚企信息科技有限公司提供，垂直于机械零件加工行业业务为主的互联网应用体系。您有任何需要帮助，请拨打以下电话，或者访问我们的在线客服论坛。非常感谢您的光临！" />
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="none|textMultiLine"
+            android:text="版本信息：加工达人 2.0.release 2017-2-22" />
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="none|textMultiLine|phone"
+            android:text="联系电话: 159-2146-0670  坐机：021-31009779" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
