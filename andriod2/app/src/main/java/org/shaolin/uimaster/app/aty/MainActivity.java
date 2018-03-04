@@ -150,7 +150,7 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
 
                 RadioButton radioButton = new RadioButton(this);
                 radioButton.setButtonDrawable(android.R.color.transparent);
-                if (bean.name.contains("可抢订单")) {
+                if (bean.name.contains("可接订单")) {
                     fragmentMap.put(R.id.main_tab, WebFragment.newWebFragment(bundle));
                     titleMap.put(R.id.main_tab, bean.name);
                     radioButton.setId(R.id.main_tab);

@@ -513,7 +513,7 @@ public class FileUtil {
 	 * @param newName
 	 * @return
 	 */
-	public static boolean reNamePath(String oldName, String newName) {
+	public static boolean renamePath(String oldName, String newName) {
 		File f = new File(oldName);
 		return f.renameTo(new File(newName));
 	}
@@ -742,8 +742,8 @@ public class FileUtil {
 	 * 解压assets的zip压缩文件到指定目录
 	 * @throws IOException
 	 */
-	public static void unZip(Context context, String assetName,
-							 String outputDirectory,boolean isReWrite) throws IOException {
+	public static void unZipToHidden(Context context, String assetName,
+							 String outputDirectory, boolean isReWrite) throws IOException {
 		//创建解压目标目录
 		File file = new File(outputDirectory);
 		//如果目标目录不存在，则创建
@@ -763,7 +763,7 @@ public class FileUtil {
 		while (zipEntry != null) {
 			//如果是一个目录
 			if (zipEntry.isDirectory()) {
-				file = new File(outputDirectory + File.separator + zipEntry.getName());
+				file = new File(outputDirectory + File.separator + "." + zipEntry.getName());
 				//文件需要覆盖或者是文件不存在
 				if (isReWrite || !file.exists()) {
 					file.mkdir();
@@ -771,7 +771,7 @@ public class FileUtil {
 			} else {
 				//如果是文件
 				file = new File(outputDirectory + File.separator
-						+ zipEntry.getName());
+						+ "." + zipEntry.getName());
 				//文件需要覆盖或者文件不存在，则解压文件
 				if (isReWrite || !file.exists()) {
 					file.createNewFile();

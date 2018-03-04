@@ -34,17 +34,20 @@ public class AdPresenterImpl extends BasePresenterImpl{
 
     @Override
     public void onResponse(String response) {
-        super.onResponse(response);
-        AdBean bean = (new Gson()).fromJson(response,AdBean.class);
-        if (!TextUtils.isEmpty(bean.path)){
-            StringBuilder sb = new StringBuilder(URLData.RESOURCE_URL_1);
-            sb.append(bean.path);
-            String adVersion = PreferencesUtils.getString(context, ConfigData.AD_VERSION);
-            if (TextUtils.isEmpty(adVersion) || !adVersion.equals(bean.version)){
-                AdFilePresenterImpl adFilePresenter = new AdFilePresenterImpl(context,sb.toString(),bean.version + ".zip",bean.version);
+        try {
+            super.onResponse(response);
+            AdBean bean = (new Gson()).fromJson(response, AdBean.class);
+            if (!TextUtils.isEmpty(bean.path)) {
+                StringBuilder sb = new StringBuilder(URLData.RESOURCE_URL_1);
+                sb.append(bean.path);
+                String adVersion = PreferencesUtils.getString(context, ConfigData.AD_VERSION);
+                if (TextUtils.isEmpty(adVersion) || !adVersion.equals(bean.version)) {
+                    AdFilePresenterImpl adFilePresenter = new AdFilePresenterImpl(context, sb.toString(), bean.version + ".zip", bean.version);
+                }
             }
+        } catch (Exception e) {
+            //e.printStackTrace();
         }
-
     }
 
     @Override

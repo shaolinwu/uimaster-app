@@ -1,6 +1,7 @@
 package org.shaolin.uimaster.app.aty;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -40,6 +41,9 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     private PullRefreshLayout refreshLayout;
     private String url;
     private boolean isRefreshing = false;
+
+    private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +98,7 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     }
 
     public void received(String html) {
+        html = html.replace("file://"+absPath+"/uimaster/", "file://"+absPath+"/.uimaster/");
         webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
     }
 

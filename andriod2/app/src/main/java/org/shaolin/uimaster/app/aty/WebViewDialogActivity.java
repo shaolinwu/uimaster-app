@@ -1,6 +1,7 @@
 package org.shaolin.uimaster.app.aty;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -41,6 +42,8 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
     private LinearLayout loadingLayout;
     private ImageView ivLoading;
     private PullRefreshLayout refreshLayout;
+
+    private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,7 +124,9 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/jquery-jstree.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster-widget.js\"></script>\n");
-        sb.append(argus.get("loadjs"));
+        String loadjs = argus.get("loadjs").toString();
+        loadjs = loadjs.replace("file://"+absPath+"/uimaster/", "file://"+absPath+"/.uimaster/");
+        sb.append(loadjs);
         sb.append("</head>\n");
         sb.append("<body data-role=\"page\">\n");
         sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||AJAX_EXCEPTION_REQUEST_WAIT\" msg=\"请求处理中，请稍候...\">\n");

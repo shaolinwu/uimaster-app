@@ -3,6 +3,7 @@ package org.shaolin.uimaster.app.fragment;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -46,6 +47,8 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
     private LinearLayout loadingLayout;
     private ImageView ivLoading;
     private PullRefreshLayout refreshLayout;
+
+    private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,6 +122,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
 
     public void received(String html) {
         //mWebView.loadUrl(url); please DON'T use this one.
+        html = html.replace("file://"+absPath+"/uimaster/", "file://"+absPath+"/.uimaster/");
         mWebView.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
     }
 

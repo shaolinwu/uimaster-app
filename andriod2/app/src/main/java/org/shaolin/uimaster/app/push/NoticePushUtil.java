@@ -62,7 +62,7 @@ public class NoticePushUtil {
                             // bar上显示的提示文字
                             .setContentTitle(bean.SUBJECT)// 设置在下拉status
                             // bar后Activity，本例子中的NotififyMessage的TextView中显示的标题
-                            //.setContentText(bean.DESCRIPTION)// TextView中显示的详细内容
+                            .setContentText(escapeHtml(bean.DESCRIPTION))// TextView中显示的详细内容
                             .setContentIntent(pendingIntent2) // 关联PendingIntent
                             .getNotification(); // 需要注意build()是在API level 16及之后增加的，在API11中可以使用getNotificatin()来代替
                     notify2.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -70,6 +70,19 @@ public class NoticePushUtil {
                 }
             }
         }
+    }
+
+    private static String escapeHtml(String description) {
+        StringBuffer sb = new StringBuffer();
+        String[] htmlClips = description.split("<");
+        for (String clip : htmlClips) {
+            if (clip.indexOf('>') >= 0 ){
+                sb.append(clip.substring(clip.indexOf('>')+1));
+            } else {
+                sb.append(clip);
+            }
+        }
+        return sb.toString();
     }
 
     public void showChatPush(Context context, JSONObject jsonObject) throws JSONException {

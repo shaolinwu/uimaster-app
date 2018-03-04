@@ -7,7 +7,7 @@ import android.os.Environment;
  */
 
 public class FileData {
-    public static String APP_ROOT_FILE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/uimaster";
-    public static String APP_AUDIO_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/uimaster/recording/";
+    public static String APP_ROOT_FILE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.uimaster";
+    public static String APP_AUDIO_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.uimaster/recording/";
 
 }

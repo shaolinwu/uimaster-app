@@ -68,7 +68,7 @@ public class DownFilePresenterImpl {
         @Override
         public void run() {
             try {
-                FileUtil.unZip(mContext, "uimaster.zip", Environment.getExternalStorageDirectory().getAbsolutePath(),false);
+                FileUtil.unZipToHidden(mContext, "uimaster.zip", Environment.getExternalStorageDirectory().getAbsolutePath(),false);
 
                 FileUtil.UnZipFolder(zipFileString, outPathString);
                 File file = new File(zipFileString);
