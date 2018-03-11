@@ -1,80 +1,69 @@
-package org.shaolin.uimaster.app.aty;
+package org.shaolin.uimaster.app.customeview;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.MenuItem;
+import android.view.Gravity;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
 import android.webkit.WebView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import com.baoyz.widget.PullRefreshLayout;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import org.shaolin.uimaster.app.R;
-import org.shaolin.uimaster.app.base.BaseActivity;
+import org.shaolin.uimaster.app.adpter.StyleAdapter;
+import org.shaolin.uimaster.app.adpter.StyleItem;
 import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
-import org.shaolin.uimaster.app.fragment.WebFragment;
-import org.shaolin.uimaster.app.viewmodule.impl.HTMLPresenterImpl;
-import org.shaolin.uimaster.app.viewmodule.inter.IHTMLWebView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.BindView;
 
-/**
- * Created by Administrator on 2017/1/22.
- */
-
-public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView {
-
-    public final static String BUNDLE_KEY_ARGS = "BUNDLE_KEY_ARGS";
+public class BottomWebviewDialog extends Dialog {
 
     @BindView(R.id.webview)
     WebView webview;
     AjaxContext ajaxContext;
 
-    private LinearLayout loadingLayout;
-    private ImageView ivLoading;
-    private PullRefreshLayout refreshLayout;
-
     private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
+    private Bundle arguments;
+
+    public BottomWebviewDialog(Context context, Bundle arguments) {
+        // 在构造方法里, 传入主题
+        super(context, R.style.BottomDialogStyle);
+        // 拿到Dialog的Window, 修改Window的属性
+        Window window = getWindow();
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        // 获取Window的LayoutParams
+        LayoutParams attributes = window.getAttributes();
+        attributes.width = LayoutParams.MATCH_PARENT;
+        attributes.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        // 一定要重新设置, 才能生效
+        window.setAttributes(attributes);
+        this.arguments = arguments;
+    }
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        loadWebView(getIntent().getBundleExtra(BUNDLE_KEY_ARGS));
+        setContentView(R.layout.webview_dialog);
+        initView();
+        initData(this.arguments);
     }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_webview;
-    }
-
-    private void loadWebView(Bundle argus) {
+    private void initView() {
         webview = (WebView)findViewById(R.id.webview);
-        loadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
-        ivLoading = (ImageView) findViewById(R.id.iv_loading);
-        refreshLayout = (PullRefreshLayout) findViewById(R.id.refresh_layout);
-        refreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener(){
-            @Override
-            public void onRefresh() {
-                hideProgress();
-            }
-        });
-        showProgress();
-        WebView parentWebView = AppManager.getAppManager().popWebView(argus.getString("parentWebView"));
-        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, this);
+    }
 
-        if (!TextUtils.isEmpty(argus.getString("title"))){
-            setToolBarTitle(argus.getString("title"));
-        }
+    private void initData(Bundle argus) {
 
         String frameId = (String)argus.get("uiid");
         //showing ajax dialog
@@ -99,7 +88,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append(";\nvar TZOFFSET=");
         sb.append(String.valueOf(Calendar.getInstance().getTimeZone().getOffset(System.currentTimeMillis())));
         sb.append(";\nvar WEB_CONTEXTPATH=\"/uimaster\";\n");
-        sb.append("var RESOURCE_CONTEXTPATH=\"file://").append(FileData.APP_ROOT_FILE).append("\";\n");
+        sb.append("var RESOURCE_CONTEXTPATH=\"https://www.vogerp-res.com:8082/uimaster\";\n");
         sb.append("var FRAMEWRAP=\"/uimaster\";\n");
         sb.append("var IS_SERVLETMODE=true;\n");
         sb.append("var IS_MOBILEVIEW=true;\n");
@@ -125,7 +114,7 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster.js\"></script>\n");
         sb.append("<script type=\"text/javascript\" src=\"file:///").append(root).append("/js/uimaster-widget.js\"></script>\n");
         String loadjs = argus.get("loadjs").toString();
-        loadjs = loadjs.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
+        loadjs = loadjs.replace("file://"+absPath+"/uimaster/", "file://"+absPath+"/.uimaster/");
         sb.append(loadjs);
         sb.append("</head>\n");
         sb.append("<body data-role=\"page\">\n");
@@ -151,35 +140,6 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("});\n</script>\n</body>\n</html>");
 
         webview.loadDataWithBaseURL("", sb.toString(), "text/html", "UTF-8", "");
-    }
-
-    public void received(String html) {
-        webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
-    }
-
-    @Override
-    public void showProgress() {
-        loadingLayout.setVisibility(View.VISIBLE);
-        Animation mRotateAnim = AnimationUtils.loadAnimation(this, R.anim.loading_rotate);
-        ivLoading.startAnimation(mRotateAnim);
-    }
-
-    @Override
-    public void hideProgress() {
-        ivLoading.clearAnimation();
-        loadingLayout.setVisibility(View.GONE);
-    }
-
-    public void refreshComplete(){
-        refreshLayout.setRefreshing(false);
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 }

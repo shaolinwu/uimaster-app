@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+
+import org.shaolin.uimaster.app.customeview.BottomStyleDialog;
+import org.shaolin.uimaster.app.customeview.BottomWebviewDialog;
 import org.shaolin.uimaster.app.utils.FileLog;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -78,6 +81,8 @@ public class AjaxContext extends Callback<String> {
 
     private Runnable pageClosed;
 
+    private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+
     public AjaxContext(BaseFragment f, WebView parentWebView, WebView myWebView, BaseActivity activity) {
         this.fragment = f;
         this.parentWebView = parentWebView;
@@ -107,7 +112,8 @@ public class AjaxContext extends Callback<String> {
     @Override
     public void onResponse(final String response) {
         try {
-            final JSONArray array = new JSONArray(response);
+            String response0 = response.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
+            final JSONArray array = new JSONArray(response0);
             int length = array.length();
             myWebView.loadUrl("javascript:UIMaster.ui.mask.close()");
             final List<JSONObject> loadJsItem = new ArrayList<JSONObject>();
@@ -179,8 +185,26 @@ public class AjaxContext extends Callback<String> {
 
             Intent intent = new Intent(activity, WebViewDialogActivity.class);
             intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
-
             activity.startActivity(intent);
+
+        } else if ("opendialog".equals(jsHandler)) {
+            Bundle arguments = new Bundle();
+            arguments.putString("js", item.getString("js"));
+            arguments.putString("data", item.getString("data"));
+            arguments.putString("uiid", item.getString("uiid"));
+            arguments.putString("_framePrefix", item.getString("frameInfo"));
+            JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
+            arguments.putString("title", dialogInfo.getString("title"));
+            arguments.putString("icon", dialogInfo.getString("icon"));
+            if (loadJsItem != null && loadJsItem.size() > 0) {
+                arguments.putString("loadjs", loadJsItem.get(0).getString("data"));
+            }
+            arguments.putString("parentWebView", webView.hashCode() + "");
+            AppManager.getAppManager().addWebWiew(webView.hashCode() + "", webView);
+
+            BottomWebviewDialog bottomStyleDialog = new BottomWebviewDialog(this.activity, arguments);
+            bottomStyleDialog.show();
+
         } else if ("form_refresh".equals(jsHandler) && activity instanceof WebViewDialogActivity) {
             //TODO: dialog update.
 
@@ -533,7 +557,13 @@ public class AjaxContext extends Callback<String> {
         this.close();
     }
 
-        @JavascriptInterface
+    @JavascriptInterface
+    public void showSelectDialog() {
+        BottomWebviewDialog bottomStyleDialog = new BottomWebviewDialog(this.activity, null);
+        bottomStyleDialog.show();
+    }
+
+    @JavascriptInterface
     public void appPay(String orderInfo, String paymethod) {
         if ("alipay".equalsIgnoreCase(paymethod)) {
             Toast.makeText(activity, "正常调起支付宝", Toast.LENGTH_SHORT).show();

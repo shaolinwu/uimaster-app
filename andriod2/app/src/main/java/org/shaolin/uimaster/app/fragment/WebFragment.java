@@ -122,7 +122,7 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
 
     public void received(String html) {
         //mWebView.loadUrl(url); please DON'T use this one.
-        html = html.replace("file://"+absPath+"/uimaster/", "file://"+absPath+"/.uimaster/");
+        html = html.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
         mWebView.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
     }
 

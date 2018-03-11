@@ -98,7 +98,7 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
     }
 
     public void received(String html) {
-        html = html.replace("file://"+absPath+"/uimaster/", "file://"+absPath+"/.uimaster/");
+        html = html.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
         webview.loadDataWithBaseURL("", html, "text/html", "UTF-8", "");
     }
 

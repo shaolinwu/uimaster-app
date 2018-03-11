@@ -37,6 +37,7 @@ import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.base.BaseFragment;
 import org.shaolin.uimaster.app.bean.LoginBean;
 import org.shaolin.uimaster.app.bean.MainModuleBean;
+import org.shaolin.uimaster.app.customeview.BottomStyleDialog;
 import org.shaolin.uimaster.app.data.ConfigData;
 import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
