@@ -394,6 +394,15 @@ public class MainActivity extends BaseActivity implements IMainModuleView,IMenuV
                 mDrawerLayout.closeDrawers();
             }
         });
+        for (org.shaolin.uimaster.app.bean.MenuItem item : items) {
+            if (item.text.equals("基本信息")) {
+                StringBuilder sb = new StringBuilder(URLData.BASE_URL);
+                sb.append(item.a_attr.href);
+                sb.append("&_appclient=andriod");
+                MineFragment.setBasicURL(sb.toString());
+                break;
+            }
+        }
     }
 
     @Override

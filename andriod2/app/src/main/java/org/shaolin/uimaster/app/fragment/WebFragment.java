@@ -147,7 +147,9 @@ public class WebFragment extends BaseFragment implements IHTMLWebView {
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         settings.setUseWideViewPort(true);//关键点
         DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        if (activity != null) {
+            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        }
         int mDensity = metrics.densityDpi;
         Log.d("maomao", "densityDpi = " + mDensity);
         if (mDensity == 240) {

@@ -11,10 +11,12 @@
         android:padding="5dp"
         android:text="我是自定义dialog标题"
         android:textSize="18sp"/>
+
     <WebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="320dp"
+        android:scrollbars="vertical">
 
     </WebView>
 

@@ -73,6 +73,7 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
 
     private MineItemPresenterImpl mineItemPresenter;
     private LoginOutPresenterImpl loginOutPresenter;
+    private static String basicURL;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,10 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
             mineFragmentInstance = new MineFragment();
         }
         return mineFragmentInstance;
+    }
+
+    public static void setBasicURL(String basicURL0) {
+        MineFragment.basicURL = basicURL0;
     }
 
     @Override
@@ -130,6 +135,12 @@ public class MineFragment extends BaseFragment implements IMineView, ILoginView 
     public void login() {
         if (tvLoginOut.getVisibility() != View.VISIBLE){
             Intent intent = new Intent(getContext(), LoginActivity.class);
+            startActivity(intent);
+        } else if (MineFragment.basicURL != null){
+            // open basic detail.
+            Intent intent = new Intent(getContext(), WebViewActivity.class);
+            intent.putExtra("url", MineFragment.basicURL);
+            intent.putExtra("title", "基本信息");
             startActivity(intent);
         }
     }

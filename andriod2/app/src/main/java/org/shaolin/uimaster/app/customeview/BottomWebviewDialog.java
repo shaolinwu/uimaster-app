@@ -17,9 +17,11 @@ import android.widget.ListView;
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.adpter.StyleAdapter;
 import org.shaolin.uimaster.app.adpter.StyleItem;
+import org.shaolin.uimaster.app.aty.AppManager;
 import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
+import org.shaolin.uimaster.app.fragment.WebFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,9 +30,8 @@ import butterknife.BindView;
 
 public class BottomWebviewDialog extends Dialog {
 
-    @BindView(R.id.webview)
-    WebView webview;
-    AjaxContext ajaxContext;
+    private WebView webview;
+    private AjaxContext ajaxContext;
 
     private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
@@ -49,6 +50,7 @@ public class BottomWebviewDialog extends Dialog {
         // 一定要重新设置, 才能生效
         window.setAttributes(attributes);
         this.arguments = arguments;
+
     }
 
     @Override
@@ -61,6 +63,8 @@ public class BottomWebviewDialog extends Dialog {
 
     private void initView() {
         webview = (WebView)findViewById(R.id.webview);
+        WebView parentWebView = AppManager.getAppManager().popWebView(arguments.getString("parentWebView"));
+        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, null);
     }
 
     private void initData(Bundle argus) {

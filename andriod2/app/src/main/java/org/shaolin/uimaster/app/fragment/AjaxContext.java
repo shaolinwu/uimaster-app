@@ -187,7 +187,7 @@ public class AjaxContext extends Callback<String> {
             intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
             activity.startActivity(intent);
 
-        } else if ("opendialog".equals(jsHandler)) {
+        } else if ("openbottomdialog".equals(jsHandler)) {
             Bundle arguments = new Bundle();
             arguments.putString("js", item.getString("js"));
             arguments.putString("data", item.getString("data"));
@@ -233,8 +233,6 @@ public class AjaxContext extends Callback<String> {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            Activity activity = (Activity) view.getContext();
-
             if (pageLoaded != null) {
                 pageLoaded.run();
             }
@@ -242,10 +240,11 @@ public class AjaxContext extends Callback<String> {
                 ((WebFragment)fragment).hideProgress();
                 ((WebFragment)fragment).refreshComplete();
             }
-            if (activity != null) {
-                ((BaseActivity)activity).hideProgress();
-                if (activity instanceof WebViewActivity){
-                    ((WebViewActivity)activity).refreshComplete();
+            if (view.getContext() != null && view.getContext() instanceof BaseActivity) {
+                Activity activity = (Activity) view.getContext();
+                ((BaseActivity) activity).hideProgress();
+                if (activity instanceof WebViewActivity) {
+                    ((WebViewActivity) activity).refreshComplete();
                 }
             }
         }
@@ -559,7 +558,15 @@ public class AjaxContext extends Callback<String> {
 
     @JavascriptInterface
     public void showSelectDialog() {
-        BottomWebviewDialog bottomStyleDialog = new BottomWebviewDialog(this.activity, null);
+        Bundle arguments = new Bundle();
+        arguments.putString("js", "");
+        arguments.putString("data", "");
+        arguments.putString("uiid", "uiid");
+        arguments.putString("_framePrefix", "");
+        arguments.putString("title", "test");
+        arguments.putString("loadjs", "");
+
+        BottomWebviewDialog bottomStyleDialog = new BottomWebviewDialog(this.activity, arguments);
         bottomStyleDialog.show();
     }
 
