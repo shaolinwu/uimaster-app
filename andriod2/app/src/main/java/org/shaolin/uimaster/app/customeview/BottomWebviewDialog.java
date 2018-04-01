@@ -13,11 +13,13 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.shaolin.uimaster.app.R;
 import org.shaolin.uimaster.app.adpter.StyleAdapter;
 import org.shaolin.uimaster.app.adpter.StyleItem;
 import org.shaolin.uimaster.app.aty.AppManager;
+import org.shaolin.uimaster.app.base.BaseActivity;
 import org.shaolin.uimaster.app.data.FileData;
 import org.shaolin.uimaster.app.data.URLData;
 import org.shaolin.uimaster.app.fragment.AjaxContext;
@@ -31,6 +33,7 @@ import butterknife.BindView;
 public class BottomWebviewDialog extends Dialog {
 
     private WebView webview;
+    TextView title;
     private AjaxContext ajaxContext;
 
     private static final String absPath = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -63,12 +66,14 @@ public class BottomWebviewDialog extends Dialog {
 
     private void initView() {
         webview = (WebView)findViewById(R.id.webview);
+        title = (TextView) findViewById(R.id.vdialog_name);
         WebView parentWebView = AppManager.getAppManager().popWebView(arguments.getString("parentWebView"));
-        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, null);
+        ajaxContext = WebFragment.initWebView(null, parentWebView, webview, new FakeInnerActivity(this));
+        this.dismiss();
     }
 
     private void initData(Bundle argus) {
-
+        title.setText(argus.getString("title"));
         String frameId = (String)argus.get("uiid");
         //showing ajax dialog
         StringBuffer sb = new StringBuffer();
@@ -131,7 +136,9 @@ public class BottomWebviewDialog extends Dialog {
         sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||SELECT_VALUE\" msg=\"必须选择其中某项.\">\n");
         sb.append("<form action=\"#\" method=\"post\" name=\"everything\"");
         sb.append(" onsubmit=\"return false;\" _framePrefix=\"").append(argus.getString("_framePrefix")).append("\">\n");
-        sb.append(argus.get("data"));
+        String data = argus.get("data").toString();
+        data = data.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
+        sb.append(data);
         sb.append("\n");
         sb.append("</form>\n");
         sb.append("<script type=\"text/javascript\">\n");
@@ -144,6 +151,24 @@ public class BottomWebviewDialog extends Dialog {
         sb.append("});\n</script>\n</body>\n</html>");
 
         webview.loadDataWithBaseURL("", sb.toString(), "text/html", "UTF-8", "");
+    }
+
+    private static class FakeInnerActivity extends BaseActivity {
+
+        BottomWebviewDialog dialog;
+        public FakeInnerActivity(BottomWebviewDialog dialog) {
+            this.dialog = dialog;
+        }
+
+        @Override
+        public void finish() {
+            this.dialog.dismiss();
+        }
+
+        @Override
+        protected int getLayoutId() {
+            return 0;
+        }
     }
 
 }

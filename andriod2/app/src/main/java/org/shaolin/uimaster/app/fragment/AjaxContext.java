@@ -13,7 +13,11 @@ import android.text.TextUtils;
 import org.shaolin.uimaster.app.customeview.BottomStyleDialog;
 import org.shaolin.uimaster.app.customeview.BottomWebviewDialog;
 import org.shaolin.uimaster.app.utils.FileLog;
+
+import android.view.ContextThemeWrapper;
 import android.webkit.ConsoleMessage;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -112,7 +116,7 @@ public class AjaxContext extends Callback<String> {
     @Override
     public void onResponse(final String response) {
         try {
-            String response0 = response.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
+            String response0 = response.replace("file://" + absPath + "/uimaster", "file://" + absPath + "/.uimaster");
             final JSONArray array = new JSONArray(response0);
             int length = array.length();
             myWebView.loadUrl("javascript:UIMaster.ui.mask.close()");
@@ -121,7 +125,11 @@ public class AjaxContext extends Callback<String> {
                 JSONObject item = array.getJSONObject(i);
                 String jsHandler = item.getString("jsHandler");
                 if ("closewindow".equals(jsHandler)) {
-                    ((Activity) myWebView.getContext()).finish();
+                    if (myWebView.getContext() instanceof Activity) {
+                        ((Activity) myWebView.getContext()).finish();
+                    } else if (activity instanceof BaseActivity){
+                        ((BaseActivity) activity).finish();
+                    }
                     if (((i + 1) < array.length()) && parentWebView != null) {
                         final int start = i + 1;
                         parentWebView.post(new Runnable() {
@@ -133,7 +141,7 @@ public class AjaxContext extends Callback<String> {
                                     try {
                                         handle(parentWebView, start0, array, array.getJSONObject(start0), loadJsItem);
                                     } catch (JSONException e) {
-                                        FileLog.w("UIMaster", "execute js command error: "+ e.getMessage(), e);
+                                        FileLog.w("UIMaster", "execute js command error: " + e.getMessage(), e);
                                     }
                                 }
                             }
@@ -144,7 +152,7 @@ public class AjaxContext extends Callback<String> {
                     handle(myWebView, i, array, item, loadJsItem);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             FileLog.w("UIMaster", "Failed to load data: ", e);
         }
     }
@@ -159,13 +167,13 @@ public class AjaxContext extends Callback<String> {
         } else if ("nopermission".equals(jsHandler)) {
             Toast.makeText(activity, "对不起！您没有访问权限！", Toast.LENGTH_SHORT).show();
         } else if ("load_js".equals(jsHandler)) {
-            JSONObject item1 = array.getJSONObject(i+1);
+            JSONObject item1 = array.getJSONObject(i + 1);
             if ("openwindow".equals(item1.getString("jsHandler"))) {
                 loadJsItem.add(item);//prepare for openwindow.
             } else {
                 String uiid = item.getString("uiid");
                 final String itemJson = item.toString();
-                webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+                webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify([" + itemJson + "]),'','200')");
             }
         } else if ("openwindow".equals(jsHandler)) {
             Bundle arguments = new Bundle();
@@ -183,28 +191,15 @@ public class AjaxContext extends Callback<String> {
             arguments.putString("parentWebView", webView.hashCode() + "");
             AppManager.getAppManager().addWebWiew(webView.hashCode() + "", webView);
 
-            Intent intent = new Intent(activity, WebViewDialogActivity.class);
-            intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
-            activity.startActivity(intent);
-
-        } else if ("openbottomdialog".equals(jsHandler)) {
-            Bundle arguments = new Bundle();
-            arguments.putString("js", item.getString("js"));
-            arguments.putString("data", item.getString("data"));
-            arguments.putString("uiid", item.getString("uiid"));
-            arguments.putString("_framePrefix", item.getString("frameInfo"));
-            JSONObject dialogInfo = new JSONObject(item.getString("sibling"));
-            arguments.putString("title", dialogInfo.getString("title"));
-            arguments.putString("icon", dialogInfo.getString("icon"));
-            if (loadJsItem != null && loadJsItem.size() > 0) {
-                arguments.putString("loadjs", loadJsItem.get(0).getString("data"));
+            JSONObject details = new JSONObject(item.getString("sibling"));
+            if (details != null && details.getBoolean("openInBottomDialog")) {
+                BottomWebviewDialog bottomStyleDialog = new BottomWebviewDialog(this.activity, arguments);
+                bottomStyleDialog.show();
+            } else {
+                Intent intent = new Intent(activity, WebViewDialogActivity.class);
+                intent.putExtra(WebViewDialogActivity.BUNDLE_KEY_ARGS, arguments);
+                activity.startActivity(intent);
             }
-            arguments.putString("parentWebView", webView.hashCode() + "");
-            AppManager.getAppManager().addWebWiew(webView.hashCode() + "", webView);
-
-            BottomWebviewDialog bottomStyleDialog = new BottomWebviewDialog(this.activity, arguments);
-            bottomStyleDialog.show();
-
         } else if ("form_refresh".equals(jsHandler) && activity instanceof WebViewDialogActivity) {
             //TODO: dialog update.
 
@@ -213,7 +208,7 @@ public class AjaxContext extends Callback<String> {
         } else {
             String uiid = item.getString("uiid");
             final String itemJson = item.toString();
-            webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify(["+itemJson+"]),'','200')");
+            webView.loadUrl("javascript:UIMaster.cmdHandler(JSON.stringify([" + itemJson + "]),'','200')");
         }
     }
 
@@ -233,12 +228,17 @@ public class AjaxContext extends Callback<String> {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            CookieManager cookieManager = CookieManager.getInstance();
+            //WebView获取加载网页的cookie
+            //String CookieStr = cookieManager.getCookie(url);
+
+            super.onPageFinished(view, url);
             if (pageLoaded != null) {
                 pageLoaded.run();
             }
-            if (fragment != null){
-                ((WebFragment)fragment).hideProgress();
-                ((WebFragment)fragment).refreshComplete();
+            if (fragment != null) {
+                ((WebFragment) fragment).hideProgress();
+                ((WebFragment) fragment).refreshComplete();
             }
             if (view.getContext() != null && view.getContext() instanceof BaseActivity) {
                 Activity activity = (Activity) view.getContext();
@@ -314,7 +314,7 @@ public class AjaxContext extends Callback<String> {
 
             if (fragment != null) {
                 fragment.startActivityForResult(createDefaultOpenableIntent(), 30);
-            } else if (activity != null){
+            } else if (activity != null) {
                 activity.startActivityForResult(createDefaultOpenableIntent(), 30);
             }
         }
@@ -377,18 +377,19 @@ public class AjaxContext extends Callback<String> {
 
     /**
      * var opt = {
-     async: false,
-     url: AJAX_SERVICE_URL,
-     type: 'POST',
-     data:{_ajaxUserEvent: action==undefined?true:action,
-     _uiid: uiid,
-     _actionName: actionName,
-     _framePrefix: UIMaster.getFramePrefix(UIMaster.El(uiid).get(0)),
-     _actionPage: entityName,
-     _sync: UIMaster.ui.sync()},
-     beforeSend: UIMaster.ui.mask.open(),
-     success: UIMaster.cmdHandler
-     };
+     * async: false,
+     * url: AJAX_SERVICE_URL,
+     * type: 'POST',
+     * data:{_ajaxUserEvent: action==undefined?true:action,
+     * _uiid: uiid,
+     * _actionName: actionName,
+     * _framePrefix: UIMaster.getFramePrefix(UIMaster.El(uiid).get(0)),
+     * _actionPage: entityName,
+     * _sync: UIMaster.ui.sync()},
+     * beforeSend: UIMaster.ui.mask.open(),
+     * success: UIMaster.cmdHandler
+     * };
+     *
      * @param jsonStr
      * @throws JSONException
      */
@@ -401,7 +402,7 @@ public class AjaxContext extends Callback<String> {
 
             PostFormBuilder form = OkHttpUtils.post().url(URLData.AJAX_SERVICE_URL);
             Iterator<String> i = (Iterator<String>) data.keys();
-            while(i.hasNext()) {
+            while (i.hasNext()) {
                 String key = i.next();
                 form.addParams(key, data.getString(key));
             }
@@ -419,7 +420,7 @@ public class AjaxContext extends Callback<String> {
         this.uploadFileUIID = uiid;
         if (activity != null && activity.selectedUploadFile != null && activity.selectedUploadFile.length > 0) {
             File[] files = new File[activity.selectedUploadFile.length];
-            for (int i=0;i<activity.selectedUploadFile.length;i++) {
+            for (int i = 0; i < activity.selectedUploadFile.length; i++) {
                 files[i] = new File(activity.selectedUploadFile[i]);
             }
             UrlParse.uploadImage(this, activity, url, files, null);
@@ -434,7 +435,7 @@ public class AjaxContext extends Callback<String> {
         this.uploadFileUIID = uiid;
         if (activity != null && activity.selectedUploadFile != null) {
             File[] files = new File[activity.selectedUploadFile.length];
-            for (int i=0;i<activity.selectedUploadFile.length;i++) {
+            for (int i = 0; i < activity.selectedUploadFile.length; i++) {
                 files[i] = new File(activity.selectedUploadFile[i]);
             }
             UrlParse.uploadImage(this, activity, url, files, null);
@@ -444,19 +445,20 @@ public class AjaxContext extends Callback<String> {
         }
     }
 
-    public void onProgress(final long totalBytes,final long remainingBytes, final boolean done) {
+    public void onProgress(final long totalBytes, final long remainingBytes, final boolean done) {
         final long percent = (totalBytes - remainingBytes) * 100 / totalBytes;
         FileLog.d("UIMaster", "uploading file percentage: " + percent);
         myWebView.post(new Runnable() {
             @Override
             public void run() {
-                myWebView.loadUrl("javascript:defaultname."+uploadFileUIID+".options.uploadProgress(null,"+remainingBytes+","+totalBytes+","+percent+");");
+                myWebView.loadUrl("javascript:defaultname." + uploadFileUIID + ".options.uploadProgress(null," + remainingBytes + "," + totalBytes + "," + percent + ");");
             }
         });
     }
 
     /**
      * this is a notification after callback.
+     *
      * @param state 1 success, 0 fail
      */
     @JavascriptInterface
@@ -464,18 +466,18 @@ public class AjaxContext extends Callback<String> {
         myWebView.post(new Runnable() {
             @Override
             public void run() {
-                myWebView.loadUrl("javascript:defaultname."+uploadFileUIID+".appCallback("+state+");");
+                myWebView.loadUrl("javascript:defaultname." + uploadFileUIID + ".appCallback(" + state + ");");
             }
         });
     }
 
     @JavascriptInterface
     public void downloadImage(final String url) {
-        String output = "vogerp-output-" + ((int)(Math.random()*10000)) + url.substring(url.lastIndexOf("."));
+        String output = "vogerp-output-" + ((int) (Math.random() * 10000)) + url.substring(url.lastIndexOf("."));
         File f = new File(FileData.APP_ROOT_FILE + "/download");
         if (!f.exists()) {
             f.mkdirs();
-        }else if( !f.isDirectory() && f.canWrite() ){
+        } else if (!f.isDirectory() && f.canWrite()) {
             f.delete();
             f.mkdirs();
         }
@@ -489,8 +491,8 @@ public class AjaxContext extends Callback<String> {
     }
 
     @JavascriptInterface
-    public void close(){
-        ((Activity)myWebView.getContext()).finish();
+    public void close() {
+        ((Activity) myWebView.getContext()).finish();
     }
 
     @JavascriptInterface
@@ -521,7 +523,7 @@ public class AjaxContext extends Callback<String> {
     public void openURLDialog(String title, String url) {
         Intent intent = new Intent(activity, WebViewActivity.class);
         intent.putExtra("title", title);
-        intent.putExtra("url", URLData.RESOURCE_URL +  url);
+        intent.putExtra("url", URLData.RESOURCE_URL + url);
         intent.putExtra("static_res", "true");
 
         activity.startActivity(intent);
@@ -594,12 +596,12 @@ public class AjaxContext extends Callback<String> {
             try {
                 JSONObject json = new JSONObject(orderInfo);
                 PayReq req = new PayReq();
-                req.appId			= json.getString("appid");
-                req.partnerId		= json.getString("mch_id");
-                req.prepayId		= json.getString("prepay_id");
-                req.nonceStr		= StringUtils.genRandomAlphaBits(32);//json.getString("nonce_str");
-                req.timeStamp		= genTimeStamp() + "";
-                req.packageValue	= "Sign=WXPay";
+                req.appId = json.getString("appid");
+                req.partnerId = json.getString("mch_id");
+                req.prepayId = json.getString("prepay_id");
+                req.nonceStr = StringUtils.genRandomAlphaBits(32);//json.getString("nonce_str");
+                req.timeStamp = genTimeStamp() + "";
+                req.packageValue = "Sign=WXPay";
                 //req.sign			= json.getString("sign");
 
                 //https://pay.weixin.qq.com/wiki/tools/signverify/
@@ -660,7 +662,7 @@ public class AjaxContext extends Callback<String> {
     public static void closeWebSocket(long userId) {
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("partyId",userId);
+            jsonObject.put("partyId", userId);
             socket.emit("unregister", jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -674,4 +676,21 @@ public class AjaxContext extends Callback<String> {
     public Object getWebSocket() {
         return socket;
     }
+
+    /**
+     * 设置Cookie
+     *
+     * @param url
+     * @param cookie  格式：uid=21233 如需设置多个，需要多次调用
+     */
+    @JavascriptInterface
+    public void synCookies(String url, String cookie) {
+        CookieSyncManager.createInstance(myWebView.getContext());
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setCookie(url, cookie);//cookies是在HttpClient中获得的cookie
+        CookieSyncManager.getInstance().sync();
+    }
+
+
 }

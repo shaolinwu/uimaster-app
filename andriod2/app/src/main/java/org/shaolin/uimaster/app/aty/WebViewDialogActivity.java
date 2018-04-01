@@ -138,7 +138,9 @@ public class WebViewDialogActivity extends BaseActivity implements IHTMLWebView 
         sb.append("<input type=\"hidden\" name=\"__resourcebundle\" value=\"Common||SELECT_VALUE\" msg=\"必须选择其中某项.\">\n");
         sb.append("<form action=\"#\" method=\"post\" name=\"everything\"");
         sb.append(" onsubmit=\"return false;\" _framePrefix=\"").append(argus.getString("_framePrefix")).append("\">\n");
-        sb.append(argus.get("data"));
+        String data = argus.get("data").toString();
+        data = data.replace("file://"+absPath+"/uimaster", "file://"+absPath+"/.uimaster");
+        sb.append(data);
         sb.append("\n");
         sb.append("</form>\n");
         sb.append("<script type=\"text/javascript\">\n");

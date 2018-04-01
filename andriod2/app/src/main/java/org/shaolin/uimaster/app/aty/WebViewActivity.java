@@ -114,7 +114,6 @@ public class WebViewActivity extends BaseActivity implements IHTMLWebView {
         CookieSyncManager.createInstance(this.getBaseContext());
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
-        cookieManager.removeSessionCookie();//移除
         cookieManager.setCookie(getIntent().getStringExtra("url"), cookies);//cookies是在HttpClient中获得的cookie
         CookieSyncManager.getInstance().sync();
     }

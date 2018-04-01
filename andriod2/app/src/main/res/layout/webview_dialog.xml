@@ -9,8 +9,9 @@
         android:textColor="#FFF"
         android:background="#999"
         android:padding="5dp"
-        android:text="我是自定义dialog标题"
-        android:textSize="18sp"/>
+        android:text=""
+        android:textSize="18sp"
+        android:id="@+id/vdialog_name"/>
 
     <WebView
         android:id="@+id/webview"
