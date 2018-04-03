@@ -9,8 +9,8 @@ package org.shaolin.uimaster.app.data;
 public final class URLData {
 
     public static final String BASE_URL = "https://www.vogerp.com/uimaster/";
-    public static final String RESOURCE_URL = "https://www.vogerp-res.com:8082/uimaster/";
-    public static final String RESOURCE_URL_1 = "https://www.vogerp-res.com:8082/uimaster";
+    public static final String RESOURCE_URL = "https://www.vogerp.com/uimaster/";
+    public static final String RESOURCE_URL_1 = "https://www.vogerp.com/uimaster";
     public static final String CHAT_URL = "https://www.vogerp.com:8090";
     public static final String CHAT_SEND_AUDIO_URL = "https://www.vogerp.com:8090/audio/add";
     public static final String CHAT_GET_AUDIO_URL = "https://www.vogerp.com:8090/audio/get";
